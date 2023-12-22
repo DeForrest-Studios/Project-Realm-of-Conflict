@@ -1,0 +1,173 @@
+~( December, 27th, 2022, Version: 0.0.1)~
+ - Output all numbers formatted with commas
+ - Put all info strings somewhere so I can easily edit them without finding them individually
+ - Upgrade panel doesn't have Main Panel button
+ - Data logging
+ - Betting salvage outputs, too high for expensive items, too low for inexpensive items.
+ - EMP Naming
+ - Individual timezone presentations
+ - Make a better display for items, there's going to be a lot of them after a while
+ - Make sure all floats are rounded when presented
+ - Display the salvage loot table to players
+ - Make “max” or “all” a choice when add ing multiple to your cart. Just adds the maximum you could purchase with current funds
+ - Fix display items page turning
+ - Salvage cooldown
+ - Salvage button it says "you salvaged the planet's surface and found:"
+ - Change salvage to scavenge
+
+~( December, 27th, 2022, Version: 0.0.2)~
+ - Fixed building outputs in display panel not being formatted correctly.
+ - You now get experience for buying items, you get more experience the higher tier item you buy
+ - You now get experience for selling materials
+ - You now get experience for upgrading buildings
+ - You now get experience for claiming materials
+
+~( December, 27th, 2022, Version: 0.0.3)~
+ - Implemented admin clear_logs command
+ - Fixed that damn sell panel finally, that thing was a bitch and a half
+ - When upgrading a building the receipt now tells you the upgraded stats of your building
+ - Items counts on player Main Panels
+ - Better stats display on Main Panel
+ - Fixed leaderboard, properly display second and third place
+
+~( December, 28th, 2022, Version: 0.0.4)~
+ - Fixed new players not being able to scavenge
+
+~( December, 28th, 2022, Version: 0.0.5)~
+I'm going to start leaving little notes here, because I want to. Hi.
+ - Added PST to claim time to help with confusion for now
+ - Added team counts to simulation reports
+ - Added sell values to sell menu for items
+ - Added item cost to select options when buying things
+ - Sell All button now gives back a text file as a receipt, those things are big so they can be just an embed
+ - Tried balancing experience more, you get more experience. This was to makes the math a bit more stable on the backend. Floats are dangerous.
+ - Fixed the scavenge doing nothing problem, there was indeed a small bug with it.
+
+~( December, 28th, 2022, Version: 0.0.6)~
+Introduced the "Oh Fuck" event
+ - Xp from claiming lowered
+ - Xp from selling lowered
+ - Xp algorithm for experience required to level up change
+ - A few other things, but I gotta get this out, nothing too important
+
+~( December, 28th, 2022, Version: 0.0.7)~
+ - Fixed simulation report not reporting damage done
+ - Change "Wood" to "Logs"
+ - Tree Farms now output Logs instead of Lumbers
+ - Implemented planet victory
+ - Level up button now shows insufficient experience, I will implement the button only showing when you can level up later
+
+ 
+~( December, 31st, 2022, Version: 0.1.0) The Crafting Update~
+ - Most float values are now rounded to the 5 decimal place.
+ - Implement simulation saving, and loading
+ - Guarded against players using admin commands, in what I think is a healthy manner :) <3
+ - Changed time between skirmishes. From 5 minutes to 20.
+ - All numbers are now base on a "Base Value" that each item has. Is a flat number for the basic materials like water, sand, logs, etc., and crafted component's base
+ values are dependant on the base values of the items required to craft it.
+ For Example: Iron's base value is Raw Copper's base value multiplied by 2, as crafting Iron requires 2 Raw Copper.
+ - Experience gain from buying items made to a flat `cost*0.4`, meaning 0.4 xp per dollar spent.
+ - Soldier stat algorithm from `range between tier*(16*tier) + tier*(14*tier) to tier*(24*tier) + tier*(18*tier)` to flat output of `cost*(2 + (tier*0.25))`
+ Tier 1 Soldier = (cost*2.25)
+ Tier 2 Soldier = (cost*2.5)
+ Tier 3 Soldier = (cost*2.75)
+ - Missile stat algorithm from `range between tier*(32*tier) + tier*(24*tier) to tier*(96*tier) + tier*(46*tier)` to `cost*3 + (tier*0.25)`
+ Tier 1 Missile = (cost*3.25)
+ Tier 2 Missile = (cost*3.5)
+ Tier 3 Missile = (cost*3.75)
+ Tier 4 Missile = (cost*4)
+ Tier 5 Missile = (cost*4.25)
+ - Shield stat algorithm from `range between tier*(600*tier) + tier*(8*tier) to tier*(700*tier) + tier*(12*tier)` to  `cost*3 + (tier*0.25)`
+ Tier 1 Shield = (cost*3.25)
+ Tier 2 Shield = (cost*3.5)
+ Tier 3 Shield = (cost*3.75)
+ Tier 4 Shield = (cost*4)
+ Tier 5 Shield = (cost*4.25)
+ - Emp stat algorithm from `range between tier*(140*tier) + tier*(8*tier) to tier*(200*tier) + tier*(12*tier)` to cost*(3.0 + (tier*0.25))
+ Tier 1 EMP = cost*3.25
+ Tier 2 EMP = cost*3.5
+ Tier 3 EMP = cost*3.75
+ - Player level effects player attack damage, and defensive power:
+  attack_power = attack_power + self.level * 1+(self.level*0.4)
+  defensive_power = defensive_power + self.level * 1+(self.level*0.5)
+ - Removed `Oh Fuck` event.
+ - Implemented skills points on level up, it will notify you on your Main Panel if you have skill points unspent
+ - Implemented level up notification on the Main Panel
+ - Implemented Skills Panel
+ - Implemented Skill Categories: General Skills, Offensive Skills, Defensive Skills, Counter Operations Skills
+ - Salvaging is now a General Skill
+ - General Skills Implemented:
+    - Manufacturing - Less resources are needed to craft and manufacture, you automatically reclaim unused materials after crafting or manufacturing something
+    - Salvaging - Raises the chances for multiple rolls throught the loot table, and raises the quantity of loot you successfully roll for
+ - Offensive Skills:
+    - Offense - Enhance one's attack power without items
+    - Domination - True damage on top of all other damage that is not effected by energy sapping
+ - Defensive Skills:
+    - Defense - Enhance one's defensive power without items
+    - Healing - Heal your population
+ - Counter Operations:
+    - Energy Sapping - Enhance one's energy sapping without items
+    - Hacking - Steal money from the opposing planet
+    - Raiding - Steal materials from the opposing planet
+ - Removed salvage skill display from stat displayMain Panels
+ - Added General Skills, Offensive Skills, Defensive Skills, Counter Operations Skills to stat display in Main Panel
+ - I can now access players panels for debugging purposes
+ - Implemented Crafting Panel
+ - Implemented Recipes
+ - Impelented SelectMenu to view recipes
+ - Implemented Recipes being display in the Crafting Panels
+ - Implemented Craft Quantity Buttons (1, 10, 100, 1000, Custom Input)
+ - Implemented Crafting of Basic, and Advanced Components
+ - Implemented Data Leaks
+ - Implemented Protector Letters
+
+~( January, 1st, 2023, Version: 0.2.0)~
+ - Reduced size of simulation report in embed. The length of the file remains the same.
+ - Fixed healing, and domination not printing out stats
+ - Removed leaderboards from embeded simulation report, so we can fit more data
+ - Implemented item craft; Beware, it's not very performant at the moment. It works, but I need to implement proper timeout deferring in order for performance to be better. Try not to spam craft. Craft what you need for now. thank you guy :)
+
+
+~( January, 1st, 2023, Version: 0.2.1)~ Deprecated Changelog
+Thank you guys for all the support. We've gotten over 50 people to take part in this project altogether just in this past week. Whether through playing and reporting bugs, helping with art, helping with lore, whatever it may be. You've all been apart of this coming together so far, and I really appreciate you all for it. With so many new people over just the past couple days, I'd like to touch bases again.
+As of `~( December, 31st, 2022, Version: 0.1.0) The Crafting Update~`, I announced we are in Alpha. At the launch things were rocky. I've very well experienced with C, C++, and Python, years of them all, but I'm admittedly only a couple months into understand asynchronous programming particularly, I've just never really messed with it. I work on compilers mainly, and programming language design, which rarely uses concurrency other than actually implementing it as a feature, which I've not really done either. A big problem I'm trying to solve, is healthily creating objects asynchronously, as this is destroying performance more than anything. I'm also working on a defer "table" that holds responses for follow ups to leasen interaction failures, but this is incompatible with the current codebase(we edit messages to acheive the single-panel gameplay, deferring does not like this), so it's going to take a lot of reworking.
+
+The next update, `0.3.0 ~ The Support Update`, is going to be implementing some support features. Medics who have healing, and defensive power. Healing fields; comes in 3 tiers, and provides massive healing. Construction of Cities, comes in 3 tiers, which provide massive defensive boosts. Contruction of Military Camps, which comes in 5 tiers, which provide small to large boosts in attack and defense.
+The Support Update will probably take at least a week, maybe two depending on the quality I want to push for. During this time I will be pushing minor update on 0.2.0, like this one, 0.2.1. These will provide hotfixes, and tiny features additions, or changes relative to the UI or database.
+
+We are currently looking for staff for the discord server, programmers, and artists who wish to help. There is no expectation of how much work you do, but there is an expectation of privacy, and effort. If you are interested in helping with programming or art, please DM me, Cavan (or Robert). If you are interested in applying for staff for the discord server, please DM Keeper Phosphorus (TheMadDM).
+
+I'd like to thank you all one more time for the support. I hope for this project to go farther, and become better.
+
+Onto the changes now:
+ - Raised experience you recieve when scavenging.
+ - Fixed the missing $ sign in front of your wallet amount on the Main Panel
+ - Fixed the improper layout of text in the Full Simulation Report
+ - You get more loot from raiding now
+ - Lower building experience
+ - Migrated database from in-house to sqllite.
+
+~( January 12 through ?, 2023, Version: 0.3.0)~
+ - Fixed a bunch of the typos, and formatting problems.
+ - Reworked Upgrade Panel
+ - Removed Print Receipt button from Buy Panel; will probably reimplement in some form
+ - Raised prices on upgrading buildings.
+ - Implemented Display Skills button in Info Panel
+ - Implemented Display Planet Stats
+ - Implemented Gold and Gold Mine
+ - Implemented Silver and Silver Mine
+ - HUGE Restructure of the Codebase
+ - Instead of collection time showing the time of last collection, shows how long since the last collection
+ - Skill panel no longers reverts back to skill categories after selecting skill
+ - Skill panel will tell you information about your skills spec
+ - Complete rework of the database in backend
+ - Refresh button on Main Panel
+ - Implemented Mycelium and Mycelium farm
+ - Implemented Medics
+ - Renamed Soldiers to Infantry
+ - You now activate the bot by typing `RoC`; any change in casing is allowed.
+ - Implemented Construction
+
+~(December 20th, 2023, Version: 0.4.0)
+I'm back.
+ - Reimplementation of more than a few things, making project open-source from the get go, and focusing the the ability for people to contribute to the project
