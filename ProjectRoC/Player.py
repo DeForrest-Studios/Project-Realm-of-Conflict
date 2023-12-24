@@ -24,6 +24,7 @@ class Player:
             "Offensive Skill": 0,
             "Defensive Skill": 0,
             "Counter Operations Skill": 0,
+            "Maiden's Grace": False
         }
         Self.Inventory = {
             "Water": 0.0,
