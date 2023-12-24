@@ -16,13 +16,15 @@ class RealmOfConflict(Bot):
         super().__init__(command_prefix=['R', 'r'], intents=Intents.all())
         Self.remove_command('help')
         Self.Data = {
-            "Players": {},
+            "Players": {"42069": Player("Test")},
             "Planets": {
                 "Analis": Planet("Analis"),
                 "Titan": Planet("Titan"),
             },
             "Panels": {},
         }
+        Self.Materials = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
+        print(Self.Materials)
         Self.Initalize_Logger()
 
 
@@ -72,6 +74,8 @@ class RealmOfConflict(Bot):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             with open(join("Data", "PlayerData", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
+                print(PlayerUUID)
+                if PlayerUUID == 42069: continue
                 MemberObject = Members[PlayerUUID]
                 LoadedPlayer = Player(MemberObject)
                 for Field in PlayerData:
@@ -96,6 +100,7 @@ class RealmOfConflict(Bot):
             return
         for PlayerDataFileName in listdir(join("Data", "PlayerInventories")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID == 42069: continue
             with open(join("Data", "PlayerInventories", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 for Field in PlayerData:
@@ -110,6 +115,7 @@ class RealmOfConflict(Bot):
             return
         for PlayerDataFileName in listdir(join("Data", "PlayerProductionFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID == 42069: continue
             with open(join("Data", "PlayerProductionFacilities", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 for Field in PlayerData:

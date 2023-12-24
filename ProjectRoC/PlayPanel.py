@@ -44,7 +44,7 @@ class PlayPanel:
             Self.EmbedFrame.title = Self.EmbedFrame.title + " (Developer)"
 
 
-    async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:Context, ButtonInteraction=None):
+    async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:Context):
         Self.InitialContext = InitialContext
         Self.Ether = Ether
         Self.Whitelist = [897410636819083304, # Robert Reynolds, Cavan
@@ -70,12 +70,7 @@ class PlayPanel:
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         await Self._Determine_Whitelist()
-        if ButtonInteraction:
-            Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
-            await Self._Send_New_Panel(ButtonInteraction)
-        else:
-            Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
-            Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+        Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
 
     async def _Return_Home(Self, ButtonInteraction):

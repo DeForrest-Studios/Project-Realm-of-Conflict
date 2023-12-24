@@ -12,7 +12,7 @@ if __name__ == '__main__':
             return
         await InitialContext.message.delete()
         if InitialContext.author.id not in Ether.Data["Players"].keys() or Ether.Data["Players"][InitialContext.author.id].Data["Team"] is None:
-            await Ether.Send_Welcome(InitialContext, InitialContext.author)
+            await Ether.Send_Welcome(InitialContext.author)
         elif InitialContext.author.id in Ether.Data["Panels"].keys():
             await Ether.Data["Panels"][InitialContext.author.id].DashboardMessage.delete()
             Ether.Data["Panels"].update({InitialContext.author.id:PlayPanel(Ether, InitialContext)})
