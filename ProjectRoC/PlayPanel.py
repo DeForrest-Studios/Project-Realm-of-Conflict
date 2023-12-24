@@ -3,7 +3,8 @@ from discord import ButtonStyle, Embed, SelectOption, Interaction, InteractionMe
 from discord.ext.commands import Context
 from discord.ui import View, Button, Select
 from RealmOfConflict import RealmOfConflict
-# Final test push, please work
+from LootTables import ScavengeTable
+from random import randrange
 
 class PlayPanel:
     def __init__(Self, Ether:RealmOfConflict, PlayerContext:Context):
@@ -44,7 +45,7 @@ class PlayPanel:
             Self.EmbedFrame.title = Self.EmbedFrame.title + " (Developer)"
 
 
-    async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:Context):
+    async def _Construct_Home(Self, Ether:RealmOfConflict=None, InitialContext:Context=None, ButtonInteraction=None):
         Self.InitialContext = InitialContext
         Self.Ether = Ether
         Self.Whitelist = [897410636819083304, # Robert Reynolds, Cavan
@@ -62,6 +63,7 @@ class PlayPanel:
         Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
 
         Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
+        Self.ScavengeButton.callback = Self._Scavenge
 
         Self.BaseViewFrame.add_item(Self.FacilitiesButton)
         Self.BaseViewFrame.add_item(Self.ScavengeButton)
@@ -70,33 +72,24 @@ class PlayPanel:
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         await Self._Determine_Whitelist()
-        Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+        if ButtonInteraction:
+            await Self._Send_New_Panel(ButtonInteraction)
+        else:
+            Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
 
-    async def _Return_Home(Self, ButtonInteraction):
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
+    async def _Scavenge(Self, ButtonInteraction:Interaction):
+        SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
+        Self.EmbedFrame.clear_fields()
+        for Roll in SuccessfulRolls:
+            if Roll == "Wallet":
+                MoneyScavenged = round(2.76 * (0.35 * Self.Player.Data["Level"]), 2)
+                Self.Player.Data["Wallet"] += MoneyScavenged
+                Self.EmbedFrame.add_field(name=f"You found ${MoneyScavenged}", value="\u200b")
+
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
-
-        Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle)
-        Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle)
-        Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
-
-        Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
-
-        Self.BaseViewFrame.add_item(Self.FacilitiesButton)
-        Self.BaseViewFrame.add_item(Self.ScavengeButton)
-
-        if Self.InitialContext.author.id in Self.Whitelist:
-            Self.BaseViewFrame.add_item(Self.DebugButton)
-
-        await Self._Determine_Whitelist()
         await Self._Send_New_Panel(ButtonInteraction)
-
-
-    async def Scavenge(Self, ButtonInteraction:Interaction):
-        ...
 
 
     async def _Construct_Facilities_Panel(Self, ButtonInteraction:Interaction):
@@ -112,7 +105,7 @@ class PlayPanel:
 
         Self.FacilitiesSelect = Select(placeholder="Select a Facility", options=Self.Options, custom_id=f"{Self.Player.Data['UUID']} ItemSelect")
 
-        Self.HomepageButton.callback = lambda ButtonInteraction: Self._Return_Home(ButtonInteraction)
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction)
 
         Self.BaseViewFrame.add_item(Self.CollectProductionButton)
         Self.BaseViewFrame.add_item(Self.CollectManufacturingButton)

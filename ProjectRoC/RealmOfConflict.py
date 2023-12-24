@@ -24,7 +24,6 @@ class RealmOfConflict(Bot):
             "Panels": {},
         }
         Self.Materials = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
-        print(Self.Materials)
         Self.Initalize_Logger()
 
 

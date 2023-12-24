@@ -19,11 +19,4 @@ if __name__ == '__main__':
         else:
             Ether.Data["Panels"].update({InitialContext.author.id:PlayPanel(Ether, InitialContext)})
 
-
-    @Ether.event
-    async def on_ready() -> None:
-        Guild = Ether.guilds[0]
-        await Ether.Autosave()
-        print("\nBot is alive.\n")
-
     Ether.run(Ether.Get_Token("Cavan"))
