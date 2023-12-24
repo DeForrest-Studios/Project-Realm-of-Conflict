@@ -7,6 +7,7 @@ ScavengeTable = {
     "Soldier": 5
 }
 
+
 MaterialTable = {
     "Water": (25, 30),
     "Sand": (17, 22),
