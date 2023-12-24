@@ -1,6 +1,6 @@
 ScavengeTable = {
     "Wallet": 65,
-    "Material":65,
+    "Material": 65,
     "Bonus Material": 25,
     "Component": 35,
     "Bonus Component": 10,
