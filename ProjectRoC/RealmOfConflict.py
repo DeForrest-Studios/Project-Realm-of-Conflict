@@ -93,6 +93,7 @@ class RealmOfConflict(Bot):
                         continue
                     Value = Contents[1]
                     LoadedPlayer.Data[Name] = Value
+                LoadedPlayer.Refresh_Stats()
                 Self.Data["Players"].update({PlayerUUID:LoadedPlayer})
 
 

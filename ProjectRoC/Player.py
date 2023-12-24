@@ -71,6 +71,9 @@ class Player:
 
     def Refresh_Stats(Self):
         Self.ExperienceForNextLevel = Self.Data["Level"] * (325 + (135 * Self.Data["Level"]))
+        if Self.Data["Experience"] >= Self.ExperienceForNextLevel:
+            Self.Data["Level"] += 1
+            Self.Refresh_Stats()
 
         
     def _Test_Init(Self):

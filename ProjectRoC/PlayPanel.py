@@ -54,6 +54,7 @@ class PlayPanel:
         Self.Player: Player = Ether.Data["Players"][InitialContext.author.id]
         await Self._Determine_Team()
 
+        print(Self.Player.ExperienceForNextLevel)
         if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
             Self.Player.Data["Level"] += 1
             Self.Player.Refresh_Stats()
