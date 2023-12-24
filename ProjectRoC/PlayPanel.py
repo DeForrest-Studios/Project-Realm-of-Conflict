@@ -3,7 +3,7 @@ from discord import ButtonStyle, Embed, SelectOption, Interaction, InteractionMe
 from discord.ext.commands import Context
 from discord.ui import View, Button, Select
 from RealmOfConflict import RealmOfConflict
-from LootTables import ScavengeTable
+from LootTables import ScavengeTable, MaterialTable
 from random import randrange
 from Player import Player
 
@@ -96,11 +96,18 @@ class PlayPanel:
                 MoneyScavenged = round(2.76 * (0.35 * Self.Player.Data["Level"]), 2)
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + MoneyScavenged, 2)
                 ScavengedString += f"Found ${MoneyScavenged}\n"
+            if Roll == "Material" or Roll == "Bonus Material":
+                MaterialScavenged = list(MaterialTable.keys())[randrange(0, (len(MaterialTable.keys()) - 1))]
+                Start, End = MaterialTable[MaterialScavenged][0], MaterialTable[MaterialScavenged][1]
+                print(Start, End)
+                MaterialScavengedAmount = randrange(Start, End)
+                Self.Player.Inventory[MaterialScavenged] = round(Self.Player.Inventory[MaterialScavenged] + MaterialScavengedAmount, 2)
+                ScavengedString += f"Found {MaterialScavengedAmount} {MaterialScavenged}\n"
 
         if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
             Self.Player.Data["Level"] += 1
             Self.Player.Refresh_Stats()
-            Self.EmbedFrame.add_field(name=f"You leveled up!", value="\u200b", inline=False)
+            Self.EmbedFrame.insert_field_at(0, name=f"You leveled up!", value="\u200b", inline=False)
             
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
         Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
