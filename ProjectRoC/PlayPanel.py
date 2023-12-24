@@ -71,8 +71,10 @@ class PlayPanel:
 
         await Self._Determine_Whitelist()
         if ButtonInteraction:
+            Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
             await Self._Send_New_Panel(ButtonInteraction)
         else:
+            Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
             Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
 
@@ -98,6 +100,10 @@ class PlayPanel:
         await Self._Send_New_Panel(ButtonInteraction)
 
 
+    async def Scavenge(Self, ButtonInteraction:Interaction):
+        ...
+
+
     async def _Construct_Facilities_Panel(Self, ButtonInteraction:Interaction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Facilities Panel")
@@ -118,4 +124,5 @@ class PlayPanel:
         Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
+        Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(ButtonInteraction)

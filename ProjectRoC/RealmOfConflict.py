@@ -4,9 +4,12 @@ from discord import ButtonStyle, Embed, Intents, Member, Interaction
 from discord.ui import Button, View
 from discord.ext.commands import Bot, Context
 from discord.utils import get
+from logging import getLogger, Formatter,  DEBUG, INFO
+from logging.handlers import RotatingFileHandler
 from asyncio import create_task, sleep
 from Planet import Planet
 from Player import Player
+
 
 class RealmOfConflict(Bot):
     def __init__(Self) -> None:
@@ -20,6 +23,7 @@ class RealmOfConflict(Bot):
             },
             "Panels": {},
         }
+        Self.Initalize_Logger()
 
 
     def Get_Token(Self, Key: str) -> None:
@@ -32,6 +36,23 @@ class RealmOfConflict(Bot):
 
     def Initialize(Self) -> None:
         Self.run(Self.Get_Token("Cavan"))
+
+    
+    def Initalize_Logger(Self):
+        Self.Logger = getLogger('discord')
+        Self.Logger.setLevel(DEBUG)
+        getLogger('discord.http').setLevel(INFO)
+
+        Self.Handler = RotatingFileHandler(
+            filename='RoC.log',
+            encoding='utf-8',
+            maxBytes=32 * 1024 * 1024,  # 32 MiB
+            backupCount=5,  # Rotate through 5 files
+        )
+        DateTimeFormat = '%Y-%m-%d %H:%M:%S'
+        Self.Formatter = Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', DateTimeFormat, style='{')
+        Self.Handler.setFormatter(Self.Formatter)
+        Self.Logger.addHandler(Self.Handler)
 
 
     def Load_Players(Self) -> None:
@@ -152,6 +173,8 @@ class RealmOfConflict(Bot):
         MessageEmbed = Embed(title="Welcome")
 
         MessageEmbed.add_field(name="\u200b", value=f"Welcome to {Choice}")
+
+        Self.Logger.info(f"{NewMember.author.name} joined {Choice}")
 
         await ButtonInteraction.response.edit_message(embed=MessageEmbed, view=None)
 
