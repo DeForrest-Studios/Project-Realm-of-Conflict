@@ -99,7 +99,6 @@ class PlayPanel:
             if Roll == "Material" or Roll == "Bonus Material":
                 MaterialScavenged = list(MaterialTable.keys())[randrange(0, (len(MaterialTable.keys()) - 1))]
                 Start, End = MaterialTable[MaterialScavenged][0], MaterialTable[MaterialScavenged][1]
-                print(Start, End)
                 MaterialScavengedAmount = randrange(Start, End)
                 Self.Player.Inventory[MaterialScavenged] = round(Self.Player.Inventory[MaterialScavenged] + MaterialScavengedAmount, 2)
                 ScavengedString += f"Found {MaterialScavengedAmount} {MaterialScavenged}\n"
