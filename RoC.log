@@ -1,5 +1,0 @@
-[2023-12-23 16:35:02] [DEBUG   ] discord.client: on_ready has successfully been registered as an event
-[2023-12-23 16:35:02] [INFO    ] discord.client: logging in using static token
-[2023-12-23 16:35:03] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 3b73f00875a76feedaee6a5231e26810).
-[2023-12-23 16:35:09] [INFO    ] discord: Sent Home panel to robertdeforrest
-[2023-12-23 16:35:26] [INFO    ] discord: Sent Facilities panel to robertdeforrest
