@@ -81,14 +81,19 @@ class PlayPanel:
     async def _Scavenge(Self, ButtonInteraction:Interaction):
         SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
+        ScavengedString = ""
+        ExperienceGained = round((0.65 * (0.35 * Self.Player.Data["Level"])) * len(SuccessfulRolls), 2)
+        ScavengedString += f"Gained {ExperienceGained} experience\n"
+        Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + ExperienceGained, 2)
+
         for Roll in SuccessfulRolls:
             if Roll == "Wallet":
                 MoneyScavenged = round(2.76 * (0.35 * Self.Player.Data["Level"]), 2)
-                Self.Player.Data["Wallet"] += MoneyScavenged
-                Self.EmbedFrame.add_field(name=f"You found ${MoneyScavenged}", value="\u200b")
-
+                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + MoneyScavenged, 2)
+                ScavengedString += f"Found ${MoneyScavenged}\n"
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
+        Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
         await Self._Send_New_Panel(ButtonInteraction)
 
 
