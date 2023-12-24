@@ -73,7 +73,6 @@ class RealmOfConflict(Bot):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             with open(join("Data", "PlayerData", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
-                print(PlayerUUID)
                 if PlayerUUID == 42069: continue
                 MemberObject = Members[PlayerUUID]
                 LoadedPlayer = Player(MemberObject)
@@ -82,12 +81,15 @@ class RealmOfConflict(Bot):
                     Name = Contents[0]
                     if Contents[1].replace(".", "").isdigit():
                         Value = float(Contents[1])
+                        LoadedPlayer.Data[Name] = Value
                         continue
                     if Contents[1].isdigit():
                         Value = int(Contents[1])
+                        LoadedPlayer.Data[Name] = Value
                         continue
                     if Contents[1] == "None":
                         Value = "None"
+                        LoadedPlayer.Data[Name] = Value
                         continue
                     Value = Contents[1]
                     LoadedPlayer.Data[Name] = Value
