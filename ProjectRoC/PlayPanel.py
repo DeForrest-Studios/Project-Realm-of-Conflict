@@ -100,6 +100,7 @@ class PlayPanel:
         if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
             Self.Player.Data["Level"] += 1
             Self.Player.Refresh_Stats()
+            Self.EmbedFrame.add_field(name=f"You leveled up!", value="\u200b", inline=False)
             
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
         Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
