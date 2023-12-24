@@ -5,6 +5,7 @@ class Player:
         if Member == "Test":
             Self._Test_Init()
             return
+        Self.ExperienceForNextLevel = 0
         Self.Data = {
             "UUID": Member.id,
             "Member Object": Member,
@@ -65,6 +66,12 @@ class Player:
             "Lithium Mine": LithiumMine(),
         }
         Self.ManufacturingFacilities = {}
+        Self.Refresh_Stats()
+
+
+    def Refresh_Stats(Self):
+        Self.ExperienceForNextLevel = Self.Data["Level"] * (325 + (135 * Self.Data["Level"]))
+
         
     def _Test_Init(Self):
         Self.Data = {

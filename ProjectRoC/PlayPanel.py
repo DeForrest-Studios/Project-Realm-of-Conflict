@@ -5,6 +5,7 @@ from discord.ui import View, Button, Select
 from RealmOfConflict import RealmOfConflict
 from LootTables import ScavengeTable
 from random import randrange
+from Player import Player
 
 class PlayPanel:
     def __init__(Self, Ether:RealmOfConflict, PlayerContext:Context):
@@ -50,9 +51,13 @@ class PlayPanel:
         Self.Ether = Ether
         Self.Whitelist = [897410636819083304, # Robert Reynolds, Cavan
                           ]
-        Self.Player = Ether.Data["Players"][InitialContext.author.id]
+        Self.Player: Player = Ether.Data["Players"][InitialContext.author.id]
         await Self._Determine_Team()
-        
+
+        if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
+            Self.Player.Data["Level"] += 1
+            Self.Player.Refresh_Stats()
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
 
@@ -60,7 +65,6 @@ class PlayPanel:
 
         Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle)
         Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle)
-        Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
 
         Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
         Self.ScavengeButton.callback = Self._Scavenge
@@ -69,6 +73,7 @@ class PlayPanel:
         Self.BaseViewFrame.add_item(Self.ScavengeButton)
 
         if InitialContext.author.id in Self.Whitelist:
+            Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         await Self._Determine_Whitelist()
@@ -92,6 +97,10 @@ class PlayPanel:
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + MoneyScavenged, 2)
                 ScavengedString += f"Found ${MoneyScavenged}\n"
 
+        if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
+            Self.Player.Data["Level"] += 1
+            Self.Player.Refresh_Stats()
+            
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
         Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
         await Self._Send_New_Panel(ButtonInteraction)
