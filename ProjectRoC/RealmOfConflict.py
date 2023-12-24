@@ -143,11 +143,11 @@ class RealmOfConflict(Bot):
                 PlayerDataFile.write(SaveData)
 
 
-    async def Choose_Team(Self, PlayerContext:Context, NewMember:Member, Choice:str, ButtonInteraction:Interaction) -> None:
+    async def Choose_Team(Self, NewMember:Member, Choice:str, ButtonInteraction:Interaction) -> None:
         Self.Data["Players"].update({NewMember.id:Player(NewMember)})
         Self.Data["Players"][NewMember.id].Data["Team"] = Choice
         Self.Data["Planets"][Choice].Data["Protector Count"] += 1
-        await NewMember.add_roles(get(PlayerContext.guild.roles, name=Choice))
+        await NewMember.add_roles(get(Self.Guild.roles, name=Choice))
 
         MessageEmbed = Embed(title="Welcome")
 
@@ -156,14 +156,14 @@ class RealmOfConflict(Bot):
         await ButtonInteraction.response.edit_message(embed=MessageEmbed, view=None)
 
 
-    async def Send_Welcome(Self, PlayerContext: Context, NewMember: Member) -> None:
+    async def Send_Welcome(Self, NewMember:Member) -> None:
         MessageEmbed = Embed(title="Welcome")
         MessageView = View()
         ChooseAnalisButton = Button(label="Choose Analis", style=ButtonStyle.blurple, custom_id=f"{NewMember.id} Analis Choice", row=1)
         ChooseTitanButton = Button(label="Choose Titan", style=ButtonStyle.red, custom_id=f"{NewMember.id} Titan Choice", row=1)
 
-        ChooseAnalisButton.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(PlayerContext, NewMember, "Analis", ButtonInteraction))
-        ChooseTitanButton.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(PlayerContext, NewMember, "Titan", ButtonInteraction))
+        ChooseAnalisButton.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(NewMember, "Analis", ButtonInteraction))
+        ChooseTitanButton.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(NewMember, "Titan", ButtonInteraction))
 
         MessageView.add_item(ChooseAnalisButton)
         MessageView.add_item(ChooseTitanButton)
@@ -192,4 +192,4 @@ class RealmOfConflict(Bot):
     # Override of existing on_member_join from discord.py
     # This sends a message to the player
     async def on_member_join(Self, NewMember:Member) -> None:
-        Self.Send_Welcome(NewMember)
+        await Self.Send_Welcome(NewMember)
