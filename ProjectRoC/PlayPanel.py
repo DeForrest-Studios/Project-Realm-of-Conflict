@@ -63,8 +63,8 @@ class PlayPanel:
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
 
-        Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle)
-        Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle)
+        Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle, custom_id="FacilitiesButton")
+        Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
 
         Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
         Self.ScavengeButton.callback = Self._Scavenge
@@ -113,20 +113,21 @@ class PlayPanel:
         await Self._Send_New_Panel(ButtonInteraction)
 
 
-    async def _Construct_Facilities_Panel(Self, ButtonInteraction:Interaction):
+    async def _Construct_Facilities_Panel(Self, Interaction:Interaction=None):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Facilities Panel")
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
 
-        Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle)
-        Self.CollectManufacturingButton = Button(label="Collect Manufacturing", style=Self.ButtonStyle)
+        Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle, custom_id="CollectProductionButton")
+        Self.CollectManufacturingButton = Button(label="Collect Manufacturing", style=Self.ButtonStyle, custom_id="CollectManufacturingButton")
         Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3)
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
 
-        Self.FacilitiesSelect = Select(placeholder="Select a Facility", options=Self.Options, custom_id=f"{Self.Player.Data['UUID']} ItemSelect")
+        Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection")
 
         Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction)
+        Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
 
         Self.BaseViewFrame.add_item(Self.CollectProductionButton)
         Self.BaseViewFrame.add_item(Self.CollectManufacturingButton)
@@ -134,4 +135,18 @@ class PlayPanel:
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
-        await Self._Send_New_Panel(ButtonInteraction)
+
+        if Interaction.data["custom_id"] == "FacilitiesButton":
+            Self.FacilitySelected = None
+            Self.FacilitiesSelect.placeholder = "Select a Facility"
+            await Self._Send_New_Panel(Interaction)
+        elif Interaction.data["custom_id"] == "ItemSelection":
+            Self.FacilitySelected = Interaction.data["values"][0]
+            Facility = Self.Player.ProductionFacilities[Self.FacilitySelected]
+            FacilityInfoString = (f"Level: {Facility.Level}\n"+
+                                  f"Capacity: {Facility.Capacity}\n"+
+                                  f"Units Per Second: {Facility.UnitesPerTick}\n"+
+                                  f"Upgrade Cost: {Facility.UpgradeCost}")
+            Self.EmbedFrame.add_field(name=f"{Facility.Name} Info", value=FacilityInfoString)
+            Self.FacilitiesSelect.placeholder = Self.FacilitySelected
+            await Self._Send_New_Panel(Interaction)
