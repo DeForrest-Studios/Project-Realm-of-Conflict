@@ -74,12 +74,15 @@ class PlayPanel:
 
         Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle, custom_id="FacilitiesButton")
         Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
+        Self.InventoryButton = Button(label="Inventory", style=Self.ButtonStyle, custom_id="InventoryButton")
 
         Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
         Self.ScavengeButton.callback = Self._Scavenge
+        Self.InventoryButton.callback = Self._Construct_Inventory_Panel
 
         Self.BaseViewFrame.add_item(Self.FacilitiesButton)
         Self.BaseViewFrame.add_item(Self.ScavengeButton)
+        Self.BaseViewFrame.add_item(Self.InventoryButton)
 
         if InitialContext.author.id in Self.Whitelist:
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
@@ -171,4 +174,21 @@ class PlayPanel:
                                     f"Units Per Second: {Self.FacilitySelected.UnitesPerTick}\n"+
                                     f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+        await Self._Send_New_Panel(Interaction)
+
+
+    async def _Construct_Inventory_Panel(Self, Interaction:Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Inventory Panel")
+        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+
+        InventoryString = ""
+
+        for Index, (Name, Amount) in enumerate(Self.Player.Inventory.items()):
+            InventoryString += f"{Amount} {Name}\n"
+            if Index == len(Self.Player.Inventory.items()) - 1:
+                InventoryString += f"{Amount} {Name}"
+        
+        Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
+
         await Self._Send_New_Panel(Interaction)
