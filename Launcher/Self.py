@@ -69,6 +69,7 @@ class Launcher:
     def Restart(Self):
         if Self.Bot is not None:
             print("Discord bot stopped")
+            Self.Bot.kill()
             Self.Bot = Popen(Self.CallCommand)
             print("Discord bot restarted")
         else:

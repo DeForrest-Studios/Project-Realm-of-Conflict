@@ -5,6 +5,7 @@ from discord.ui import View, Button, Select
 from RealmOfConflict import RealmOfConflict
 from LootTables import ScavengeTable, MaterialTable
 from random import randrange
+from time import time
 from Player import Player
 from Facilities import ProductionFacility
 
@@ -132,7 +133,6 @@ class PlayPanel:
         else:
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Facilities Panel")
-            Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
 
             Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle, custom_id="CollectProductionButton")
             Self.CollectManufacturingButton = Button(label="Collect Manufacturing", style=Self.ButtonStyle, custom_id="CollectManufacturingButton")
@@ -141,7 +141,10 @@ class PlayPanel:
 
             Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
 
-            Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction=ButtonInteraction)
+            Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+
+            Self.CollectProductionButton.callback = lambda ButtonInteraction: Self._Collect_Production_Facilities(ButtonInteraction)
+            Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction)
             Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
 
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
@@ -171,27 +174,57 @@ class PlayPanel:
         if Self.FacilitySelected:
             FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
                                     f"Capacity: {Self.FacilitySelected.Capacity}\n"+
-                                    f"Units Per Second: {Self.FacilitySelected.UnitesPerTick}\n"+
+                                    f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
                                     f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+        await Self._Send_New_Panel(Interaction)
+
+
+    async def _Collect_Production_Facilities(Self, Interaction):
+        CollectionString = ""
+        ProductionFacilityLength = len(Self.Player.ProductionFacilities.values()) - 1
+        CollectionTime = int(time())
+        for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
+            if Self.Player.Data["Time of Last Production Collection"] == "Never":
+                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"]), 2)
+            else:
+                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
+
+            if Index == ProductionFacilityLength:
+                CollectionString += f"{EarnedAmount} {Facility.OutputItem}"
+            else:
+                CollectionString += f"{EarnedAmount} {Facility.OutputItem}\n"
+
+            Self.Player.Inventory[Facility.OutputItem] = EarnedAmount
+        
+        Self.Player.Data["Time of Last Production Collection"] = CollectionTime
+
+        Self.EmbedFrame.clear_fields()
+
+        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+
+        Self.EmbedFrame.add_field(name="Collected:", value=CollectionString)
+
         await Self._Send_New_Panel(Interaction)
 
 
     async def _Construct_Inventory_Panel(Self, Interaction:Interaction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Inventory Panel")
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
 
         InventoryString = ""
 
+        PlayerInventoryLength = len(Self.Player.Inventory.items()) - 1
         for Index, (Name, Amount) in enumerate(Self.Player.Inventory.items()):
-            InventoryString += f"{Amount} {Name}\n"
-            if Index == len(Self.Player.Inventory.items()) - 1:
+            if Index == PlayerInventoryLength:
                 InventoryString += f"{Amount} {Name}"
-        
-        Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
+            else:
+                InventoryString += f"{Amount} {Name}\n"
 
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+
+        Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
 
         Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction=ButtonInteraction)
 

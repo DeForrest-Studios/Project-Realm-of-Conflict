@@ -15,7 +15,7 @@ MaterialTable = {
     "Cotton": (15, 20),
     "Limestone": (14, 19),
     "Wheat": (13, 18),
-    "Tree": (12, 17),
+    "Log": (12, 17),
     "Coal": (10, 15),
     "Mycelium": (9, 15),
     "Copper Ore": (7, 12),

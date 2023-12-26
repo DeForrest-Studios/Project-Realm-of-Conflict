@@ -3,6 +3,7 @@ class ProductionFacility:
         Self.Name: str = None
         Self.Level: int = 1
         Self.OutputItem: str = None
+        Self.UnitsPerTick:int = None
         Self.UnitsPerTickMultiplier: float = None
         Self.CapacityMultiplier: int = None
         Self.UpgradeCostMultiplier: int = None
@@ -15,7 +16,7 @@ class ProductionFacility:
 
     def Stat_Refresh(Self):
         Self.Capacity = Self.CapacityMultiplier * Self.Level
-        Self.UnitesPerTick = round(((Self.UnitsPerTickMultiplier + (Self.UnitsPerTickMultiplier*Self.Level)) * Self.Level), 3)
+        Self.UnitsPerTick = round(((Self.UnitsPerTickMultiplier + (Self.UnitsPerTickMultiplier*Self.Level)) * Self.Level), 2)
         Self.UpgradeCost = Self.UpgradeCostMultiplier * Self.Level
         Self.ExperienceGainOnUpgrade = (Self.UpgradeCost * 1.5) * Self.Level
 

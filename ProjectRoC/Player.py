@@ -1,5 +1,7 @@
 from Facilities import Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
 
+from time import time
+
 class Player:
     def __init__(Self, Member):
         if Member == "Test":
@@ -24,7 +26,10 @@ class Player:
             "Offensive Skill": 0,
             "Defensive Skill": 0,
             "Counter Operations Skill": 0,
-            "Maiden's Grace": False
+            "Maiden's Grace": False,
+            "Join TimeStamp": int(time()),
+            "Time of Last Production Collection": "Never",
+            "Time of Last Manufacturing Collection": "Never",
         }
         Self.Inventory = {
             "Water": 0.0,
