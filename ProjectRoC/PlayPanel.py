@@ -1,12 +1,14 @@
 from asyncio import create_task
 from discord import ButtonStyle, Embed, SelectOption, Interaction, InteractionMessage
 from discord.ext.commands import Context
-from discord.ui import View, Button, Select
+from discord.ui import View, Button, Select, Modal, TextInput
 from RealmOfConflict import RealmOfConflict
 from LootTables import ScavengeTable, MaterialTable
 from random import randrange
 from time import time
 from Player import Player
+from os import remove
+from os.path import join
 from Facilities import ProductionFacility
 
 class PlayPanel:
@@ -87,6 +89,7 @@ class PlayPanel:
 
         if InitialContext.author.id in Self.Whitelist:
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
+            Self.DebugButton.callback = Self._Construct_Debug_Panel
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         await Self._Determine_Whitelist()
@@ -94,6 +97,44 @@ class PlayPanel:
             await Self._Send_New_Panel(ButtonInteraction)
         else:
             Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+
+
+    async def _Construct_Debug_Panel(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
+
+        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
+
+        Self.ResetPlayer = Button(label="Reset Player", style=Self.ButtonStyle, custom_id="ResetPlayerButton")
+
+        Self.PlayerUUIDSubmission = Modal(title="Submit Player UUID")
+
+        SubmittedUUID = TextInput(label="Player UUID") 
+
+        Self.BaseViewFrame.add_item(Self.ResetPlayer)
+
+        Self.PlayerUUIDSubmission.add_item(SubmittedUUID)
+
+        Self.ResetPlayer.callback = lambda Interaction: Interaction.response.send_modal(Self.PlayerUUIDSubmission)
+
+        Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Interaction, int(SubmittedUUID.value))
+
+        await Self._Send_New_Panel(Interaction)
+
+
+    async def _Reset_Player(Self, Interaction, SubmittedUUID):
+        if Self.Player.Data["Team"] == "Analis":
+            await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Analis"])
+        if Self.Player.Data["Team"] == "Titan":
+            await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Titan"])
+        Self.Ether.Data["Players"][SubmittedUUID] = None
+        Self.Ether.Data["Players"].pop(SubmittedUUID)
+        remove(join("Data", "PlayerData", f"{SubmittedUUID}.roc"))
+        remove(join("Data", "PlayerInventories", f"{SubmittedUUID}.roc"))
+        remove(join("Data", "PlayerProductionFacilities", f"{SubmittedUUID}.roc"))
+
+        await Self._Send_New_Panel(Interaction)
+        
 
 
     async def _Scavenge(Self, ButtonInteraction:Interaction):
@@ -135,7 +176,7 @@ class PlayPanel:
             Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Facilities Panel")
 
             Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle, custom_id="CollectProductionButton")
-            Self.CollectManufacturingButton = Button(label="Collect Manufacturing", style=Self.ButtonStyle, custom_id="CollectManufacturingButton")
+            # Self.CollectManufacturingButton = Button(label="Collect Manufacturing", style=Self.ButtonStyle, custom_id="CollectManufacturingButton")
             Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
             Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
 
@@ -148,7 +189,7 @@ class PlayPanel:
             Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
 
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
-            Self.BaseViewFrame.add_item(Self.CollectManufacturingButton)
+            # Self.BaseViewFrame.add_item(Self.CollectManufacturingButton)
             Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
 

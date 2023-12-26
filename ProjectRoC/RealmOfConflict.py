@@ -9,6 +9,7 @@ from logging.handlers import RotatingFileHandler
 from asyncio import create_task, sleep
 from Planet import Planet
 from Player import Player
+from random import randrange
 
 
 class RealmOfConflict(Bot):
@@ -79,6 +80,8 @@ class RealmOfConflict(Bot):
                 for Field in PlayerData:
                     Contents = Field.split(":")
                     Name = Contents[0]
+                    if Name == "Member Object":
+                        continue
                     if Contents[1].replace(".", "").isdigit():
                         Value = float(Contents[1])
                         LoadedPlayer.Data[Name] = Value
@@ -173,16 +176,24 @@ class RealmOfConflict(Bot):
 
 
     async def Choose_Team(Self, NewMember:Member, Choice:str, ButtonInteraction:Interaction) -> None:
+        if Choice == "Maiden":
+            if Self.Data["Planets"]["Analis"].Data["Protector Count"]-3 >= Self.Data["Planets"]["Titan"].Data["Protector Count"]:
+                Choice = Self.Data["Planets"]["Titan"]
+            elif Self.Data["Planets"]["Titan"].Data["Protector Count"]-3 >= Self.Data["Planets"]["Analis"].Data["Protector Count"]:
+                Choice = Self.Data["Planets"]["Analis"]
+            else:
+                Choice = list(Self.Data["Planets"].values())[randrange(0, 1)]
+
         Self.Data["Players"].update({NewMember.id:Player(NewMember)})
-        Self.Data["Players"][NewMember.id].Data["Team"] = Choice
-        Self.Data["Planets"][Choice].Data["Protector Count"] += 1
-        await NewMember.add_roles(get(Self.Guild.roles, name=Choice))
+        Self.Data["Players"][NewMember.id].Data["Team"] = Choice.Data["Name"]
+        Choice.Data["Protector Count"] += 1
+        await NewMember.add_roles(Self.Roles[Choice.Data["Name"]])
 
         MessageEmbed = Embed(title="Welcome")
 
-        MessageEmbed.add_field(name="\u200b", value=f"Welcome to {Choice}")
+        MessageEmbed.add_field(name="\u200b", value=f"Welcome to {Choice.Data['Name']}")
 
-        Self.Logger.info(f"{NewMember.author.name} joined {Choice}")
+        Self.Logger.info(f"{NewMember.name} joined {Choice}")
 
         await ButtonInteraction.response.edit_message(embed=MessageEmbed, view=None)
 
@@ -192,12 +203,15 @@ class RealmOfConflict(Bot):
         MessageView = View()
         ChooseAnalisButton = Button(label="Choose Analis", style=ButtonStyle.blurple, custom_id=f"{NewMember.id} Analis Choice", row=1)
         ChooseTitanButton = Button(label="Choose Titan", style=ButtonStyle.red, custom_id=f"{NewMember.id} Titan Choice", row=1)
+        MaidensChoice = Button(label="Let the Maiden Choose", style=ButtonStyle.grey, custom_id=f"{NewMember.id} Maidens Choice", row=1)
 
         ChooseAnalisButton.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(NewMember, "Analis", ButtonInteraction))
         ChooseTitanButton.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(NewMember, "Titan", ButtonInteraction))
+        MaidensChoice.callback = lambda ButtonInteraction: create_task(Self.Choose_Team(NewMember, "Maiden", ButtonInteraction))
 
         MessageView.add_item(ChooseAnalisButton)
         MessageView.add_item(ChooseTitanButton)
+        MessageView.add_item(MaidensChoice)
 
         await NewMember.send(embed=MessageEmbed, view=MessageView)
 
@@ -208,19 +222,3 @@ class RealmOfConflict(Bot):
         if Context.guild.id in [1018734763378479164]: # DevServer
             return "Protected"
         return "Unprotected"
-
-
-    # Override of existing on_ready from discord.py
-    async def on_guild_available(Self, Guild):
-        print(f"Guild available: {Guild.name}")
-        # if Guild.name in ["Guild available: Project RoC - Dev Server"]:
-        Self.Guild = Self.guilds[0]
-        Self.Load_Players()
-        await Self.Autosave()
-        print("\nBot is alive.\n")
-
-
-    # Override of existing on_member_join from discord.py
-    # This sends a message to the player
-    async def on_member_join(Self, NewMember:Member) -> None:
-        await Self.Send_Welcome(NewMember)
