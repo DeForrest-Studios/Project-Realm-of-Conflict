@@ -47,7 +47,7 @@ class PlayPanel:
                 else:
                     Info +=f"**{Name}** ~ {Value}\n"
 
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info)
+        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info, inline=False)
 
 
     async def _Determine_Whitelist(Self):
@@ -113,16 +113,48 @@ class PlayPanel:
         await Self._Generate_Info()
 
         Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
-        Self.BuyButton.callback = ...
+        Self.BuyButton.callback = Self._Avargo_Sale
         Self.BaseViewFrame.add_item(Self.BuyButton)
 
         Self.SellButton = Button(label="Sell", style=Self.ButtonStyle, custom_id="SellButton")
-        Self.SellButton.callback = ...
+        Self.SellButton.callback = Self._Avargo_Sale
         Self.BaseViewFrame.add_item(Self.SellButton)
 
         Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
         Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
+
+
+
+    async def _Avargo_Sale(Self, Interaction:Interaction):
+        async def _Select_Material(Interaction, MaterialChosen):
+            Self.AvargoItemChoice.placeholder = MaterialChosen
+            await Interaction.response.edit_message(view=Self.BaseViewFrame)
+
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Buy Panel")
+
+        await Self._Generate_Info()
+
+        Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
+        Self.BuyButton.callback = lambda Interaction: Interaction.response.send_modal(Self.AvargoForm)
+        Self.BaseViewFrame.add_item(Self.BuyButton)
+
+        Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
+        Self.AvargoButton.callback = Self._Construct_Avargo_Panel
+        Self.BaseViewFrame.add_item(Self.AvargoButton)
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        # Format a string that has the material cost next to it
+        Self.AvargoItemChoices = [SelectOption(label=Material) for Material in Self.Ether.Materials]
+        Self.AvargoItemChoice = Select(placeholder="Select a material", options=Self.AvargoItemChoices, custom_id=f"ItemSelection", row=2)
+        Self.AvargoItemChoice.callback = lambda Interaction: _Select_Material(Interaction, Interaction.data["values"][0])
+        Self.BaseViewFrame.add_item(Self.AvargoItemChoice)
 
         await Self._Send_New_Panel(Interaction)
 
@@ -160,7 +192,6 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
         
 
-
     async def _Scavenge(Self, Interaction:Interaction):
         SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
@@ -191,7 +222,11 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Construct_Facilities_Panel(Self, Interaction:Interaction=None):
+    async def _Construct_Facilities_Panel(Self, Interaction:Interaction):
+        if Interaction.data["custom_id"] == "ItemSelection":
+            Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
+            Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
+
         if Interaction.data["custom_id"] == "FacilityUpgradeButton":
             Self.FacilitySelected.Upgrade()
             # Do not refresh BaseViewFrame, and EmbedFrame
@@ -209,36 +244,24 @@ class PlayPanel:
 
             Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
             Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
-            Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
+            Self.FacilitiesSelect.callback = lambda Interaction: Self._Construct_Facilities_Panel(Interaction)
             Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
 
             await Self._Generate_Info(Exclusions=["Team", "Power"])
-
-            Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
-
-        if Interaction.data["custom_id"] == "FacilitiesButton":
-            Self.FacilitySelected = None
-            Self.FacilitiesSelect.placeholder = "Select a Facility"
-        if Interaction.data["custom_id"] == "ItemSelection":
-            if Self.FacilitySelected == Interaction.data["values"][0]:
-                Self.FacilitySelected = None
-                Self.FacilitiesSelect.placeholder = "Select a Facility"
-                await Self._Send_New_Panel(Interaction)
-                return
+        
+        if Self.FacilitySelected:
+            Self.EmbedFrame.clear_fields()
             Self.FacilityUpgradeButton = Button(label="Upgrade", style=Self.ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
             Self.BaseViewFrame.add_item(Self.FacilityUpgradeButton)
-            Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
             Self.FacilityUpgradeButton.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
-            Self.FacilitiesSelect.placeholder = Self.FacilitySelected.Name
-        
-        Self.EmbedFrame.clear_fields()
-        await Self._Generate_Info(Exclusions=["Team", "Power"])
-        if Self.FacilitySelected:
             FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
                                     f"Capacity: {Self.FacilitySelected.Capacity}\n"+
                                     f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
                                     f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+        
+        await Self._Generate_Info(Exclusions=["Team", "Power"])
+        Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Interaction)
 
 
