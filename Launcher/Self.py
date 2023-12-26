@@ -8,6 +8,7 @@ from glob import glob
 class Launcher:
     def __init__(Self):
         Self.Key = None
+        Self.Bot = None
         Self.CommandDictionary = {"start": Self.Start,
                                   "restart": Self.Restart,
                                   "exit": Self.Exit,
@@ -24,7 +25,6 @@ class Launcher:
         Self.CallCommand = f"{Self.VirtualEnvironmentPath} -B {join(Self.ProjectFilePath)} {Self.Key} {Self.KeySelection}"
 
         Self.User_Input()
-
 
 
     def Read_User_Settings(Self):
@@ -54,66 +54,48 @@ class Launcher:
 
     def User_Input(Self):
         while True:
-            admin_input = input()
-            print("Input command: ", admin_input)
+            AdminInput = input()
+            print("Input command: ", AdminInput)
             try:
-                Self.CommandDictionary[admin_input.lower()]()
+                Self.CommandDictionary[AdminInput.lower()]()
             except KeyError:
                 print("Invalid command.")
-    
-
-    def BotExists(Self):
-        try:
-            Bot
-        except NameError:
-            return False
-        else:
-            return True
 
 
     def Start(Self):
-        global Bot
-        Bot = Popen(Self.CallCommand)
+        Self.Bot = Popen(Self.CallCommand)
 
 
     def Restart(Self):
-        global Bot
-        if Self.BotExists():
+        if Self.Bot is not None:
             print("Discord bot stopped")
-            Bot.kill()
-            Bot = Popen(Self.CallCommand)
+            Self.Bot = Popen(Self.CallCommand)
             print("Discord bot restarted")
         else:
             print("There isn't a running bot")
 
     def Exit(Self):
-        global Bot
-        if Self.BotExists() == False:
+        if Self.Bot is not None:
             exit()
         else:
             print("There is a running bot")
 
 
     def Stop(Self):
-        global Bot
-        if Self.BotExists():
+        if Self.Bot is not None:
             print("Discord bot stopped")
-            Bot.kill()
-            del Bot
+            Self.Bot = Self.Bot.kill()
         else:
             print("There isn't a running bot")
 
 
     def Emergency_Stop(Self):
-        global Bot
-        if Self.BotExists() == False:
+        if Self.Bot is None:
             print("Bot is not running it seems, stopping altogether though.")
             exit()
-
-        if Self.BotExists():
+        else:
             print("Discord bot stopped")
-            Bot.kill()
-            del Bot
+            Self.Bot = Self.Bot.kill()
             exit()
 
 
