@@ -55,8 +55,8 @@ class PlayPanel:
         if Self.InitialContext:
             InitialContext = Self.InitialContext
 
-        Self.InitialContext = InitialContext
-        Self.Ether = Ether
+        Self.InitialContext:Context = InitialContext
+        Self.Ether:RealmOfConflict = Ether
         Self.Whitelist = [897410636819083304, # Robert Reynolds, Cavan
                           ]
         Self.Player: Player = Ether.Data["Players"][InitialContext.author.id]
@@ -190,5 +190,13 @@ class PlayPanel:
                 InventoryString += f"{Amount} {Name}"
         
         Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction=ButtonInteraction)
+
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        Self.Ether.Logger.info(f"Sent Inventory panel to {Self.Player.Data['Name']}")
 
         await Self._Send_New_Panel(Interaction)
