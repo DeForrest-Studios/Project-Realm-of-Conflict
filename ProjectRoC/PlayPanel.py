@@ -18,8 +18,8 @@ class PlayPanel:
         create_task(Self._Construct_Home(Ether, PlayerContext))
 
 
-    async def _Send_New_Panel(Self, ButtonInteraction: Interaction):
-        await ButtonInteraction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+    async def _Send_New_Panel(Self, Interaction: Interaction):
+        await Interaction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
 
     async def _Determine_Team(Self):
@@ -33,7 +33,9 @@ class PlayPanel:
 
     async def _Generate_Info(Self, Exclusions:list=[]):
         Fields = [Field for Field in ["Wallet", "Team", "Level", "Experience", "Power"] if Field not in Exclusions]
+
         Info = ""
+
         for Name, Value in Self.Player.Data.items():
             if Name in Fields:
                 if Name == 'Wallet':
@@ -44,7 +46,8 @@ class PlayPanel:
                     Info +=f"**{Name}** ~ {format(int(Value), ',')}\n"
                 else:
                     Info +=f"**{Name}** ~ {Value}\n"
-        return Info
+
+        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info)
 
 
     async def _Determine_Whitelist(Self):
@@ -52,7 +55,7 @@ class PlayPanel:
             Self.EmbedFrame.title = Self.EmbedFrame.title + " (Developer)"
 
 
-    async def _Construct_Home(Self, Ether:RealmOfConflict=None, InitialContext:Context=None, ButtonInteraction=None):
+    async def _Construct_Home(Self, Ether:RealmOfConflict=None, InitialContext:Context=None, Interaction=None):
         if Self.Ether:
             Ether = Self.Ether
         if Self.InitialContext:
@@ -73,18 +76,22 @@ class PlayPanel:
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
 
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
+        await Self._Generate_Info()
+
+        Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
+        Self.ScavengeButton.callback = Self._Scavenge
+        Self.BaseViewFrame.add_item(Self.ScavengeButton)
 
         Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle, custom_id="FacilitiesButton")
-        Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
-        Self.InventoryButton = Button(label="Inventory", style=Self.ButtonStyle, custom_id="InventoryButton")
-
         Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
-        Self.ScavengeButton.callback = Self._Scavenge
-        Self.InventoryButton.callback = Self._Construct_Inventory_Panel
-
         Self.BaseViewFrame.add_item(Self.FacilitiesButton)
-        Self.BaseViewFrame.add_item(Self.ScavengeButton)
+
+        Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, custom_id="AvargoButton")
+        Self.AvargoButton.callback = Self._Construct_Avargo_Panel
+        Self.BaseViewFrame.add_item(Self.AvargoButton)
+
+        Self.InventoryButton = Button(label="Inventory", style=Self.ButtonStyle, custom_id="InventoryButton")
+        Self.InventoryButton.callback = Self._Construct_Inventory_Panel
         Self.BaseViewFrame.add_item(Self.InventoryButton)
 
         if InitialContext.author.id in Self.Whitelist:
@@ -93,31 +100,48 @@ class PlayPanel:
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         await Self._Determine_Whitelist()
-        if ButtonInteraction:
-            await Self._Send_New_Panel(ButtonInteraction)
+        if Interaction:
+            await Self._Send_New_Panel(Interaction)
         else:
             Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+
+
+    async def _Construct_Avargo_Panel(Self, Interaction:Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Panel")
+
+        await Self._Generate_Info()
+
+        Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
+        Self.BuyButton.callback = ...
+        Self.BaseViewFrame.add_item(Self.BuyButton)
+
+        Self.SellButton = Button(label="Sell", style=Self.ButtonStyle, custom_id="SellButton")
+        Self.SellButton.callback = ...
+        Self.BaseViewFrame.add_item(Self.SellButton)
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
 
 
     async def _Construct_Debug_Panel(Self, Interaction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
 
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
+        await Self._Generate_Info()
 
         Self.ResetPlayer = Button(label="Reset Player", style=Self.ButtonStyle, custom_id="ResetPlayerButton")
-
-        Self.PlayerUUIDSubmission = Modal(title="Submit Player UUID")
-
-        SubmittedUUID = TextInput(label="Player UUID") 
-
+        Self.ResetPlayer.callback = lambda Interaction: Interaction.response.send_modal(Self.PlayerUUIDSubmission)
         Self.BaseViewFrame.add_item(Self.ResetPlayer)
 
+        Self.PlayerUUIDSubmission = Modal(title="Submit Player UUID")
+        Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Interaction, int(SubmittedUUID.value))
         Self.PlayerUUIDSubmission.add_item(SubmittedUUID)
 
-        Self.ResetPlayer.callback = lambda Interaction: Interaction.response.send_modal(Self.PlayerUUIDSubmission)
-
-        Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Interaction, int(SubmittedUUID.value))
+        SubmittedUUID = TextInput(label="Player UUID") 
 
         await Self._Send_New_Panel(Interaction)
 
@@ -137,7 +161,7 @@ class PlayPanel:
         
 
 
-    async def _Scavenge(Self, ButtonInteraction:Interaction):
+    async def _Scavenge(Self, Interaction:Interaction):
         SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
         ScavengedString = ""
@@ -162,9 +186,9 @@ class PlayPanel:
             Self.Player.Refresh_Stats()
             Self.EmbedFrame.insert_field_at(0, name=f"You leveled up!", value="\u200b", inline=False)
             
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(), inline=False)
+        await Self._Generate_Info()
         Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
-        await Self._Send_New_Panel(ButtonInteraction)
+        await Self._Send_New_Panel(Interaction)
 
 
     async def _Construct_Facilities_Panel(Self, Interaction:Interaction=None):
@@ -176,22 +200,19 @@ class PlayPanel:
             Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Facilities Panel")
 
             Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle, custom_id="CollectProductionButton")
-            # Self.CollectManufacturingButton = Button(label="Collect Manufacturing", style=Self.ButtonStyle, custom_id="CollectManufacturingButton")
-            Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
-            Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-
-            Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
-
-            Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
-
-            Self.CollectProductionButton.callback = lambda ButtonInteraction: Self._Collect_Production_Facilities(ButtonInteraction)
-            Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction)
-            Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
-
+            Self.CollectProductionButton.callback = lambda Interaction: Self._Collect_Production_Facilities(Interaction)
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
-            # Self.BaseViewFrame.add_item(Self.CollectManufacturingButton)
-            Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
+
+            Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+            Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
+            Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
+            Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
+            Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
+
+            await Self._Generate_Info(Exclusions=["Team", "Power"])
 
             Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
 
@@ -211,7 +232,7 @@ class PlayPanel:
             Self.FacilitiesSelect.placeholder = Self.FacilitySelected.Name
         
         Self.EmbedFrame.clear_fields()
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+        await Self._Generate_Info(Exclusions=["Team", "Power"])
         if Self.FacilitySelected:
             FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
                                     f"Capacity: {Self.FacilitySelected.Capacity}\n"+
@@ -242,7 +263,7 @@ class PlayPanel:
 
         Self.EmbedFrame.clear_fields()
 
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+        await Self._Generate_Info(Exclusions=["Team", "Power"])
 
         Self.EmbedFrame.add_field(name="Collected:", value=CollectionString)
 
@@ -263,11 +284,11 @@ class PlayPanel:
             else:
                 InventoryString += f"{Amount} {Name}\n"
 
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=await Self._Generate_Info(Exclusions=["Team", "Power"]), inline=False)
+        await Self._Generate_Info(Exclusions=["Team", "Power"])
 
         Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
 
-        Self.HomepageButton.callback = lambda ButtonInteraction: Self._Construct_Home(ButtonInteraction=ButtonInteraction)
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
 
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
