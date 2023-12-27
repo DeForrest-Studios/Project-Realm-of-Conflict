@@ -1,3 +1,5 @@
+from Infantry import Soldier, Medic
+
 ScavengeTable = {
     "Wallet": 65,
     "Material": 65,
@@ -6,7 +8,6 @@ ScavengeTable = {
     "Bonus Component": 10,
     "Soldier": 5
 }
-
 
 MaterialTable = {
     "Water": (25, 30),
@@ -42,4 +43,18 @@ MaterialWorthTable = {
     "Silver Ore": 28,
     "Gold Ore": 40,
     "Lithium Ore": 62,
+}
+
+InfantryToObject = {
+    "Soldier":Soldier,
+    "Medic":Medic,
+}
+
+InfantryTable = {
+    "Level 1 ~ Soldier": 8500,
+    "Level 2 ~ Soldier": 21500,
+    "Level 3 ~ Soldier": 47300,
+    "Level 1 ~ Medic": 8500,
+    "Level 2 ~ Medic": 21500,
+    "Level 3 ~ Medic": 47300,
 }

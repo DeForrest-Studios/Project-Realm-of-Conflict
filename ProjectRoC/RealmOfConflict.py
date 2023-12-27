@@ -3,13 +3,13 @@ from os.path import join, exists
 from discord import ButtonStyle, Embed, Intents, Member, Interaction
 from discord.ui import Button, View
 from discord.ext.commands import Bot, Context
-from discord.utils import get
 from logging import getLogger, Formatter,  DEBUG, INFO
 from logging.handlers import RotatingFileHandler
 from asyncio import create_task, sleep
 from Planet import Planet
 from Player import Player
 from random import randrange
+from Tables import InfantryToObject
 
 
 class RealmOfConflict(Bot):
@@ -63,6 +63,7 @@ class RealmOfConflict(Bot):
             return
         Self.Load_Player_Data()
         Self.Load_Player_Inventories()
+        Self.Load_Player_Army()
         # Self.Load_Player_Production_Facilities()
 
 
@@ -76,7 +77,7 @@ class RealmOfConflict(Bot):
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 if PlayerUUID == 42069: continue
                 MemberObject = Members[PlayerUUID]
-                LoadedPlayer = Player(MemberObject)
+                Self.Data["Players"].update({PlayerUUID:Player(MemberObject)})
                 for Field in PlayerData:
                     Contents = Field.split(":")
                     Name = Contents[0]
@@ -84,20 +85,19 @@ class RealmOfConflict(Bot):
                         continue
                     if Contents[1].isdigit():
                         Value = int(Contents[1])
-                        LoadedPlayer.Data[Name] = Value
+                        Self.Data["Players"][PlayerUUID].Data[Name] = Value
                         continue
                     if Contents[1].replace(".", "").isdigit():
                         Value = float(Contents[1])
-                        LoadedPlayer.Data[Name] = Value
+                        Self.Data["Players"][PlayerUUID].Data[Name] = Value
                         continue
                     if Contents[1] == "None":
                         Value = "None"
-                        LoadedPlayer.Data[Name] = Value
+                        Self.Data["Players"][PlayerUUID].Data[Name] = Value
                         continue
                     Value = Contents[1]
-                    LoadedPlayer.Data[Name] = Value
-                LoadedPlayer.Refresh_Stats()
-                Self.Data["Players"].update({PlayerUUID:LoadedPlayer})
+                    Self.Data["Players"][PlayerUUID].Data[Name] = Value
+                Self.Data["Players"][PlayerUUID].Refresh_Stats()
 
 
     def Load_Player_Inventories(Self) -> None:
@@ -130,6 +130,23 @@ class RealmOfConflict(Bot):
                     Self.Data["Players"][PlayerUUID].Facilities[Name].Level = Value
 
 
+    def Load_Player_Army(Self) -> None:
+        if not exists(join("Data", "PlayerArmy")):
+            return
+        for PlayerDataFileName in listdir(join("Data", "PlayerArmy")):
+            PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID == 42069: continue
+            with open(join("Data", "PlayerArmy", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
+                PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
+                for Field in PlayerData:
+                    Contents = Field.split(":")
+                    Name = Contents[0]
+                    Level = int(Contents[1])
+                    Type = Contents[2]
+                    Self.Data["Players"][PlayerUUID].Army.update({Name:InfantryToObject[Type](Level, Type, Self.Data["Players"][PlayerUUID], Name=Name)})
+
+        
+
     async def Autosave(Self) -> None:
         if not exists("Data"):
             mkdir("Data")
@@ -141,12 +158,15 @@ class RealmOfConflict(Bot):
             mkdir(join("Data", "PlayerProductionFacilities"))
         if not exists(join("Data", "PlayerManufacturingFacilities")):
             mkdir(join("Data", "PlayerManufacturingFacilities"))
+        if not exists(join("Data", "PlayerArmy")):
+            mkdir(join("Data", "PlayerArmy"))
         while True:
             await sleep(5)
             print("Autosaving")
             await Self.Save_Player_Data()
             await Self.Save_Player_Inventories()
             await Self.Save_Player_ProductionFacilities()
+            await Self.Save_Player_Army()
 
     async def Save_Player_Data(Self) -> None:
         for UUID, Player in Self.Data["Players"].items():
@@ -175,19 +195,25 @@ class RealmOfConflict(Bot):
                 PlayerDataFile.write(SaveData)
 
 
+    async def Save_Player_Army(Self) -> None:
+        for UUID, Player in Self.Data["Players"].items():
+            SaveData = ""
+            with open(join("Data", "PlayerArmy", f"{UUID}.roc"), 'w+') as PlayerDataFile:
+                for InfantryID, Infantry in Player.Army.items():
+                    SaveData += f"{InfantryID}:{Infantry.Level}:{Infantry.Type}\n"
+                PlayerDataFile.write(SaveData)
+
+
     async def Choose_Team(Self, NewMember:Member, Choice:str, ButtonInteraction:Interaction) -> None:
         if Choice == "Maiden":
             if Self.Data["Planets"]["Analis"].Data["Protector Count"]-3 >= Self.Data["Planets"]["Titan"].Data["Protector Count"]:
-                print("Auto-chose Titan")
                 Choice = Self.Data["Planets"]["Titan"]
             elif Self.Data["Planets"]["Titan"].Data["Protector Count"]-3 >= Self.Data["Planets"]["Analis"].Data["Protector Count"]:
                 Choice = Self.Data["Planets"]["Analis"]
-                print("Auto-chose Analis")
             else:
                 RandomNumber = randrange(0, 2)
                 print(RandomNumber)
                 Choice = list(Self.Data["Planets"].values())[RandomNumber]
-                print("Randomly Chose")
 
         Self.Data["Players"].update({NewMember.id:Player(NewMember)})
         Self.Data["Players"][NewMember.id].Data["Team"] = Choice.Data["Name"]

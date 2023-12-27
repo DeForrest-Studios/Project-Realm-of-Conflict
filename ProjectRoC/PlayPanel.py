@@ -4,7 +4,7 @@ from discord import Interaction as DiscordInteraction
 from discord.ext.commands import Context
 from discord.ui import View, Button, Select, Modal, TextInput
 from RealmOfConflict import RealmOfConflict
-from LootTables import ScavengeTable, MaterialTable, MaterialWorthTable
+from Tables import ScavengeTable, MaterialTable, MaterialWorthTable, InfantryTable, InfantryToObject
 from random import randrange
 from time import time
 from Player import Player
@@ -64,6 +64,7 @@ class PlayPanel:
         Self.Player: Player = Ether.Data["Players"][InitialContext.author.id]
         Self.FacilitySelected = None
         Self.MaterialChosen = None
+        Self.InfantrySelected = None
         Self.ReceiptString = ""
         Self.Receipt = {}
         await Self._Determine_Team()
@@ -88,6 +89,10 @@ class PlayPanel:
         Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, custom_id="AvargoButton")
         Self.AvargoButton.callback = Self._Construct_Avargo_Panel
         Self.BaseViewFrame.add_item(Self.AvargoButton)
+
+        Self.SententsButton = Button(label="Sentents", style=Self.ButtonStyle, custom_id="SententsButton")
+        Self.SententsButton.callback = Self._Construct_Sentents_Panel
+        Self.BaseViewFrame.add_item(Self.SententsButton)
 
         Self.InventoryButton = Button(label="Inventory", style=Self.ButtonStyle, custom_id="InventoryButton")
         Self.InventoryButton.callback = Self._Construct_Inventory_Panel
@@ -255,7 +260,82 @@ class PlayPanel:
                 Self.Player.Inventory[Material] -= Quantity
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
                 Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
+                await Self._Send_New_Panel(Interaction)
 
+
+    async def _Construct_Sentents_Panel(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Sentents Panel")
+        await Self._Generate_Info()
+
+        Self.ArmyButton = Button(label="My Army", style=Self.ButtonStyle, custom_id="ArmyButton")
+        Self.ArmyButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.ArmyButton)
+
+        Self.RecruitButton = Button(label="Recruit", style=Self.ButtonStyle, custom_id="RecruitButton")
+        Self.RecruitButton.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.RecruitButton)
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
+
+
+    async def _Construct_Recruit_Panel(Self, Interaction, InfantrySelected=None, InfantryRecruited=None):
+        if InfantrySelected == None:
+            Self.BaseViewFrame = View(timeout=144000)
+            Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
+            await Self._Generate_Info()
+
+            Self.RecruitButton = Button(label="Recruit", style=Self.ButtonStyle, custom_id="RecruitButton")
+            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction, Self.InfantrySelected, Self.InfantrySelected)
+            Self.BaseViewFrame.add_item(Self.RecruitButton)
+
+            Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
+            Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices, custom_id=f"InfantrySelection", row=2)
+            Self.BaseViewFrame.add_item(Self.InfantryChoice)
+
+            Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
+            Self.BaseViewFrame.add_item(Self.HomepageButton)
+        
+        if InfantrySelected:
+            Self.InfantrySelected = InfantrySelected
+            Self.InfantryChoice.placeholder = InfantrySelected
+
+        if InfantryRecruited:
+            InfantryKey = Self.InfantrySelected.split(" for ")[0]
+            if Self.Player.Data["Wallet"] >= InfantryTable[InfantryKey]:
+                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - InfantryTable[InfantryKey], 2)
+                Self.EmbedFrame.add_field(name=f"Purchased {Self.InfantrySelected} for {InfantryTable[InfantryKey]}", value="\u200b")
+                InfantryData = InfantryKey.split(" ~ ")
+                InfantryLevel = InfantryData[0].split(" ")[1]
+                InfantryType = InfantryData[1]
+                NewInfantry = InfantryToObject[InfantryType](InfantryLevel, InfantryType, Self.Player)
+                Self.Player.Army.update({NewInfantry.Name:NewInfantry})
+                Self.EmbedFrame.clear_fields()
+                await Self._Generate_Info()
+                Self.EmbedFrame.add_field(name=f"Recruited {NewInfantry.Name}", value="\u200b")
+            else:
+                Self.EmbedFrame.clear_fields()
+                await Self._Generate_Info()
+                Self.EmbedFrame.add_field(name=f"Insufficient Funds", value="\u200b")
+        Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction, Interaction.data["values"][0])
+        await Self._Send_New_Panel(Interaction)
+
+
+    async def _Construct_Army_Panel(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")
+        await Self._Generate_Info()
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
 
 
     async def _Construct_Debug_Panel(Self, Interaction):
