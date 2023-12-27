@@ -178,11 +178,16 @@ class RealmOfConflict(Bot):
     async def Choose_Team(Self, NewMember:Member, Choice:str, ButtonInteraction:Interaction) -> None:
         if Choice == "Maiden":
             if Self.Data["Planets"]["Analis"].Data["Protector Count"]-3 >= Self.Data["Planets"]["Titan"].Data["Protector Count"]:
+                print("Auto-chose Titan")
                 Choice = Self.Data["Planets"]["Titan"]
             elif Self.Data["Planets"]["Titan"].Data["Protector Count"]-3 >= Self.Data["Planets"]["Analis"].Data["Protector Count"]:
                 Choice = Self.Data["Planets"]["Analis"]
+                print("Auto-chose Analis")
             else:
-                Choice = list(Self.Data["Planets"].values())[randrange(0, 1)]
+                RandomNumber = randrange(0, 2)
+                print(RandomNumber)
+                Choice = list(Self.Data["Planets"].values())[RandomNumber]
+                print("Randomly Chose")
 
         Self.Data["Players"].update({NewMember.id:Player(NewMember)})
         Self.Data["Players"][NewMember.id].Data["Team"] = Choice.Data["Name"]
