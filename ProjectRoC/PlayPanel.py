@@ -105,12 +105,16 @@ class PlayPanel:
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         if Interaction:
+            if Interaction.user != Self.InitialContext.author:
+                return
             await Self._Send_New_Panel(Interaction)
         else:
             Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
 
     async def _Construct_Avargo_Panel(Self, Interaction:DiscordInteraction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Panel")
 
@@ -132,6 +136,8 @@ class PlayPanel:
 
 
     async def _Construct_Quantity_Modal(Self, Interaction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         Self.AvargoItemQuantityModal = Modal(title="Enter Quantity")
         Self.AvargoItemQuantityModal.on_submit = lambda Interaction: Self._Avargo_Sale(Interaction, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, Quantity=int(Self.AvargoItemQuantity.value))
 
@@ -141,6 +147,8 @@ class PlayPanel:
     
 
     async def _Avargo_Sale(Self, Interaction:DiscordInteraction, MaterialChosen=None, ReceiptStarted=False, Quantity=None, InsufficientFunds=False):
+        if Interaction.user != Self.InitialContext.author:
+            return
         if MaterialChosen is None:
             Self.ReceiptString = ""
             Self.Receipt = {}
@@ -194,6 +202,8 @@ class PlayPanel:
 
 
     async def _Avargo_Checkout(Self, Interaction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         Total = 0
         for Material, Quantity in Self.Receipt.items():
             Total += round(MaterialWorthTable[Material] * Quantity, 2)
@@ -223,6 +233,8 @@ class PlayPanel:
 
 
     async def _Construct_Debug_Panel(Self, Interaction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
 
@@ -247,6 +259,8 @@ class PlayPanel:
 
 
     async def _Reset_Player(Self, Interaction, SubmittedUUID):
+        if Interaction.user != Self.InitialContext.author:
+            return
         if Self.Player.Data["Team"] == "Analis":
             await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Analis"])
         if Self.Player.Data["Team"] == "Titan":
@@ -261,6 +275,8 @@ class PlayPanel:
         
 
     async def _Scavenge(Self, Interaction:DiscordInteraction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
         ScavengedString = ""
@@ -291,6 +307,8 @@ class PlayPanel:
 
 
     async def _Construct_Facilities_Panel(Self, Interaction:DiscordInteraction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         if Interaction.data["custom_id"] == "ItemSelection":
             Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
             Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
@@ -333,6 +351,8 @@ class PlayPanel:
 
 
     async def _Collect_Production_Facilities(Self, Interaction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         CollectionString = ""
         ProductionFacilityLength = len(Self.Player.ProductionFacilities.values()) - 1
         CollectionTime = int(time())
@@ -361,6 +381,8 @@ class PlayPanel:
 
 
     async def _Construct_Inventory_Panel(Self, Interaction:DiscordInteraction):
+        if Interaction.user != Self.InitialContext.author:
+            return
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Inventory Panel")
         Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
