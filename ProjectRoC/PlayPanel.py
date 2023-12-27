@@ -3,7 +3,7 @@ from discord import ButtonStyle, Embed, SelectOption, Interaction, InteractionMe
 from discord.ext.commands import Context
 from discord.ui import View, Button, Select, Modal, TextInput
 from RealmOfConflict import RealmOfConflict
-from LootTables import ScavengeTable, MaterialTable
+from LootTables import ScavengeTable, MaterialTable, MaterialWorthTable
 from random import randrange
 from time import time
 from Player import Player
@@ -151,7 +151,7 @@ class PlayPanel:
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         # Format a string that has the material cost next to it
-        Self.AvargoItemChoices = [SelectOption(label=Material) for Material in Self.Ether.Materials]
+        Self.AvargoItemChoices = [SelectOption(label=f"{Material} ~ ${MaterialWorthTable[Material]}") for Material in Self.Ether.Materials]
         Self.AvargoItemChoice = Select(placeholder="Select a material", options=Self.AvargoItemChoices, custom_id=f"ItemSelection", row=2)
         Self.AvargoItemChoice.callback = lambda Interaction: _Select_Material(Interaction, Interaction.data["values"][0])
         Self.BaseViewFrame.add_item(Self.AvargoItemChoice)

@@ -25,3 +25,21 @@ MaterialTable = {
     "Gold Ore": (1, 5),
     "Lithium Ore": (1, 3),
 }
+
+MaterialWorthTable = {
+    "Water": 0.02,
+    "Sand": 0.10,
+    "Gravel": 0.10,
+    "Cotton": 0.60,
+    "Limestone": 0.65,
+    "Wheat": 1.0,
+    "Log": 1.2,
+    "Coal": 3,
+    "Mycelium": 5,
+    "Copper Ore": 9,
+    "Iron Ore": 9,
+    "Aluminum Ore": 17,
+    "Silver Ore": 28,
+    "Gold Ore": 40,
+    "Lithium Ore": 62,
+}
