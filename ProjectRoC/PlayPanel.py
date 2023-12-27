@@ -47,14 +47,8 @@ class PlayPanel:
                     Info +=f"**{Name}** ~ {format(int(Value), ',')}\n"
                 else:
                     Info +=f"**{Name}** ~ {Value}\n"
-        await Self._Determine_Whitelist()
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info, inline=False)
-
-
-    async def _Determine_Whitelist(Self):
-        if Self.InitialContext.author.id in Self.Whitelist:
-            Self.EmbedFrame.title = Self.EmbedFrame.title + " (Developer)"
 
 
     async def _Construct_Home(Self, Ether:RealmOfConflict=None, InitialContext:Context=None, Interaction=None):
@@ -121,11 +115,11 @@ class PlayPanel:
         await Self._Generate_Info()
 
         Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
-        Self.BuyButton.callback = Self._Avargo_Sale
+        Self.BuyButton.callback = lambda Interaction: Self._Avargo_Sale(Interaction, "Buy")
         Self.BaseViewFrame.add_item(Self.BuyButton)
 
         Self.SellButton = Button(label="Sell", style=Self.ButtonStyle, custom_id="SellButton")
-        Self.SellButton.callback = Self._Avargo_Sale
+        Self.SellButton.callback = lambda Interaction: Self._Avargo_Sale(Interaction, "Sell")
         Self.BaseViewFrame.add_item(Self.SellButton)
 
         Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -139,16 +133,17 @@ class PlayPanel:
         if Interaction.user != Self.InitialContext.author:
             return
         Self.AvargoItemQuantityModal = Modal(title="Enter Quantity")
-        Self.AvargoItemQuantityModal.on_submit = lambda Interaction: Self._Avargo_Sale(Interaction, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, Quantity=int(Self.AvargoItemQuantity.value))
+        Self.AvargoItemQuantityModal.on_submit = lambda Interaction: Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, Quantity=int(Self.AvargoItemQuantity.value))
 
         Self.AvargoItemQuantity = TextInput(label="Enter item quantity")
         Self.AvargoItemQuantityModal.add_item(Self.AvargoItemQuantity)
         await Interaction.response.send_modal(Self.AvargoItemQuantityModal)
     
 
-    async def _Avargo_Sale(Self, Interaction:DiscordInteraction, MaterialChosen=None, ReceiptStarted=False, Quantity=None, InsufficientFunds=False):
+    async def _Avargo_Sale(Self, Interaction:DiscordInteraction, SaleType, MaterialChosen=None, ReceiptStarted=False, Quantity=None, InsufficientFunds=False, InsufficientMaterials=False):
         if Interaction.user != Self.InitialContext.author:
             return
+        Self.SaleType = SaleType
         if MaterialChosen is None:
             Self.ReceiptString = ""
             Self.Receipt = {}
@@ -162,7 +157,7 @@ class PlayPanel:
             Self.BaseViewFrame.add_item(Self.AddButton)
 
             Self.CheckoutButton = Button(label="Checkout", style=Self.ButtonStyle, custom_id="CheckoutButton")
-            Self.CheckoutButton.callback = Self._Avargo_Checkout
+            Self.CheckoutButton.callback = lambda Interaction: Self._Avargo_Checkout(Interaction, SaleType)
             Self.BaseViewFrame.add_item(Self.CheckoutButton)
 
             Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]} per unit") for Material in Self.Ether.Materials]
@@ -177,20 +172,27 @@ class PlayPanel:
             Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
         
-        Self.AvargoItemChoice.callback = lambda Interaction: Self._Avargo_Sale(Interaction, ReceiptStarted=ReceiptStarted, MaterialChosen=Interaction.data["values"][0])
+        Self.AvargoItemChoice.callback = lambda Interaction: Self._Avargo_Sale(Interaction, SaleType, ReceiptStarted=ReceiptStarted, MaterialChosen=Interaction.data["values"][0])
             
 
         if MaterialChosen:
             Self.AvargoItemChoice.placeholder = MaterialChosen
             Self.MaterialChosen = MaterialChosen
             Self.MaterialRaw = MaterialChosen.split(" at ")[0]
+            Self.EmbedFrame.add_field(name=f"You have {Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialRaw}", value="\u200b")
         if ReceiptStarted:
             if Quantity:
                 Self.Receipt.update({Self.MaterialRaw:Quantity})
-                if len(Self.ReceiptString) > 0:
-                    Self.ReceiptString += f"\n{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)}"
-                else:
-                    Self.ReceiptString += f"{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)}"
+                if Self.SaleType == "Buy":
+                    if len(Self.ReceiptString) > 0:
+                        Self.ReceiptString += f"\n{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)}"
+                    else:
+                        Self.ReceiptString += f"{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)}"
+                elif Self.SaleType == "Sell":
+                    if len(Self.ReceiptString) > 0:
+                        Self.ReceiptString += f"\n{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)//4}"
+                    else:
+                        Self.ReceiptString += f"{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)//4}"
                 Self.EmbedFrame.clear_fields()
                 await Self._Generate_Info()
                 Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
@@ -198,38 +200,57 @@ class PlayPanel:
         if InsufficientFunds:
             Self.EmbedFrame.add_field(name="Insufficient Funds", value="\u200b")
 
+        if InsufficientMaterials:
+            Self.EmbedFrame.add_field(name="Insufficient Materials", value=f"You only have {Self.Player.Inventory[Self.InsufficientMaterial]} {Self.InsufficientMaterial}")
+
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Avargo_Checkout(Self, Interaction):
+    async def _Avargo_Checkout(Self, Interaction, SaleType):
         if Interaction.user != Self.InitialContext.author:
             return
         Total = 0
+        if len(Self.Receipt) == 0:
+            return
         for Material, Quantity in Self.Receipt.items():
-            Total += round(MaterialWorthTable[Material] * Quantity, 2)
+            if SaleType == "Buy":
+                Total += round(MaterialWorthTable[Material] * Quantity, 2)
+            if SaleType == "Sell":
+                Total += round((MaterialWorthTable[Material]//4) * Quantity, 2)
         
-        if Total <= Self.Player.Data["Wallet"]:
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
+        await Self._Generate_Info()
+
+        Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
+        Self.EmbedFrame.add_field(name="Total", value=f"${Total}", inline=False)
+
+        Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
+        Self.AvargoButton.callback = Self._Construct_Avargo_Panel
+        Self.BaseViewFrame.add_item(Self.AvargoButton)
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
+
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+        if SaleType == "Buy":
+            if Total <= Self.Player.Data["Wallet"]:
+                for Material, Quantity in Self.Receipt.items():
+                    Self.Player.Inventory[Material] += Quantity
+                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - Total, 2)
+                await Self._Send_New_Panel(Interaction)
+            else:
+                await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientFunds=True)
+        if SaleType == "Sell":
             for Material, Quantity in Self.Receipt.items():
-                Self.Player.Inventory[Material] += Quantity
-        
-            Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - Total, 2)
-            Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
-            await Self._Generate_Info()
-            Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
-            Self.EmbedFrame.add_field(name="Total", value=f"${Total}", inline=False)
+                if Quantity > Self.Player.Inventory[Material]:
+                    Self.InsufficientMaterial = Material
+                    await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientMaterials=True)
+                    return
+            for Material, Quantity in Self.Receipt.items():
+                Self.Player.Inventory[Material] -= Quantity
+                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
 
-            Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
-            Self.AvargoButton.callback = Self._Construct_Avargo_Panel
-            Self.BaseViewFrame.add_item(Self.AvargoButton)
-
-            Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-            Self.BaseViewFrame.add_item(Self.HomepageButton)
-
-            await Self._Send_New_Panel(Interaction)
-        else:
-            await Self._Avargo_Sale(Interaction, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientFunds=True)
 
 
     async def _Construct_Debug_Panel(Self, Interaction):
@@ -367,7 +388,7 @@ class PlayPanel:
             else:
                 CollectionString += f"{EarnedAmount} {Facility.OutputItem}\n"
 
-            Self.Player.Inventory[Facility.OutputItem] = EarnedAmount
+            Self.Player.Inventory[Facility.OutputItem] = round(Self.Player.Inventory[Facility.OutputItem] + EarnedAmount, 2)
         
         Self.Player.Data["Time of Last Production Collection"] = CollectionTime
 
