@@ -125,7 +125,7 @@ class PlayPanel:
         Self.BaseViewFrame.add_item(Self.SellButton)
 
         Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction)
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         await Self._Send_New_Panel(Interaction)
@@ -232,6 +232,11 @@ class PlayPanel:
         Self.ResetPlayer.callback = lambda Interaction: Interaction.response.send_modal(Self.PlayerUUIDSubmission)
         Self.BaseViewFrame.add_item(Self.ResetPlayer)
 
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+
         Self.PlayerUUIDSubmission = Modal(title="Submit Player UUID")
         Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Interaction, int(SubmittedUUID.value))
         SubmittedUUID = TextInput(label="Player UUID") 
@@ -302,7 +307,7 @@ class PlayPanel:
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
 
             Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction)
+            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
 
             Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
@@ -322,7 +327,7 @@ class PlayPanel:
                                     f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
                                     f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
-        
+
         Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Interaction)
 
