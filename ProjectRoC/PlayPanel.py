@@ -47,6 +47,7 @@ class PlayPanel:
                     Info +=f"**{Name}** ~ {format(int(Value), ',')}\n"
                 else:
                     Info +=f"**{Name}** ~ {Value}\n"
+        await Self._Determine_Whitelist()
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info, inline=False)
 
@@ -103,7 +104,6 @@ class PlayPanel:
             Self.DebugButton.callback = Self._Construct_Debug_Panel
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
-        await Self._Determine_Whitelist()
         if Interaction:
             await Self._Send_New_Panel(Interaction)
         else:
@@ -323,7 +323,6 @@ class PlayPanel:
                                     f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
         
-        await Self._Generate_Info(Exclusions=["Team", "Power"])
         Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Interaction)
 
