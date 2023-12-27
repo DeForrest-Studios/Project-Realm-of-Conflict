@@ -82,12 +82,12 @@ class RealmOfConflict(Bot):
                     Name = Contents[0]
                     if Name == "Member Object":
                         continue
-                    if Contents[1].replace(".", "").isdigit():
-                        Value = float(Contents[1])
-                        LoadedPlayer.Data[Name] = Value
-                        continue
                     if Contents[1].isdigit():
                         Value = int(Contents[1])
+                        LoadedPlayer.Data[Name] = Value
+                        continue
+                    if Contents[1].replace(".", "").isdigit():
+                        Value = float(Contents[1])
                         LoadedPlayer.Data[Name] = Value
                         continue
                     if Contents[1] == "None":

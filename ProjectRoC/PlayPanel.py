@@ -209,13 +209,20 @@ class PlayPanel:
     async def _Avargo_Checkout(Self, Interaction, SaleType):
         if Interaction.user != Self.InitialContext.author:
             return
-        Total = 0
         if len(Self.Receipt) == 0:
             return
+        Total = 0
+        EarnedExperience = 0
         for Material, Quantity in Self.Receipt.items():
             if SaleType == "Buy":
                 Total += round(MaterialWorthTable[Material] * Quantity, 2)
+                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]//4), 2)
             if SaleType == "Sell":
+                if Quantity > Self.Player.Inventory[Material]:
+                    Self.InsufficientMaterial = Material
+                    await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientMaterials=True)
+                    return
+                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]//4), 2)
                 Total += round((MaterialWorthTable[Material]//4) * Quantity, 2)
         
         Self.BaseViewFrame = View(timeout=144000)
@@ -224,6 +231,7 @@ class PlayPanel:
 
         Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
         Self.EmbedFrame.add_field(name="Total", value=f"${Total}", inline=False)
+        Self.EmbedFrame.add_field(name="Experienced Earned", value=f"{EarnedExperience}", inline=False)
 
         Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
         Self.AvargoButton.callback = Self._Construct_Avargo_Panel
@@ -238,18 +246,15 @@ class PlayPanel:
                 for Material, Quantity in Self.Receipt.items():
                     Self.Player.Inventory[Material] += Quantity
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - Total, 2)
+                Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
                 await Self._Send_New_Panel(Interaction)
             else:
                 await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientFunds=True)
         if SaleType == "Sell":
             for Material, Quantity in Self.Receipt.items():
-                if Quantity > Self.Player.Inventory[Material]:
-                    Self.InsufficientMaterial = Material
-                    await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientMaterials=True)
-                    return
-            for Material, Quantity in Self.Receipt.items():
                 Self.Player.Inventory[Material] -= Quantity
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
+                Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
 
 
 
