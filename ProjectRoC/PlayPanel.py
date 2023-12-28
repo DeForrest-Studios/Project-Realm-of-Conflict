@@ -165,10 +165,6 @@ class PlayPanel:
             Self.CheckoutButton.callback = lambda Interaction: Self._Avargo_Checkout(Interaction, SaleType)
             Self.BaseViewFrame.add_item(Self.CheckoutButton)
 
-            Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]} per unit") for Material in Self.Ether.Materials]
-            Self.AvargoItemChoice = Select(placeholder="Select a material", options=Self.AvargoItemChoices, custom_id=f"ItemSelection", row=2)
-            Self.BaseViewFrame.add_item(Self.AvargoItemChoice)
-
             Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
             Self.AvargoButton.callback = Self._Construct_Avargo_Panel
             Self.BaseViewFrame.add_item(Self.AvargoButton)
@@ -177,7 +173,14 @@ class PlayPanel:
             Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
         
-        Self.AvargoItemChoice.callback = lambda Interaction: Self._Avargo_Sale(Interaction, SaleType, ReceiptStarted=ReceiptStarted, MaterialChosen=Interaction.data["values"][0])
+            if Self.SaleType == "Buy":
+                Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]} per unit") for Material in Self.Ether.Materials]
+            if Self.SaleType == "Sell":
+                Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]/4} per unit") for Material in Self.Ether.Materials]
+
+            Self.AvargoItemChoice = Select(placeholder="Select a material", options=Self.AvargoItemChoices, custom_id=f"ItemSelection", row=2)
+            Self.BaseViewFrame.add_item(Self.AvargoItemChoice)
+            Self.AvargoItemChoice.callback = lambda Interaction: Self._Avargo_Sale(Interaction, SaleType, ReceiptStarted=ReceiptStarted, MaterialChosen=Interaction.data["values"][0])
             
 
         if MaterialChosen:
@@ -195,9 +198,9 @@ class PlayPanel:
                         Self.ReceiptString += f"{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)}"
                 elif Self.SaleType == "Sell":
                     if len(Self.ReceiptString) > 0:
-                        Self.ReceiptString += f"\n{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)//4}"
+                        Self.ReceiptString += f"\n{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)/4}"
                     else:
-                        Self.ReceiptString += f"{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)//4}"
+                        Self.ReceiptString += f"{Quantity} {Self.MaterialChosen} for ${MaterialWorthTable[Self.MaterialRaw] * int(Quantity)/4}"
                 Self.EmbedFrame.clear_fields()
                 await Self._Generate_Info()
                 Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
@@ -221,18 +224,17 @@ class PlayPanel:
         for Material, Quantity in Self.Receipt.items():
             if SaleType == "Buy":
                 Total += round(MaterialWorthTable[Material] * Quantity, 2)
-                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]//4), 2)
+                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]/4), 2)
             if SaleType == "Sell":
                 if Quantity > Self.Player.Inventory[Material]:
                     Self.InsufficientMaterial = Material
                     await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientMaterials=True)
                     return
-                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]//4), 2)
-                Total += round((MaterialWorthTable[Material]//4) * Quantity, 2)
+                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]/8), 2)
+                Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
         
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
-        await Self._Generate_Info()
 
         Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
         Self.EmbedFrame.add_field(name="Total", value=f"${Total}", inline=False)
@@ -252,6 +254,7 @@ class PlayPanel:
                     Self.Player.Inventory[Material] += Quantity
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - Total, 2)
                 Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
+                await Self._Generate_Info()
                 await Self._Send_New_Panel(Interaction)
             else:
                 await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientFunds=True)
@@ -260,6 +263,7 @@ class PlayPanel:
                 Self.Player.Inventory[Material] -= Quantity
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
                 Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
+                await Self._Generate_Info()
                 await Self._Send_New_Panel(Interaction)
 
 
