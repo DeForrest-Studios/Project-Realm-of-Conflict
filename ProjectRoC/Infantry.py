@@ -65,12 +65,22 @@ class Infantry:
     
     def Generate_Name(Self, Owner):
         RandomFirstName = FirstNames[randrange(0, len(FirstNames))]
-        RandomLastName = LastNames[randrange(0, len(FirstNames))]
+        RandomLastName = LastNames[randrange(0, len(LastNames))]
         Name = f"{RandomFirstName} {RandomLastName}"
         if Name not in Owner.Army.keys():
             return Name
         else:
             Self.Generate_Name(Owner)
+
+class Marksman(Infantry):
+    def __init__(Self, Level, Type, Owner, Name=None):
+        if Name == None:
+            super().__init__(Level, Type, Owner)
+        else:
+            super().__init__(Level, Type, Owner, Name)
+        Self.OffensivePower = 15000 * (Level * 3500)
+        Self.DefensivePower = 4500 * (Level * 1000)
+
 
 class Soldier(Infantry):
     def __init__(Self, Level, Type, Owner, Name=None):
@@ -78,11 +88,15 @@ class Soldier(Infantry):
             super().__init__(Level, Type, Owner)
         else:
             super().__init__(Level, Type, Owner, Name)
+        Self.OffensivePower = 7500 * (Level * 4500)
+        Self.DefensivePower = 7500 * (Level * 4500)
 
 
-class Medic:
+class Medic(Infantry):
     def __init__(Self, Level, Type, Owner, Name=None):
         if Name == None:
             super().__init__(Level, Type, Owner)
         else:
             super().__init__(Level, Type, Owner, Name)
+        Self.HealingPower = 15000 * (Level * 3500)
+        Self.DefensivePower = 4500 * (Level * 1000)

@@ -57,4 +57,7 @@ InfantryTable = {
     "Level 1 ~ Medic": 8500,
     "Level 2 ~ Medic": 21500,
     "Level 3 ~ Medic": 47300,
+    "Level 1 ~ Marksman": 8500,
+    "Level 2 ~ Marksman": 21500,
+    "Level 3 ~ Marksman": 47300,
 }

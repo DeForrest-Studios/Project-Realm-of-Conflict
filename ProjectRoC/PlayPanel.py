@@ -335,6 +335,26 @@ class PlayPanel:
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")
         await Self._Generate_Info()
 
+        ArmyString = ""
+
+        for Index, (Name, Infantry) in enumerate(Self.Player.Army.items()):
+            if len(ArmyString) + 36 >= 1024:
+                print("Pagintion Required")
+                Self.ArmyPaginationRequired = True
+                Self.ArmyIndex = Index
+                break
+            ArmyString += f"{Name} ~ Level {Infantry.Level} ~ {Infantry.Type}\n"
+
+        Self.EmbedFrame.add_field(name="\u200b", value=ArmyString, inline=False)
+
+        Self.NextPageButton = Button(label="Next Page", style=Self.ButtonStyle, custom_id="NextPageButton")
+        Self.NextPageButton.callback = lambda Interaction: ...
+        Self.BaseViewFrame.add_item(Self.NextPageButton)
+
+        Self.PreviousPageButton = Button(label="Previous Page", style=Self.ButtonStyle, custom_id="PreviousPageButton")
+        Self.PreviousPageButton.callback = lambda Interaction: ...
+        Self.BaseViewFrame.add_item(Self.PreviousPageButton)
+
         Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
         Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
