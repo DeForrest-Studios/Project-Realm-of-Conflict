@@ -12,6 +12,7 @@ from os import remove
 from os.path import join
 from Facilities import ProductionFacility
 
+
 class PlayPanel:
     def __init__(Self, Ether:RealmOfConflict, PlayerContext:Context):
         Self.Ether = None
