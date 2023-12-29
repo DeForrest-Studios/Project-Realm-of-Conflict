@@ -4,6 +4,7 @@ from RealmOfConflict import RealmOfConflict
 from PlayPanel import PlayPanel
 from asyncio import create_task
 from Simulation import Simulation
+from sys import exit
 
 if __name__ == '__main__':
     Ether = RealmOfConflict()
@@ -26,19 +27,39 @@ if __name__ == '__main__':
     @Ether.event
     async def on_guild_available(Guild):
         print(f"Guild available: {Guild.name}")
-        # if Guild.name in ["Guild available: Project RoC - Dev Server"]:
+        if len(Ether.guilds) > 1:
+            print("Your bot is in two places, whatever you're doing, just stop please.")
+            print("Killing the bot.")
+            exit()
         Ether.Guild = Ether.guilds[0]
+
+        if Ether.Guild.id == 1190385562604015626:
+            print("Running on Developer Server")
+            Ether.Roles = {
+                "Titan":Ether.Guild.get_role(1190385562604015629),
+                "Analis":Ether.Guild.get_role(1190385562604015628),
+            }
+            Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190385563505791017)})
+
+        if Ether.Guild.id == 1135093444734361702:
+            print("Running on Unstable Server")
+            Ether.Roles = {
+                "Titan":Ether.Guild.get_role(1135093444734361705),
+                "Analis":Ether.Guild.get_role(1135093444734361704),
+            }
+            Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1135093445191532607)})
+
+        if Ether.Guild.id == 1063056213589368953:
+            print("Running on Official Server")
+            Ether.Roles = {
+                "Titan":Ether.Guild.get_role(1190386754327412870),
+                "Analis":Ether.Guild.get_role(1190386754327412869),
+            }
+            Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190386761831039096)})
+
         Ether.Load_Players()
         create_task(Ether.Autosave())
-        if "Dev" in Ether.Guild.name:
-            Ether.Roles = {
-                "Titan":Ether.Guild.get_role(1018735284147466240),
-                "Analis":Ether.Guild.get_role(1018735450053156894),
-            }
-        else:
-            pass
         print("\nBot is alive.\n")
-        Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1061196134548246528)})
         CoreSimulation = Simulation(Ether, Ether.Data["Planets"]["Analis"], Ether.Data["Planets"]["Titan"])
 
 

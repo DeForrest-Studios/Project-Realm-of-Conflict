@@ -258,4 +258,4 @@ class Simulation:
                                                                                                       filename=f"Full Simulation Report {Ether['Skirmish Count']}.txt"))
                 break
 
-            await sleep(120)
+            await sleep(3600)

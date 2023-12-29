@@ -253,6 +253,6 @@ class RealmOfConflict(Bot):
     async def Guild_Guard(Self, Context:Context):
         if Context.guild is None:
             return "Unprotected"
-        if Context.guild.id in [1018734763378479164]: # DevServer
+        if Context.guild.id == Self.Guild.id: # DevServer
             return "Protected"
         return "Unprotected"

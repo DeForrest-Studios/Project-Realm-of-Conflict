@@ -101,13 +101,10 @@ class Player:
         Self.Data["Healing Power"] = 0
         for Infantry in Self.Army.values():
             if hasattr(Infantry, "OffensivePower"):
-                print(Infantry.OffensivePower)
                 Self.Data["Offensive Power"] += Infantry.OffensivePower
             if hasattr(Infantry, "DefensivePower"):
-                print(Infantry.DefensivePower)
                 Self.Data["Defensive Power"] += Infantry.DefensivePower
             if hasattr(Infantry, "HealingPower"):
-                print(Infantry.HealingPower)
                 Self.Data["Healing Power"] += Infantry.HealingPower
         Self.Data["Power"] = Self.Data["Offensive Power"] + Self.Data["Defensive Power"] + Self.Data["Healing Power"]
 
