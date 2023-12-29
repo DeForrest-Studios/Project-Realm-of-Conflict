@@ -78,8 +78,8 @@ class Marksman(Infantry):
             super().__init__(Level, Type, Owner)
         else:
             super().__init__(Level, Type, Owner, Name)
-        Self.OffensivePower = 15000 * (Level * 3500)
-        Self.DefensivePower = 4500 * (Level * 1000)
+        Self.OffensivePower = 15000 + (Level * 3500)
+        Self.DefensivePower = 4500 + (Level * 1000)
 
 
 class Soldier(Infantry):
@@ -88,8 +88,8 @@ class Soldier(Infantry):
             super().__init__(Level, Type, Owner)
         else:
             super().__init__(Level, Type, Owner, Name)
-        Self.OffensivePower = 7500 * (Level * 4500)
-        Self.DefensivePower = 7500 * (Level * 4500)
+        Self.OffensivePower = 7500 + (Level * 4500)
+        Self.DefensivePower = 7500 + (Level * 4500)
 
 
 class Medic(Infantry):
@@ -98,5 +98,5 @@ class Medic(Infantry):
             super().__init__(Level, Type, Owner)
         else:
             super().__init__(Level, Type, Owner, Name)
-        Self.HealingPower = 15000 * (Level * 3500)
-        Self.DefensivePower = 4500 * (Level * 1000)
+        Self.HealingPower = 15000 + (Level * 3500)
+        Self.DefensivePower = 4500 + (Level * 1000)

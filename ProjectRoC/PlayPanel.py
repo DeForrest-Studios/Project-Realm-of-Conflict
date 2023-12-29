@@ -32,9 +32,9 @@ class PlayPanel:
             Self.ButtonStyle = ButtonStyle.grey
 
 
-    async def _Generate_Info(Self, Exclusions:list=[]):
+    async def _Generate_Info(Self, Exclusions:list=[], Inclusions=[]):
         Fields = [Field for Field in ["Wallet", "Team", "Level", "Experience", "Power"] if Field not in Exclusions]
-
+        Fields += Inclusions
         Info = ""
 
         for Name, Value in Self.Player.Data.items():
@@ -97,6 +97,10 @@ class PlayPanel:
         Self.InventoryButton = Button(label="Inventory", style=Self.ButtonStyle, custom_id="InventoryButton")
         Self.InventoryButton.callback = Self._Construct_Inventory_Panel
         Self.BaseViewFrame.add_item(Self.InventoryButton)
+
+        Self.ProfileButton = Button(label="Profile", style=Self.ButtonStyle, custom_id="ProfileButton")
+        Self.ProfileButton.callback = Self._Construct_Profile_Panel
+        Self.BaseViewFrame.add_item(Self.ProfileButton)
 
         if InitialContext.author.id in Self.Whitelist:
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
@@ -251,7 +255,7 @@ class PlayPanel:
         if SaleType == "Buy":
             if Total <= Self.Player.Data["Wallet"]:
                 for Material, Quantity in Self.Receipt.items():
-                    Self.Player.Inventory[Material] += Quantity
+                    Self.Player.Inventory[Material] = round(Self.Player.Inventory[Material] + Quantity, 2)
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - Total, 2)
                 Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
                 await Self._Generate_Info()
@@ -260,7 +264,7 @@ class PlayPanel:
                 await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientFunds=True)
         if SaleType == "Sell":
             for Material, Quantity in Self.Receipt.items():
-                Self.Player.Inventory[Material] -= Quantity
+                Self.Player.Inventory[Material] = round(Self.Player.Inventory[Material] - Quantity, 2)
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
                 Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
                 await Self._Generate_Info()
@@ -535,5 +539,21 @@ class PlayPanel:
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         Self.Ether.Logger.info(f"Sent Inventory panel to {Self.Player.Data['Name']}")
+
+        await Self._Send_New_Panel(Interaction)
+    
+    async def _Construct_Profile_Panel(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Profile Panel")
+        await Self._Generate_Info(Inclusions=["Offensive Power", "Defensive Power", "Healing Power",
+                                              "Production Power", "Manufacturing Power", "Energy Sapping",])
+
+        Self.ChangeNicknameButton = Button(label="Change Nickname", style=Self.ButtonStyle, custom_id="ChangeNicknameButton")
+        Self.ChangeNicknameButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.ChangeNicknameButton)
+
+        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         await Self._Send_New_Panel(Interaction)

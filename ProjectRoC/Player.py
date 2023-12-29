@@ -35,8 +35,9 @@ class Player:
                 "Experience": 0.0,
                 "Level": 1,
                 "Power": 0,
-                "Attack Power": 0,
+                "Offensive Power": 0,
                 "Defensive Power": 0,
+                "Healing Power": 0,
                 "Production Power": 0,
                 "Manufacturing Power": 0,
                 "Energy Sapping": 0,
@@ -92,6 +93,24 @@ class Player:
         Self.ManufacturingFacilities = {}
         Self.Army = {}
         Self.Refresh_Stats()
+
+
+    def Refresh_Power(Self):
+        Self.Data["Offensive Power"] = 0
+        Self.Data["Defensive Power"] = 0
+        Self.Data["Healing Power"] = 0
+        for Infantry in Self.Army.values():
+            if hasattr(Infantry, "OffensivePower"):
+                print(Infantry.OffensivePower)
+                Self.Data["Offensive Power"] += Infantry.OffensivePower
+            if hasattr(Infantry, "DefensivePower"):
+                print(Infantry.DefensivePower)
+                Self.Data["Defensive Power"] += Infantry.DefensivePower
+            if hasattr(Infantry, "HealingPower"):
+                print(Infantry.HealingPower)
+                Self.Data["Healing Power"] += Infantry.HealingPower
+        Self.Data["Power"] = Self.Data["Offensive Power"] + Self.Data["Defensive Power"] + Self.Data["Healing Power"]
+
 
 
     def Refresh_Stats(Self):
