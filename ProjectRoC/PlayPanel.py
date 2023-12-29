@@ -138,7 +138,7 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Construct_Quantity_Modal(Self, Interaction):
+    async def _Construct_Quantity_Modal(Self, Interaction:DiscordInteraction):
         if Interaction.user != Self.InitialContext.author:
             return
         Self.AvargoItemQuantityModal = Modal(title="Enter Quantity")
@@ -218,7 +218,7 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Avargo_Checkout(Self, Interaction, SaleType):
+    async def _Avargo_Checkout(Self, Interaction:DiscordInteraction, SaleType):
         if Interaction.user != Self.InitialContext.author:
             return
         if len(Self.Receipt) == 0:
@@ -271,7 +271,7 @@ class PlayPanel:
                 await Self._Send_New_Panel(Interaction)
 
 
-    async def _Construct_Sentents_Panel(Self, Interaction):
+    async def _Construct_Sentents_Panel(Self, Interaction:DiscordInteraction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Sentents Panel")
         await Self._Generate_Info()
@@ -291,7 +291,7 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Construct_Recruit_Panel(Self, Interaction, InfantrySelected=None, InfantryRecruited=None):
+    async def _Construct_Recruit_Panel(Self, Interaction:DiscordInteraction, InfantrySelected=None, InfantryRecruited=None):
         if InfantrySelected == None:
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
@@ -335,7 +335,7 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Construct_Army_Panel(Self, Interaction):
+    async def _Construct_Army_Panel(Self, Interaction:DiscordInteraction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")
         await Self._Generate_Info()
@@ -393,7 +393,7 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Reset_Player(Self, Interaction, SubmittedUUID):
+    async def _Reset_Player(Self, Interaction:DiscordInteraction, SubmittedUUID):
         if Interaction.user != Self.InitialContext.author:
             return
         if Self.Player.Data["Team"] == "Analis":
@@ -485,7 +485,7 @@ class PlayPanel:
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Collect_Production_Facilities(Self, Interaction):
+    async def _Collect_Production_Facilities(Self, Interaction:DiscordInteraction):
         if Interaction.user != Self.InitialContext.author:
             return
         CollectionString = ""
