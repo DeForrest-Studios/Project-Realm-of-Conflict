@@ -543,8 +543,8 @@ class PlayPanel:
 
         await Self._Send_New_Panel(Interaction)
     
-    
-    async def _Construct_Profile_Panel(Self, Interaction):
+
+    async def _Construct_Profile_Panel(Self, Interaction:DiscordInteraction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Profile Panel")
         await Self._Generate_Info(Inclusions=["Offensive Power", "Defensive Power", "Healing Power",
