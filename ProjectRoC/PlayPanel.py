@@ -12,6 +12,8 @@ from os import remove
 from os.path import join
 from Facilities import ProductionFacility
 
+# Fuck
+
 
 class PlayPanel:
     def __init__(Self, Ether:RealmOfConflict, PlayerContext:Context):
