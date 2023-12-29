@@ -23,6 +23,7 @@ class RealmOfConflict(Bot):
                 "Titan": Planet("Titan"),
             },
             "Panels": {},
+            "Skirmish Count": 0,
         }
         Self.Materials = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
         Self.Initalize_Logger()

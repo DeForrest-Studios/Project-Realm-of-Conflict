@@ -3,6 +3,7 @@ from discord.ext.commands import Context
 from RealmOfConflict import RealmOfConflict
 from PlayPanel import PlayPanel
 from asyncio import create_task
+from Simulation import Simulation
 
 if __name__ == '__main__':
     Ether = RealmOfConflict()
@@ -37,6 +38,8 @@ if __name__ == '__main__':
         else:
             pass
         print("\nBot is alive.\n")
+        Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1061196134548246528)})
+        CoreSimulation = Simulation(Ether, Ether.Data["Planets"]["Analis"], Ether.Data["Planets"]["Titan"])
 
 
     # Override of existing on_member_join from discord.py

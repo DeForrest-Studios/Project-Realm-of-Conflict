@@ -319,10 +319,11 @@ class PlayPanel:
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - InfantryTable[InfantryKey], 2)
                 Self.EmbedFrame.add_field(name=f"Purchased {Self.InfantrySelected} for {InfantryTable[InfantryKey]}", value="\u200b")
                 InfantryData = InfantryKey.split(" ~ ")
-                InfantryLevel = InfantryData[0].split(" ")[1]
+                InfantryLevel = int(InfantryData[0].split(" ")[1])
                 InfantryType = InfantryData[1]
                 NewInfantry = InfantryToObject[InfantryType](InfantryLevel, InfantryType, Self.Player)
                 Self.Player.Army.update({NewInfantry.Name:NewInfantry})
+                Self.Player.Refresh_Power()
                 Self.EmbedFrame.clear_fields()
                 await Self._Generate_Info()
                 Self.EmbedFrame.add_field(name=f"Recruited {NewInfantry.Name}", value="\u200b")

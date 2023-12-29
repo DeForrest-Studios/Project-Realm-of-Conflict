@@ -5,7 +5,7 @@ class Planet():
             "Population": 78542986762964,
             "Protector Count": 0,
             "Damage": 0,
-            "Attack Power": 0,
+            "Offensive Power": 0,
             "Defensive Power": 0,
             "Energy Sapping": 0,
             "Domination": 0,
