@@ -1,38 +1,34 @@
-from discord import Embed, File
-
-from os.path import join
-
-from random import randrange
-
 from asyncio import sleep, create_task
+from discord import Embed
+
 
 
 class Simulation:
-    def __init__(Self, Ether, Analis, Titan):
+    def __init__(Self, Ether, Analis, Titan) -> None:
         create_task(Self._Core_Simulation(Ether, Analis, Titan))
 
-    async def _Generate_Simulation_Reports(Self, Ether, Analis, Titan):
+    async def _Generate_Simulation_Reports(Self, Analis, Titan) -> None:
         Self.AnalisEmbedReportString = "".join((f"Analis Population.: {format(Analis.Data['Population'], ',')}\n",
-                                        f"Analis Attack: {format(Analis.Data['Offensive Power'], ',')}\n",
-                                        f"Analis Defense: {format(Analis.Data['Defensive Power'], ',')}\n",
-                                        f"Analis Energy Sapping: {format(Analis.Data['Energy Sapping'], ',')}\n",
-                                        f"Total Analisian Protectors: {format(Analis.Data['Protector Count'], ',')}\n",
-                                        f"Average Analisian Players Earned from Hacking: ${format(Analis.Data['Average Earnings'])}\n",
-                                        f"Analisian Domination: {format(Analis.Data['Domination'], ',')}\n",
-                                        f"Dominated: {format(Analis.Data['Population Dominated'], ',')} Pop.\n",
-                                        f"Analisian Healing: {format(Analis.Data['Healing'], ',')}\n",
-                                        f"Healed: {format(Analis.Data['Population Healed'], ',')} Pop.\n",))
+                                                f"Analis Attack: {format(Analis.Data['Offensive Power'], ',')}\n",
+                                                f"Analis Defense: {format(Analis.Data['Defensive Power'], ',')}\n",
+                                                f"Analis Energy Sapping: {format(Analis.Data['Energy Sapping'], ',')}\n",
+                                                f"Total Analisian Protectors: {format(Analis.Data['Protector Count'], ',')}\n",
+                                                f"Average Analisian Players Earned from Hacking: ${format(Analis.Data['Average Earnings'])}\n",
+                                                f"Analisian Domination: {format(Analis.Data['Domination'], ',')}\n",
+                                                f"Dominated: {format(Analis.Data['Population Dominated'], ',')} Pop.\n",
+                                                f"Analisian Healing: {format(Analis.Data['Healing'], ',')}\n",
+                                                f"Healed: {format(Analis.Data['Population Healed'], ',')} Pop.\n",))
 
         Self.TitanEmbedReportString = "".join((f"Titan Population.: {format(Titan.Data['Population'], ',')}\n",
-                                       f"Titan Attack: {format(Titan.Data['Offensive Power'], ',')}\n",
-                                       f"Titan Defense: {format(Titan.Data['Defensive Power'], ',')}\n",
-                                       f"Titan Energy Sapping: {format(Titan.Data['Energy Sapping'], ',')}\n",
-                                       f"Total Titan Protectors: {format(Titan.Data['Protector Count'], ',')}\n",
-                                       f"Average Titan Players Earned from Hacking: ${format(Titan.Data['Average Earnings'])}\n",
-                                       f"Titan Domination: {format(Titan.Data['Domination'], ',')}\n",
-                                       f"Dominated: {format(Titan.Data['Population Dominated'], ',')} Pop.\n",
-                                       f"Titan Healing: {format(Titan.Data['Healing'], ',')}\n",
-                                       f"Healed: {format(Titan.Data['Population Healed'], ',')} Pop.\n\n"))
+                                               f"Titan Attack: {format(Titan.Data['Offensive Power'], ',')}\n",
+                                               f"Titan Defense: {format(Titan.Data['Defensive Power'], ',')}\n",
+                                               f"Titan Energy Sapping: {format(Titan.Data['Energy Sapping'], ',')}\n",
+                                               f"Total Titan Protectors: {format(Titan.Data['Protector Count'], ',')}\n",
+                                               f"Average Titan Players Earned from Hacking: ${format(Titan.Data['Average Earnings'])}\n",
+                                               f"Titan Domination: {format(Titan.Data['Domination'], ',')}\n",
+                                               f"Dominated: {format(Titan.Data['Population Dominated'], ',')} Pop.\n",
+                                               f"Titan Healing: {format(Titan.Data['Healing'], ',')}\n",
+                                               f"Healed: {format(Titan.Data['Population Healed'], ',')} Pop.\n\n"))
 
         if Self.VictoriousPlanet is not None:
             Self.EmbedReportString = f"**{Self.VictoriousPlanet} has claimed victory over {Self.DestroyedPlanet}.**\n\n", Self.EmbedReportString
@@ -87,7 +83,7 @@ class Simulation:
             Self.ReportEmbed.add_field(name="\u200b", value=Self.AnalisLeaderboardReportString, inline=False)
             Self.ReportEmbed.add_field(name="\u200b", value=Self.TitanLeaderboardReportString, inline=False)
 
-    async def _Core_Simulation(Self, Ether, Analis, Titan):
+    async def _Core_Simulation(Self, Ether, Analis, Titan) -> None:
         Self.VictoriousPlanet = None
         Self.DestroyedPlanet = None
 
@@ -234,7 +230,7 @@ class Simulation:
             #         Self.Raids += '\n'.join([f'{item[1]} {item[0]}' for item in Self.player_materials.items()])
             #         Self.Raids += '\n\n'
 
-            await create_task(Self._Generate_Simulation_Reports(Ether, Analis, Titan))
+            await create_task(Self._Generate_Simulation_Reports(Analis, Titan))
 
             if Self.VictoriousPlanet is None:
                 await Ether.Data["Simulation Channel"].send(embed=Self.ReportEmbed)

@@ -1,12 +1,12 @@
-from Facilities import Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
+from Facilities import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
 
 from time import time
 
 class Player:
     def __init__(Self, Member):
-        Self.ExperienceForNextLevel = 0
+        Self.ExperienceForNextLevel:int = 0
         if Member == "Test":
-            Self.Data = {
+            Self.Data:{str:...} = {
                 "UUID": 42069,
                 "Member Object": None,
                 "Name": "TestPlayer",
@@ -26,7 +26,7 @@ class Player:
                 "Counter Operations Skill": 0,
             }
         else:
-            Self.Data = {
+            Self.Data:{str:...} = {
                 "UUID": Member.id,
                 "Member Object": Member,
                 "Name": Member.name,
@@ -50,7 +50,7 @@ class Player:
                 "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
             }
-        Self.Inventory = {
+        Self.Inventory:{str:float} = {
             "Water": 0.0,
             "Sand": 0.0,
             "Gravel": 0.0,
@@ -73,7 +73,7 @@ class Player:
             "Refined Gold": 0.0,
             "Refined Lithium": 0.0,
         }
-        Self.ProductionFacilities = {
+        Self.ProductionFacilities:{str:ProductionFacility} = {
             "Well": Well(),
             "Sand Quarry": SandQuarry(),
             "Gravel Pit": GravelPit(),

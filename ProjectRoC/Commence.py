@@ -1,4 +1,6 @@
 from discord import Member
+from discord import Guild as DiscordGuild
+from discord import Role as DiscordRole
 from discord.ext.commands import Context
 from RealmOfConflict import RealmOfConflict
 from PlayPanel import PlayPanel
@@ -31,11 +33,11 @@ if __name__ == '__main__':
             print("Your bot is in two places, whatever you're doing, just stop please.")
             print("Killing the bot.")
             exit()
-        Ether.Guild = Ether.guilds[0]
+        Ether.Guild:DiscordGuild = Ether.guilds[0]
 
         if Ether.Guild.id == 1190385562604015626:
             print("Running on Developer Server")
-            Ether.Roles = {
+            Ether.Roles:{str:DiscordRole} = {
                 "Titan":Ether.Guild.get_role(1190385562604015629),
                 "Analis":Ether.Guild.get_role(1190385562604015628),
             }
@@ -43,7 +45,7 @@ if __name__ == '__main__':
 
         if Ether.Guild.id == 1135093444734361702:
             print("Running on Unstable Server")
-            Ether.Roles = {
+            Ether.Roles:{str:DiscordRole} = {
                 "Titan":Ether.Guild.get_role(1135093444734361705),
                 "Analis":Ether.Guild.get_role(1135093444734361704),
             }
@@ -51,7 +53,7 @@ if __name__ == '__main__':
 
         if Ether.Guild.id == 1063056213589368953:
             print("Running on Official Server")
-            Ether.Roles = {
+            Ether.Roles:{str:DiscordRole} = {
                 "Titan":Ether.Guild.get_role(1190386754327412870),
                 "Analis":Ether.Guild.get_role(1190386754327412869),
             }

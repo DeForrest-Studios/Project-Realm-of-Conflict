@@ -1,22 +1,21 @@
 from asyncio import create_task
-from discord import ButtonStyle, Embed, SelectOption, InteractionMessage
+from discord import ButtonStyle, Embed, SelectOption
 from discord import Interaction as DiscordInteraction
+from discord import Message as DiscordMessage
 from discord.ext.commands import Context
 from discord.ui import View, Button, Select, Modal, TextInput
-from RealmOfConflict import RealmOfConflict
-from Tables import ScavengeTable, MaterialTable, MaterialWorthTable, InfantryTable, InfantryToObject
-from random import randrange
-from time import time
-from Player import Player
+from Facilities import ProductionFacility
 from os import remove
 from os.path import join
-from Facilities import ProductionFacility
+from Player import Player
+from random import randrange
+from RealmOfConflict import RealmOfConflict
+from Tables import ScavengeTable, MaterialTable, MaterialWorthTable, InfantryTable, InfantryToObject
+from time import time
 
 
 class PlayPanel:
     def __init__(Self, Ether:RealmOfConflict, PlayerContext:Context):
-        Self.Ether = None
-        Self.InitialContext = None
         create_task(Self._Construct_Home(Ether, PlayerContext))
 
 
@@ -60,14 +59,14 @@ class PlayPanel:
 
         Self.InitialContext:Context = InitialContext
         Self.Ether:RealmOfConflict = Ether
-        Self.Whitelist = [897410636819083304, # Robert Reynolds, Cavan
+        Self.Whitelist:[int] = [897410636819083304, # Robert Reynolds, Cavan
                           ]
-        Self.Player: Player = Ether.Data["Players"][InitialContext.author.id]
+        Self.Player:Player = Ether.Data["Players"][InitialContext.author.id]
         Self.FacilitySelected = None
         Self.MaterialChosen = None
         Self.InfantrySelected = None
         Self.ReceiptString = ""
-        Self.Receipt = {}
+        Self.Receipt:{str:int} = {}
         await Self._Determine_Team()
 
         if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
@@ -113,7 +112,7 @@ class PlayPanel:
                 return
             await Self._Send_New_Panel(Interaction)
         else:
-            Self.DashboardMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+            Self.DashboardMessage:DiscordMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
 
     async def _Construct_Avargo_Panel(Self, Interaction:DiscordInteraction):
@@ -156,7 +155,7 @@ class PlayPanel:
         Self.SaleType = SaleType
         if MaterialChosen is None:
             Self.ReceiptString = ""
-            Self.Receipt = {}
+            Self.Receipt:{str:int} = {}
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
 
@@ -190,8 +189,8 @@ class PlayPanel:
 
         if MaterialChosen:
             Self.AvargoItemChoice.placeholder = MaterialChosen
-            Self.MaterialChosen = MaterialChosen
-            Self.MaterialRaw = MaterialChosen.split(" at ")[0]
+            Self.MaterialChosen:str = MaterialChosen
+            Self.MaterialRaw:str = MaterialChosen.split(" at ")[0]
             Self.EmbedFrame.add_field(name=f"You have {Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialRaw}", value="\u200b")
         if ReceiptStarted:
             if Quantity:
@@ -224,8 +223,8 @@ class PlayPanel:
             return
         if len(Self.Receipt) == 0:
             return
-        Total = 0
-        EarnedExperience = 0
+        Total:int = 0
+        EarnedExperience:float = 0.00
         for Material, Quantity in Self.Receipt.items():
             if SaleType == "Buy":
                 Total += round(MaterialWorthTable[Material] * Quantity, 2)
@@ -343,6 +342,9 @@ class PlayPanel:
 
         ArmyString = ""
 
+        Index:int
+        Name:str
+        Infantry:object
         for Index, (Name, Infantry) in enumerate(Self.Player.Army.items()):
             if len(ArmyString) + 36 >= 1024:
                 print("Pagintion Required")
@@ -413,10 +415,10 @@ class PlayPanel:
     async def _Scavenge(Self, Interaction:DiscordInteraction):
         if Interaction.user != Self.InitialContext.author:
             return
-        SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
+        SuccessfulRolls:[str] = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
         ScavengedString = ""
-        ExperienceGained = round((0.65 * (0.35 * Self.Player.Data["Level"])) * len(SuccessfulRolls), 2)
+        ExperienceGained:float = round((0.65 * (0.35 * Self.Player.Data["Level"])) * len(SuccessfulRolls), 2)
         ScavengedString += f"Gained {ExperienceGained} experience\n"
         Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + ExperienceGained, 2)
 
@@ -490,7 +492,7 @@ class PlayPanel:
         if Interaction.user != Self.InitialContext.author:
             return
         CollectionString = ""
-        ProductionFacilityLength = len(Self.Player.ProductionFacilities.values()) - 1
+        ProductionFacilityLength:int = len(Self.Player.ProductionFacilities.values()) - 1
         CollectionTime = int(time())
         for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
             if Self.Player.Data["Time of Last Production Collection"] == "Never":
@@ -526,6 +528,9 @@ class PlayPanel:
         InventoryString = ""
 
         PlayerInventoryLength = len(Self.Player.Inventory.items()) - 1
+        Index:int
+        Name:str
+        Amount:float
         for Index, (Name, Amount) in enumerate(Self.Player.Inventory.items()):
             if Index == PlayerInventoryLength:
                 InventoryString += f"{Amount} {Name}"

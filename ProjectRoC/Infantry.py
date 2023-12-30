@@ -1,6 +1,5 @@
-from asyncio import run
+from discord import Member as DiscordMember
 from random import randrange
-from Player import Player
 
 FirstNames = [
     "Zara", "Nyx", "Xander", "Ari", "Nova", "Eli", "Luna", "Kai", "Cleo", "Jett",
@@ -55,17 +54,17 @@ LastNames = [
 
 
 class Infantry:
-    def __init__(Self, Level, Type, Owner, Name=None):
+    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
             Self.Name = Self.Generate_Name(Owner)
         else:
             Self.Name = Name
-        Self.Level = Level
-        Self.Type = Type
+        Self.Level:int = Level
+        Self.Type:str = Type
     
     def Generate_Name(Self, Owner):
-        RandomFirstName = FirstNames[randrange(0, len(FirstNames))]
-        RandomLastName = LastNames[randrange(0, len(LastNames))]
+        RandomFirstName:str = FirstNames[randrange(0, len(FirstNames))]
+        RandomLastName:str = LastNames[randrange(0, len(LastNames))]
         Name = f"{RandomFirstName} {RandomLastName}"
         if Name not in Owner.Army.keys():
             return Name
@@ -73,7 +72,7 @@ class Infantry:
             Self.Generate_Name(Owner)
 
 class Marksman(Infantry):
-    def __init__(Self, Level, Type, Owner, Name=None):
+    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
             super().__init__(Level, Type, Owner)
         else:
@@ -82,21 +81,21 @@ class Marksman(Infantry):
         Self.DefensivePower = 4500 + (Level * 1000)
 
 
-class Soldier(Infantry):
-    def __init__(Self, Level, Type, Owner, Name=None):
-        if Name == None:
-            super().__init__(Level, Type, Owner)
-        else:
-            super().__init__(Level, Type, Owner, Name)
-        Self.OffensivePower = 7500 + (Level * 4500)
-        Self.DefensivePower = 7500 + (Level * 4500)
-
-
 class Medic(Infantry):
-    def __init__(Self, Level, Type, Owner, Name=None):
+    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
             super().__init__(Level, Type, Owner)
         else:
             super().__init__(Level, Type, Owner, Name)
         Self.HealingPower = 15000 + (Level * 3500)
         Self.DefensivePower = 4500 + (Level * 1000)
+
+
+class Soldier(Infantry):
+    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
+        if Name == None:
+            super().__init__(Level, Type, Owner)
+        else:
+            super().__init__(Level, Type, Owner, Name)
+        Self.OffensivePower = 7500 + (Level * 4500)
+        Self.DefensivePower = 7500 + (Level * 4500)

@@ -1,6 +1,6 @@
 class Planet():
     def __init__(Self, Name:str):
-        Self.Data = {
+        Self.Data:{str:...} = {
             "Name": Name,
             "Population": 78542986762964,
             "Protector Count": 0,

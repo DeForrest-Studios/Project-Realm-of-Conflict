@@ -1,6 +1,6 @@
-from Infantry import Soldier, Medic
+from Infantry import Medic, Soldier
 
-ScavengeTable = {
+ScavengeTable:{str:int} = {
     "Wallet": 65,
     "Material": 65,
     "Bonus Material": 25,
@@ -9,7 +9,7 @@ ScavengeTable = {
     "Soldier": 5
 }
 
-MaterialTable = {
+MaterialTable:{str:tuple} = {
     "Water": (25, 30),
     "Sand": (17, 22),
     "Gravel": (17, 22),
@@ -27,7 +27,7 @@ MaterialTable = {
     "Lithium Ore": (1, 3),
 }
 
-MaterialWorthTable = {
+MaterialWorthTable:{str:float} = {
     "Water": 0.02,
     "Sand": 0.10,
     "Gravel": 0.10,
@@ -45,12 +45,12 @@ MaterialWorthTable = {
     "Lithium Ore": 62,
 }
 
-InfantryToObject = {
+InfantryToObject:{str:object} = {
     "Soldier":Soldier,
     "Medic":Medic,
 }
 
-InfantryTable = {
+InfantryTable:{str:int} = {
     "Level 1 ~ Soldier": 8500,
     "Level 2 ~ Soldier": 21500,
     "Level 3 ~ Soldier": 47300,
