@@ -30,7 +30,7 @@ class FacilitiesPanel(Panel):
             Self.EmbedFrame = Embed(title=f"{InitialContext.author.name}'s Facilities Panel")
 
             Self.CollectProductionButton = Button(label="Collect Production", style=ButtonStyle, custom_id="CollectProductionButton")
-            Self.CollectProductionButton.callback = lambda Interaction: Self._Collect_Production_Facilities(Interaction)
+            Self.CollectProductionButton.callback = lambda Interaction: Self._Collect_Production_Facilities(Ether, InitialContext, ButtonStyle, Interaction)
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -40,7 +40,7 @@ class FacilitiesPanel(Panel):
 
             Self.Options = [SelectOption(label=Name) for Name, Building in Ether.Data["Players"][InitialContext.author.id].ProductionFacilities.items() if Building != "None"]
             Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
-            Self.FacilitiesSelect.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction)
+            Self.FacilitiesSelect.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
             Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
 
             await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])

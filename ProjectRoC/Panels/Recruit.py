@@ -21,7 +21,7 @@ class RecruitPanel(Panel):
             await Self._Generate_Info(Ether, InitialContext)
 
             Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")
-            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction, Self.InfantrySelected, Self.InfantrySelected)
+            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, Self.InfantrySelected, Self.InfantrySelected)
             Self.BaseViewFrame.add_item(Self.RecruitButton)
 
             Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
@@ -55,5 +55,5 @@ class RecruitPanel(Panel):
                 Self.EmbedFrame.clear_fields()
                 await Self._Generate_Info(Ether, InitialContext)
                 Self.EmbedFrame.add_field(name=f"Insufficient Funds", value="\u200b")
-        Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction, Interaction.data["values"][0])
+        Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, Interaction.data["values"][0])
         await Self._Send_New_Panel(Interaction)
