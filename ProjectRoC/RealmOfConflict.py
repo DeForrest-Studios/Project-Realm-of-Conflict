@@ -65,6 +65,7 @@ class RealmOfConflict(Bot):
         Self.Load_Player_Data()
         Self.Load_Player_Inventories()
         Self.Load_Player_Army()
+        Self.Load_Planet_Data()
         # Self.Load_Player_Production_Facilities()
 
 
@@ -99,6 +100,32 @@ class RealmOfConflict(Bot):
                     Value = Contents[1]
                     Self.Data["Players"][PlayerUUID].Data[Name] = Value
                 Self.Data["Players"][PlayerUUID].Refresh_Stats()
+
+
+    def Load_Planet_Data(Self) -> None:
+        if not exists(join("Data", "PlanetData")):
+            return
+        for PlanetDataFileName in listdir(join("Data", "PlanetData")):
+            PlanetName = PlanetDataFileName.split(".")[0]
+            with open(join("Data", "PlanetData", f"{PlanetName}.roc"), 'r') as PlanetDataFile:
+                PlanetData = [Line.strip() for Line in PlanetDataFile.readlines()]
+                for Field in PlanetData:
+                    Contents = Field.split(":")
+                    Name = Contents[0]
+                    if Contents[1].isdigit():
+                        Value = int(Contents[1])
+                        Self.Data["Planets"][PlanetName].Data[Name] = Value
+                        continue
+                    if Contents[1].replace(".", "").isdigit():
+                        Value = float(Contents[1])
+                        Self.Data["Planets"][PlanetName].Data[Name] = Value
+                        continue
+                    if Contents[1] == "None":
+                        Value = "None"
+                        Self.Data["Planets"][PlanetName].Data[Name] = Value
+                        continue
+                    Value = Contents[1]
+                    Self.Data["Planets"][PlanetName].Data[Name] = Value
 
 
     def Load_Player_Inventories(Self) -> None:
@@ -163,6 +190,8 @@ class RealmOfConflict(Bot):
             mkdir(join("Data", "PlayerManufacturingFacilities"))
         if not exists(join("Data", "PlayerArmy")):
             mkdir(join("Data", "PlayerArmy"))
+        if not exists(join("Data", "PlanetData")):
+            mkdir(join("Data", "PlanetData"))
         while True:
             await sleep(5)
             print("Autosaving")
@@ -170,6 +199,15 @@ class RealmOfConflict(Bot):
             await Self.Save_Player_Inventories()
             await Self.Save_Player_ProductionFacilities()
             await Self.Save_Player_Army()
+            await Self.Save_Planet_Data()
+
+    async def Save_Planet_Data(Self) -> None:
+        for Name, Planet in Self.Data["Planets"].items():
+            SaveData = ""
+            with open(join("Data", "PlanetData", f"{Name}.roc"), 'w+') as PlayerDataFile:
+                for Name, Value in Planet.Data.items():
+                    SaveData += f"{Name}:{Value}\n"
+                PlayerDataFile.write(SaveData)
 
     async def Save_Player_Data(Self) -> None:
         for UUID, Player in Self.Data["Players"].items():
