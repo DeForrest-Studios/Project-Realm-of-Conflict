@@ -7,6 +7,7 @@ from discord import SelectOption, Embed
 from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
 from Panels.Recruit import RecruitPanel
+from Panels.Army import ArmyPanel
 
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -39,7 +40,7 @@ class SententPanel(Panel):
 
     async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         Mapping:{str:Panel} = {
-            "ArmyButton":...,
+            "ArmyButton":ArmyPanel,
             "RecruitButton":RecruitPanel,
         }
         Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)

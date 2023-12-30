@@ -16,6 +16,8 @@ from Panels.Panel import Panel
 from Panels.Facilities import FacilitiesPanel
 from Panels.Avargo import AvargoPanel
 from Panels.Sentents import SententPanel
+from Panels.Inventory import InventoryPanel
+from Panels.Profile import ProfilePanel
 
 
 class PlayPanel(Panel):
@@ -96,43 +98,10 @@ class PlayPanel(Panel):
             "FacilitiesButton":FacilitiesPanel,
             "AvargoButton":AvargoPanel,
             "SententsButton":SententPanel,
+            "InventoryButton":InventoryPanel,
+            "ProfileButton":ProfilePanel,
         }
         Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
-
-
-    async def _Construct_Army_Panel(Self, Interaction:DiscordInteraction):
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")
-        await Self._Generate_Info()
-
-        ArmyString = ""
-
-        Index:int
-        Name:str
-        Infantry:object
-        for Index, (Name, Infantry) in enumerate(Self.Player.Army.items()):
-            if len(ArmyString) + 36 >= 1024:
-                print("Pagintion Required")
-                Self.ArmyPaginationRequired = True
-                Self.ArmyIndex = Index
-                break
-            ArmyString += f"{Name} ~ Level {Infantry.Level} ~ {Infantry.Type}\n"
-
-        Self.EmbedFrame.add_field(name="\u200b", value=ArmyString, inline=False)
-
-        Self.NextPageButton = Button(label="Next Page", style=Self.ButtonStyle, custom_id="NextPageButton")
-        Self.NextPageButton.callback = lambda Interaction: ...
-        Self.BaseViewFrame.add_item(Self.NextPageButton)
-
-        Self.PreviousPageButton = Button(label="Previous Page", style=Self.ButtonStyle, custom_id="PreviousPageButton")
-        Self.PreviousPageButton.callback = lambda Interaction: ...
-        Self.BaseViewFrame.add_item(Self.PreviousPageButton)
-
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.HomepageButton)
-
-        await Self._Send_New_Panel(Interaction)
 
 
     async def _Construct_Debug_Panel(Self, Interaction):
@@ -206,53 +175,4 @@ class PlayPanel(Panel):
             
         await Self._Generate_Info()
         Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
-        await Self._Send_New_Panel(Interaction)
-
-
-    async def _Construct_Inventory_Panel(Self, Interaction:DiscordInteraction):
-        if Interaction.user != Self.InitialContext.author:
-            return
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Inventory Panel")
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-
-        InventoryString = ""
-
-        PlayerInventoryLength = len(Self.Player.Inventory.items()) - 1
-        Index:int
-        Name:str
-        Amount:float
-        for Index, (Name, Amount) in enumerate(Self.Player.Inventory.items()):
-            if Index == PlayerInventoryLength:
-                InventoryString += f"{Amount} {Name}"
-            else:
-                InventoryString += f"{Amount} {Name}\n"
-
-        await Self._Generate_Info(Exclusions=["Team", "Power"])
-
-        Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
-
-        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-
-        Self.BaseViewFrame.add_item(Self.HomepageButton)
-
-        Self.Ether.Logger.info(f"Sent Inventory panel to {Self.Player.Data['Name']}")
-
-        await Self._Send_New_Panel(Interaction)
-    
-
-    async def _Construct_Profile_Panel(Self, Interaction:DiscordInteraction):
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Profile Panel")
-        await Self._Generate_Info(Inclusions=["Offensive Power", "Defensive Power", "Healing Power",
-                                              "Production Power", "Manufacturing Power", "Energy Sapping",])
-
-        Self.ChangeNicknameButton = Button(label="Change Nickname", style=Self.ButtonStyle, custom_id="ChangeNicknameButton")
-        Self.ChangeNicknameButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.ChangeNicknameButton)
-
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.HomepageButton)
-
         await Self._Send_New_Panel(Interaction)

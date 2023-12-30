@@ -22,11 +22,11 @@ class AvargoPanel(Panel):
         await Self._Generate_Info(Ether, InitialContext)
 
         Self.BuyButton = Button(label="Buy", style=ButtonStyle, custom_id="BuyButton")
-        Self.BuyButton.callback = lambda Interaction: Self._Avargo_Sale(Interaction, "Buy")
+        Self.BuyButton.callback = lambda Interaction: Self._Avargo_Sale(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, "Buy")
         Self.BaseViewFrame.add_item(Self.BuyButton)
 
         Self.SellButton = Button(label="Sell", style=ButtonStyle, custom_id="SellButton")
-        Self.SellButton.callback = lambda Interaction: Self._Avargo_Sale(Interaction, "Sell")
+        Self.SellButton.callback = lambda Interaction: Self._Avargo_Sale(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, "Sell")
         Self.BaseViewFrame.add_item(Self.SellButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -66,11 +66,11 @@ class AvargoPanel(Panel):
             Self.BaseViewFrame.add_item(Self.AddButton)
 
             Self.CheckoutButton = Button(label="Checkout", style=ButtonStyle, custom_id="CheckoutButton")
-            Self.CheckoutButton.callback = lambda Interaction: Self._Avargo_Checkout(Interaction, SaleType)
+            Self.CheckoutButton.callback = lambda Interaction: Self._Avargo_Checkout(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, SaleType)
             Self.BaseViewFrame.add_item(Self.CheckoutButton)
 
             Self.AvargoButton = Button(label="Avargo", style=ButtonStyle, row=3, custom_id="AvargoButton")
-            Self.AvargoButton.callback = Self._Construct_Avargo_Panel
+            Self.AvargoButton.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
             Self.BaseViewFrame.add_item(Self.AvargoButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -79,9 +79,9 @@ class AvargoPanel(Panel):
             Self.BaseViewFrame.add_item(Self.HomepageButton)
         
             if Self.SaleType == "Buy":
-                Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]} per unit") for Material in Self.Ether.Materials]
+                Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]} per unit") for Material in Ether.Materials]
             if Self.SaleType == "Sell":
-                Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]/4} per unit") for Material in Self.Ether.Materials]
+                Self.AvargoItemChoices = [SelectOption(label=f"{Material} at ${MaterialWorthTable[Material]/4} per unit") for Material in Ether.Materials]
 
             Self.AvargoItemChoice = Select(placeholder="Select a material", options=Self.AvargoItemChoices, custom_id=f"ItemSelection", row=2)
             Self.BaseViewFrame.add_item(Self.AvargoItemChoice)
