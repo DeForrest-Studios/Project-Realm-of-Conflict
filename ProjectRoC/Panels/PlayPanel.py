@@ -100,50 +100,6 @@ class PlayPanel(Panel):
         Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
 
 
-    async def _Construct_Recruit_Panel(Self, Interaction:DiscordInteraction, InfantrySelected=None, InfantryRecruited=None):
-        if InfantrySelected == None:
-            Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
-            await Self._Generate_Info()
-
-            Self.RecruitButton = Button(label="Recruit", style=Self.ButtonStyle, custom_id="RecruitButton")
-            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction, Self.InfantrySelected, Self.InfantrySelected)
-            Self.BaseViewFrame.add_item(Self.RecruitButton)
-
-            Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
-            Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices, custom_id=f"InfantrySelection", row=2)
-            Self.BaseViewFrame.add_item(Self.InfantryChoice)
-
-            Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-            Self.BaseViewFrame.add_item(Self.HomepageButton)
-        
-        if InfantrySelected:
-            Self.InfantrySelected = InfantrySelected
-            Self.InfantryChoice.placeholder = InfantrySelected
-
-        if InfantryRecruited:
-            InfantryKey = Self.InfantrySelected.split(" for ")[0]
-            if Self.Player.Data["Wallet"] >= InfantryTable[InfantryKey]:
-                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - InfantryTable[InfantryKey], 2)
-                Self.EmbedFrame.add_field(name=f"Purchased {Self.InfantrySelected} for {InfantryTable[InfantryKey]}", value="\u200b")
-                InfantryData = InfantryKey.split(" ~ ")
-                InfantryLevel = int(InfantryData[0].split(" ")[1])
-                InfantryType = InfantryData[1]
-                NewInfantry = InfantryToObject[InfantryType](InfantryLevel, InfantryType, Self.Player)
-                Self.Player.Army.update({NewInfantry.Name:NewInfantry})
-                Self.Player.Refresh_Power()
-                Self.EmbedFrame.clear_fields()
-                await Self._Generate_Info()
-                Self.EmbedFrame.add_field(name=f"Recruited {NewInfantry.Name}", value="\u200b")
-            else:
-                Self.EmbedFrame.clear_fields()
-                await Self._Generate_Info()
-                Self.EmbedFrame.add_field(name=f"Insufficient Funds", value="\u200b")
-        Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction, Interaction.data["values"][0])
-        await Self._Send_New_Panel(Interaction)
-
-
     async def _Construct_Army_Panel(Self, Interaction:DiscordInteraction):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")

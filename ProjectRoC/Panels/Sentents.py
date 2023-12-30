@@ -6,6 +6,7 @@ from discord import ButtonStyle as DiscordButtonStyle
 from discord import SelectOption, Embed
 from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
+from Panels.Recruit import RecruitPanel
 
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -21,11 +22,11 @@ class SententPanel(Panel):
         await Self._Generate_Info(Ether, InitialContext)
 
         Self.ArmyButton = Button(label="My Army", style=ButtonStyle, custom_id="ArmyButton")
-        Self.ArmyButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
+        Self.ArmyButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
         Self.BaseViewFrame.add_item(Self.ArmyButton)
 
         Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")
-        Self.RecruitButton.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction=Interaction)
+        Self.RecruitButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
         Self.BaseViewFrame.add_item(Self.RecruitButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -36,9 +37,9 @@ class SententPanel(Panel):
         await Self._Send_New_Panel(Interaction)
 
 
-    async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction):
+    async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         Mapping:{str:Panel} = {
             "ArmyButton":...,
-            "RecruitButton":...,
+            "RecruitButton":RecruitPanel,
         }
-        Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
+        Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
