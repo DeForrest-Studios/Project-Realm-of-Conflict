@@ -72,8 +72,8 @@ class RealmOfConflict(Bot):
     def Load_Player_Data(Self) -> None:
         if not exists(join("Data", "PlayerData")):
             return
+        Self.Members = {M.id:M for M in Self.Guild.members}
         for PlayerDataFileName in listdir(join("Data", "PlayerData")):
-            Self.Members = {M.id:M for M in Self.Guild.members}
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             with open(join("Data", "PlayerData", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
