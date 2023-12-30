@@ -18,6 +18,7 @@ from Panels.Avargo import AvargoPanel
 from Panels.Sentents import SententPanel
 from Panels.Inventory import InventoryPanel
 from Panels.Profile import ProfilePanel
+from Panels.Debug import DebugPanel
 
 
 class PlayPanel(Panel):
@@ -39,8 +40,7 @@ class PlayPanel(Panel):
         Ether:RealmOfConflict = Ether
         Whitelist:[int] = [897410636819083304, # Robert Reynolds, Cavan
         ]
-        Self.MaterialChosen = None
-        Self.InfantrySelected = None
+        Self.Mapping = {}
         Self.ReceiptString = ""
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
@@ -79,8 +79,9 @@ class PlayPanel(Panel):
         Self.BaseViewFrame.add_item(Self.ProfileButton)
 
         if InitialContext.author.id in Whitelist:
-            Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
-            Self.DebugButton.callback = Self._Construct_Debug_Panel
+            Self.Mapping.update({"DebugButton":DebugPanel})
+            Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3, custom_id="DebugButton")
+            Self.DebugButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
 
@@ -93,56 +94,14 @@ class PlayPanel(Panel):
 
         
     async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction):
-        Mapping:{str:Panel} = {
+        Self.Mapping:{str:Panel}.update({
             "FacilitiesButton":FacilitiesPanel,
             "AvargoButton":AvargoPanel,
             "SententsButton":SententPanel,
             "InventoryButton":InventoryPanel,
             "ProfileButton":ProfilePanel,
-        }
-        Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
-
-
-    async def _Construct_Debug_Panel(Self, Ether, InitialContext, Interaction):
-        if Interaction.user != Self.InitialContext.author:
-            return
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Debug Panel")
-
-        await Self._Generate_Info()
-
-        Self.ResetPlayer = Button(label="Reset Player", style=Self.ButtonStyle, custom_id="ResetPlayerButton")
-        Self.ResetPlayer.callback = lambda Interaction: Interaction.response.send_modal(Self.PlayerUUIDSubmission)
-        Self.BaseViewFrame.add_item(Self.ResetPlayer)
-
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.HomepageButton)
-
-
-        Self.PlayerUUIDSubmission = Modal(title="Submit Player UUID")
-        Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Interaction, int(Self.PlayerSubmittedUUID.value))
-        Self.PlayerSubmittedUUID = TextInput(label="Player UUID") 
-        Self.PlayerUUIDSubmission.add_item(Self.PlayerSubmittedUUID)
-
-
-        await Self._Send_New_Panel(Interaction)
-
-
-    async def _Reset_Player(Self, Ether, InitialContext, Interaction, SubmittedUUID):
-        if Interaction.user != Self.InitialContext.author:
-            return
-        if Ether.Data["Players"][InitialContext.author.id].Data["Team"] == "Analis":
-            await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Analis"])
-        if Ether.Data["Players"][InitialContext.author.id].Data["Team"] == "Titan":
-            await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Titan"])
-        Self.Ether.Data["Players"][SubmittedUUID] = None
-        Self.Ether.Data["Players"].pop(SubmittedUUID)
-        remove(join("Data", "PlayerData", f"{SubmittedUUID}.roc"))
-        remove(join("Data", "PlayerInventories", f"{SubmittedUUID}.roc"))
-        remove(join("Data", "PlayerProductionFacilities", f"{SubmittedUUID}.roc"))
-
-        await Self._Send_New_Panel(Interaction)
+        })
+        Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
         
 
     async def _Scavenge(Self, Ether, InitialContext, Interaction:DiscordInteraction):
