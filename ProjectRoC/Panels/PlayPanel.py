@@ -2,9 +2,9 @@ from asyncio import create_task
 from discord import ButtonStyle, Embed, SelectOption
 from discord import Interaction as DiscordInteraction
 from discord import Message as DiscordMessage
-from discord.ext.commands import Context
+from discord.ext.commands import Context as DiscordContext
 from discord.ui import View, Button, Select, Modal, TextInput
-from Facilities import ProductionFacility
+from Structures import ProductionFacility
 from os import remove
 from os.path import join
 from Player import Player
@@ -12,62 +12,35 @@ from random import randrange
 from RealmOfConflict import RealmOfConflict
 from Tables import ScavengeTable, MaterialTable, MaterialWorthTable, InfantryTable, InfantryToObject
 from time import time
+from Panels.Panel import Panel
+from Panels.Facilities import FacilitiesPanel
 
 
-class PlayPanel:
-    def __init__(Self, Ether:RealmOfConflict, PlayerContext:Context):
+class PlayPanel(Panel):
+    def __init__(Self, Ether:RealmOfConflict, PlayerContext:DiscordContext):
+        super().__init__()
         create_task(Self._Construct_Home(Ether, PlayerContext))
 
 
-    async def _Send_New_Panel(Self, Interaction:DiscordInteraction):
-        await Interaction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
-
-
-    async def _Determine_Team(Self):
-        if "Titan" in str(Self.InitialContext.author.roles):
+    async def _Determine_Team(Self, InitialContext):
+        if "Titan" in str(InitialContext.author.roles):
             Self.ButtonStyle = ButtonStyle.red
-        elif "Analis" in str(Self.InitialContext.author.roles):
+        elif "Analis" in str(InitialContext.author.roles):
             Self.ButtonStyle = ButtonStyle.blurple
         else:
             Self.ButtonStyle = ButtonStyle.grey
 
 
-    async def _Generate_Info(Self, Exclusions:list=[], Inclusions=[]):
-        Fields = [Field for Field in ["Wallet", "Team", "Level", "Experience", "Power"] if Field not in Exclusions]
-        Fields += Inclusions
-        Info = ""
-
-        for Name, Value in Self.Player.Data.items():
-            if Name in Fields:
-                if Name == 'Wallet':
-                    Info +=f"**{Name}** ~ ${format(float(Value), ',')}\n"
-                elif type(Value) == float:
-                    Info +=f"**{Name}** ~ {format(float(Value), ',')}\n"
-                elif type(Value) == int:
-                    Info +=f"**{Name}** ~ {format(int(Value), ',')}\n"
-                else:
-                    Info +=f"**{Name}** ~ {Value}\n"
-
-        Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info, inline=False)
-
-
-    async def _Construct_Home(Self, Ether:RealmOfConflict=None, InitialContext:Context=None, Interaction=None):
-        if Self.Ether:
-            Ether = Self.Ether
-        if Self.InitialContext:
-            InitialContext = Self.InitialContext
-
-        Self.InitialContext:Context = InitialContext
-        Self.Ether:RealmOfConflict = Ether
-        Self.Whitelist:[int] = [897410636819083304, # Robert Reynolds, Cavan
+    async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, Interaction:DiscordInteraction=None):
+        Ether:RealmOfConflict = Ether
+        Whitelist:[int] = [897410636819083304, # Robert Reynolds, Cavan
                           ]
         Self.Player:Player = Ether.Data["Players"][InitialContext.author.id]
-        Self.FacilitySelected = None
         Self.MaterialChosen = None
         Self.InfantrySelected = None
         Self.ReceiptString = ""
         Self.Receipt:{str:int} = {}
-        await Self._Determine_Team()
+        await Self._Determine_Team(InitialContext)
 
         if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
             Self.Player.Data["Level"] += 1
@@ -76,14 +49,14 @@ class PlayPanel:
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
 
-        await Self._Generate_Info()
+        await Self._Generate_Info(Ether, InitialContext, )
 
         Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
         Self.ScavengeButton.callback = Self._Scavenge
         Self.BaseViewFrame.add_item(Self.ScavengeButton)
 
         Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle, custom_id="FacilitiesButton")
-        Self.FacilitiesButton.callback = Self._Construct_Facilities_Panel
+        Self.FacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.FacilitiesButton)
 
         Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, custom_id="AvargoButton")
@@ -102,17 +75,25 @@ class PlayPanel:
         Self.ProfileButton.callback = Self._Construct_Profile_Panel
         Self.BaseViewFrame.add_item(Self.ProfileButton)
 
-        if InitialContext.author.id in Self.Whitelist:
+        if InitialContext.author.id in Whitelist:
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3)
             Self.DebugButton.callback = Self._Construct_Debug_Panel
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
+
         if Interaction:
-            if Interaction.user != Self.InitialContext.author:
+            if Interaction.user != InitialContext.author:
                 return
             await Self._Send_New_Panel(Interaction)
         else:
-            Self.DashboardMessage:DiscordMessage = await Self.InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+            Self.DashboardMessage:DiscordMessage = await InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+
+        
+    async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction):
+        Mapping:{str:Panel} = {
+            "FacilitiesButton":FacilitiesPanel
+        }
+        Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
 
 
     async def _Construct_Avargo_Panel(Self, Interaction:DiscordInteraction):
@@ -441,80 +422,6 @@ class PlayPanel:
             
         await Self._Generate_Info()
         Self.EmbedFrame.add_field(name=f"Scavenged", value=ScavengedString, inline=False)
-        await Self._Send_New_Panel(Interaction)
-
-
-    async def _Construct_Facilities_Panel(Self, Interaction:DiscordInteraction):
-        if Interaction.user != Self.InitialContext.author:
-            return
-        if Interaction.data["custom_id"] == "ItemSelection":
-            Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
-            Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
-
-        if Interaction.data["custom_id"] == "FacilityUpgradeButton":
-            Self.FacilitySelected.Upgrade()
-            # Do not refresh BaseViewFrame, and EmbedFrame
-        else:
-            Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{Self.InitialContext.author.name}'s Facilities Panel")
-
-            Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle, custom_id="CollectProductionButton")
-            Self.CollectProductionButton.callback = lambda Interaction: Self._Collect_Production_Facilities(Interaction)
-            Self.BaseViewFrame.add_item(Self.CollectProductionButton)
-
-            Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-            Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-            Self.BaseViewFrame.add_item(Self.HomepageButton)
-
-            Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
-            Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
-            Self.FacilitiesSelect.callback = lambda Interaction: Self._Construct_Facilities_Panel(Interaction)
-            Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
-
-            await Self._Generate_Info(Exclusions=["Team", "Power"])
-        
-        if Self.FacilitySelected:
-            Self.EmbedFrame.clear_fields()
-            Self.FacilityUpgradeButton = Button(label="Upgrade", style=Self.ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
-            Self.BaseViewFrame.add_item(Self.FacilityUpgradeButton)
-            Self.FacilityUpgradeButton.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
-            FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
-                                    f"Capacity: {Self.FacilitySelected.Capacity}\n"+
-                                    f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
-                                    f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
-            Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
-
-        Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player.Data['Name']}")
-        await Self._Send_New_Panel(Interaction)
-
-
-    async def _Collect_Production_Facilities(Self, Interaction:DiscordInteraction):
-        if Interaction.user != Self.InitialContext.author:
-            return
-        CollectionString = ""
-        ProductionFacilityLength:int = len(Self.Player.ProductionFacilities.values()) - 1
-        CollectionTime = int(time())
-        for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
-            if Self.Player.Data["Time of Last Production Collection"] == "Never":
-                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"]), 2)
-            else:
-                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
-
-            if Index == ProductionFacilityLength:
-                CollectionString += f"{EarnedAmount} {Facility.OutputItem}"
-            else:
-                CollectionString += f"{EarnedAmount} {Facility.OutputItem}\n"
-
-            Self.Player.Inventory[Facility.OutputItem] = round(Self.Player.Inventory[Facility.OutputItem] + EarnedAmount, 2)
-        
-        Self.Player.Data["Time of Last Production Collection"] = CollectionTime
-
-        Self.EmbedFrame.clear_fields()
-
-        await Self._Generate_Info(Exclusions=["Team", "Power"])
-
-        Self.EmbedFrame.add_field(name="Collected:", value=CollectionString)
-
         await Self._Send_New_Panel(Interaction)
 
 

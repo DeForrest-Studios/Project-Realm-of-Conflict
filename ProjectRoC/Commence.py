@@ -3,7 +3,7 @@ from discord import Guild as DiscordGuild
 from discord import Role as DiscordRole
 from discord.ext.commands import Context
 from RealmOfConflict import RealmOfConflict
-from PlayPanel import PlayPanel
+from Panels.PlayPanel import PlayPanel
 from asyncio import create_task
 from Simulation import Simulation
 from sys import exit

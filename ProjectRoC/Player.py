@@ -1,4 +1,4 @@
-from Facilities import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
+from Structures import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
 
 from time import time
 
