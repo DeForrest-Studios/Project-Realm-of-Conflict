@@ -1,17 +1,12 @@
 from asyncio import create_task
-from discord import ButtonStyle, Embed, SelectOption
+from discord import ButtonStyle, Embed
 from discord import Interaction as DiscordInteraction
 from discord import Message as DiscordMessage
 from discord.ext.commands import Context as DiscordContext
-from discord.ui import View, Button, Select, Modal, TextInput
-from Structures import ProductionFacility
-from os import remove
-from os.path import join
-from Player import Player
+from discord.ui import View, Button
 from random import randrange
 from RealmOfConflict import RealmOfConflict
-from Tables import ScavengeTable, MaterialTable, InfantryTable, InfantryToObject
-from time import time
+from Tables import ScavengeTable, MaterialTable
 from Panels.Panel import Panel
 from Panels.Facilities import FacilitiesPanel
 from Panels.Avargo import AvargoPanel
@@ -45,9 +40,11 @@ class PlayPanel(Panel):
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
 
-        if Ether.Data["Players"][InitialContext.author.id].Data["Experience"] >= Ether.Data["Players"][InitialContext.author.id].ExperienceForNextLevel:
-            Ether.Data["Players"][InitialContext.author.id].Data["Level"] += 1
-            Ether.Data["Players"][InitialContext.author.id].Refresh_Stats()
+        Self.Player = Ether.Data["Players"][InitialContext.author.id]
+
+        if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
+            Self.Player.Data["Level"] += 1
+            Self.Player.Refresh_Stats()
 
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Home Panel")
@@ -110,25 +107,25 @@ class PlayPanel(Panel):
         SuccessfulRolls:[str] = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
         ScavengedString = ""
-        ExperienceGained:float = round((0.65 * (0.35 * Ether.Data["Players"][InitialContext.author.id].Data["Level"])) * len(SuccessfulRolls), 2)
+        ExperienceGained:float = round((0.65 * (0.35 * Self.Player.Data["Level"])) * len(SuccessfulRolls), 2)
         ScavengedString += f"Gained {ExperienceGained} experience\n"
-        Ether.Data["Players"][InitialContext.author.id].Data["Experience"] = round(Ether.Data["Players"][InitialContext.author.id].Data["Experience"] + ExperienceGained, 2)
+        Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + ExperienceGained, 2)
 
         for Roll in SuccessfulRolls:
             if Roll == "Wallet":
-                MoneyScavenged = round(2.76 * (0.35 * Ether.Data["Players"][InitialContext.author.id].Data["Level"]), 2)
-                Ether.Data["Players"][InitialContext.author.id].Data["Wallet"] = round(Ether.Data["Players"][InitialContext.author.id].Data["Wallet"] + MoneyScavenged, 2)
+                MoneyScavenged = round(2.76 * (0.35 * Self.Player.Data["Level"]), 2)
+                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + MoneyScavenged, 2)
                 ScavengedString += f"Found ${MoneyScavenged}\n"
             if Roll == "Material" or Roll == "Bonus Material":
                 MaterialScavenged = list(MaterialTable.keys())[randrange(0, (len(MaterialTable.keys()) - 1))]
                 Start, End = MaterialTable[MaterialScavenged][0], MaterialTable[MaterialScavenged][1]
                 MaterialScavengedAmount = randrange(Start, End)
-                Ether.Data["Players"][InitialContext.author.id].Inventory[MaterialScavenged] = round(Ether.Data["Players"][InitialContext.author.id].Inventory[MaterialScavenged] + MaterialScavengedAmount, 2)
+                Self.Player.Inventory[MaterialScavenged] = round(Self.Player.Inventory[MaterialScavenged] + MaterialScavengedAmount, 2)
                 ScavengedString += f"Found {MaterialScavengedAmount} {MaterialScavenged}\n"
 
-        if Ether.Data["Players"][InitialContext.author.id].Data["Experience"] >= Ether.Data["Players"][InitialContext.author.id].ExperienceForNextLevel:
-            Ether.Data["Players"][InitialContext.author.id].Data["Level"] += 1
-            Ether.Data["Players"][InitialContext.author.id].Refresh_Stats()
+        if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
+            Self.Player.Data["Level"] += 1
+            Self.Player.Refresh_Stats()
             Self.EmbedFrame.insert_field_at(0, name=f"You leveled up!", value="\u200b", inline=False)
             
         await Self._Generate_Info(Ether, InitialContext)

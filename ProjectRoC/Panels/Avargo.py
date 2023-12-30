@@ -16,8 +16,9 @@ class AvargoPanel(Panel):
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
+        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Avargo Panel")
+        Self.EmbedFrame = Embed(title=f"{Self.Player}'s Avargo Panel")
 
         await Self._Generate_Info(Ether, InitialContext)
 
@@ -57,7 +58,7 @@ class AvargoPanel(Panel):
             Self.ReceiptString = ""
             Self.Receipt:{str:int} = {}
             Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Avargo Sale Panel")
+            Self.EmbedFrame = Embed(title=f"{Self.Player}'s Avargo Sale Panel")
 
             await Self._Generate_Info(Ether, InitialContext)
 
@@ -139,7 +140,7 @@ class AvargoPanel(Panel):
                 Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
         
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Avargo Sale Panel")
+        Self.EmbedFrame = Embed(title=f"{Self.Player}'s Avargo Sale Panel")
 
         Self.EmbedFrame.add_field(name="Receipt", value=Self.ReceiptString, inline=False)
         Self.EmbedFrame.add_field(name="Total", value=f"${Total}", inline=False)

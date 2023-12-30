@@ -16,16 +16,17 @@ class InventoryPanel(Panel):
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
+        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{InitialContext.author.name}'s Inventory Panel")
 
         InventoryString = ""
 
-        PlayerInventoryLength = len(Ether.Data['Players'][InitialContext.author.id].Inventory.items()) - 1
+        PlayerInventoryLength = len(Self.Player.Inventory.items()) - 1
         Index:int
         Name:str
         Amount:float
-        for Index, (Name, Amount) in enumerate(Ether.Data['Players'][InitialContext.author.id].Inventory.items()):
+        for Index, (Name, Amount) in enumerate(Self.Player.Inventory.items()):
             if Index == PlayerInventoryLength:
                 InventoryString += f"{Amount} {Name}"
             else:
@@ -40,6 +41,6 @@ class InventoryPanel(Panel):
         Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
-        Ether.Logger.info(f"Sent Inventory panel to {Ether.Data['Players'][InitialContext.author.id].Data['Name']}")
+        Ether.Logger.info(f"Sent Inventory panel to {Self.Player.Data['Name']}")
 
         await Self._Send_New_Panel(Interaction)

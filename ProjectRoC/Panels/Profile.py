@@ -13,8 +13,9 @@ class ProfilePanel(Panel):
         create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
 
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Profile Panel")
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Profile Panel")
         await Self._Generate_Info(Ether, InitialContext, Inclusions=["Offensive Power", "Defensive Power", "Healing Power",
                                               "Production Power", "Manufacturing Power", "Energy Sapping",])
 

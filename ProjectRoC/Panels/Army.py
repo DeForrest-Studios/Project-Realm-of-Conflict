@@ -17,8 +17,9 @@ class ArmyPanel(Panel):
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
+        Self.Player = Ether.Data['Players'][InitialContext.author.id]
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Army Panel")
+        Self.EmbedFrame = Embed(title=f"{Self.Player}'s Army Panel")
         await Self._Generate_Info(Ether, InitialContext)
 
         ArmyString = ""
@@ -26,7 +27,7 @@ class ArmyPanel(Panel):
         Index:int
         Name:str
         Infantry:object
-        for Index, (Name, Infantry) in enumerate(Ether.Data['Players'][InitialContext.author.id].Army.items()):
+        for Index, (Name, Infantry) in enumerate(Self.Player.Army.items()):
             if len(ArmyString) + 36 >= 1024:
                 print("Pagintion Required")
                 Self.ArmyPaginationRequired = True

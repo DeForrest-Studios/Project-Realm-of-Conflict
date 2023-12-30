@@ -18,8 +18,9 @@ class SententPanel(Panel):
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
+        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Sentents Panel")
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Sentents Panel")
         await Self._Generate_Info(Ether, InitialContext)
 
         Self.ArmyButton = Button(label="My Army", style=ButtonStyle, custom_id="ArmyButton")

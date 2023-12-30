@@ -16,8 +16,9 @@ class RecruitPanel(Panel):
 
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, InfantrySelected=None, InfantryRecruited=None):
         if InfantrySelected == None:
+            Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
             Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Recruit Panel")
+            Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
             await Self._Generate_Info(Ether, InitialContext)
 
             Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")
@@ -39,15 +40,15 @@ class RecruitPanel(Panel):
 
         if InfantryRecruited:
             InfantryKey = Self.InfantrySelected.split(" for ")[0]
-            if Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] >= InfantryTable[InfantryKey]:
-                Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] - InfantryTable[InfantryKey], 2)
+            if Self.Player.Data["Wallet"] >= InfantryTable[InfantryKey]:
+                Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - InfantryTable[InfantryKey], 2)
                 Self.EmbedFrame.add_field(name=f"Purchased {Self.InfantrySelected} for {InfantryTable[InfantryKey]}", value="\u200b")
                 InfantryData = InfantryKey.split(" ~ ")
                 InfantryLevel = int(InfantryData[0].split(" ")[1])
                 InfantryType = InfantryData[1]
-                NewInfantry = InfantryToObject[InfantryType](InfantryLevel, InfantryType, Ether.Data['Players'][InitialContext.author.id])
-                Ether.Data['Players'][InitialContext.author.id].Army.update({NewInfantry.Name:NewInfantry})
-                Ether.Data['Players'][InitialContext.author.id].Refresh_Power()
+                NewInfantry = InfantryToObject[InfantryType](InfantryLevel, InfantryType, Self.Player)
+                Self.Player.Army.update({NewInfantry.Name:NewInfantry})
+                Self.Player.Refresh_Power()
                 Self.EmbedFrame.clear_fields()
                 await Self._Generate_Info(Ether, InitialContext)
                 Self.EmbedFrame.add_field(name=f"Recruited {NewInfantry.Name}", value="\u200b")

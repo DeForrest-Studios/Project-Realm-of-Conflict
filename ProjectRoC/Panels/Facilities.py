@@ -18,8 +18,9 @@ class FacilitiesPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         Self.FacilitySelected = None
+        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
         if Interaction.data["custom_id"] == "ItemSelection":
-            Self.FacilitySelected: ProductionFacility = Ether.Data["Players"][InitialContext.author.id].ProductionFacilities[Interaction.data["values"][0]]
+            Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
             Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
 
         if Interaction.data["custom_id"] == "FacilityUpgradeButton":
@@ -38,7 +39,7 @@ class FacilitiesPanel(Panel):
             Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
 
-            Self.Options = [SelectOption(label=Name) for Name, Building in Ether.Data["Players"][InitialContext.author.id].ProductionFacilities.items() if Building != "None"]
+            Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
             Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
             Self.FacilitiesSelect.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
             Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
@@ -56,7 +57,7 @@ class FacilitiesPanel(Panel):
                                     f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
 
-        Ether.Logger.info(f"Sent Facilities panel to {Ether.Data['Players'][InitialContext.author.id].Data['Name']}")
+        Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
         await Self._Send_New_Panel(Interaction)
 
 
@@ -64,24 +65,24 @@ class FacilitiesPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         CollectionString = ""
-        ProductionFacilityLength:int = len(Ether.Data["Players"][InitialContext.author.id].ProductionFacilities.values()) - 1
+        ProductionFacilityLength:int = len(Self.Player.ProductionFacilities.values()) - 1
         CollectionTime = int(Time())
         Index:int
         Facility:ProductionFacility
-        for Index, Facility in enumerate(Ether.Data["Players"][InitialContext.author.id].ProductionFacilities.values()):
-            if Ether.Data["Players"][InitialContext.author.id].Data["Time of Last Production Collection"] == "Never":
-                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Ether.Data["Players"][InitialContext.author.id].Data["Join TimeStamp"]), 2)
+        for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
+            if Self.Player.Data["Time of Last Production Collection"] == "Never":
+                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"]), 2)
             else:
-                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Ether.Data["Players"][InitialContext.author.id].Data["Time of Last Production Collection"]), 2)
+                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
 
             if Index == ProductionFacilityLength:
                 CollectionString += f"{EarnedAmount} {Facility.OutputItem}"
             else:
                 CollectionString += f"{EarnedAmount} {Facility.OutputItem}\n"
 
-            Ether.Data["Players"][InitialContext.author.id].Inventory[Facility.OutputItem] = round(Ether.Data["Players"][InitialContext.author.id].Inventory[Facility.OutputItem] + EarnedAmount, 2)
+            Self.Player.Inventory[Facility.OutputItem] = round(Self.Player.Inventory[Facility.OutputItem] + EarnedAmount, 2)
         
-        Ether.Data["Players"][InitialContext.author.id].Data["Time of Last Production Collection"] = CollectionTime
+        Self.Player.Data["Time of Last Production Collection"] = CollectionTime
 
         Self.EmbedFrame.clear_fields()
 
