@@ -15,6 +15,7 @@ from time import time
 from Panels.Panel import Panel
 from Panels.Facilities import FacilitiesPanel
 from Panels.Avargo import AvargoPanel
+from Panels.Sentents import SententPanel
 
 
 class PlayPanel(Panel):
@@ -94,28 +95,9 @@ class PlayPanel(Panel):
         Mapping:{str:Panel} = {
             "FacilitiesButton":FacilitiesPanel,
             "AvargoButton":AvargoPanel,
+            "SententsButton":SententPanel,
         }
         Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
-
-
-    async def _Construct_Sentents_Panel(Self, Interaction:DiscordInteraction):
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Sentents Panel")
-        await Self._Generate_Info()
-
-        Self.ArmyButton = Button(label="My Army", style=Self.ButtonStyle, custom_id="ArmyButton")
-        Self.ArmyButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.ArmyButton)
-
-        Self.RecruitButton = Button(label="Recruit", style=Self.ButtonStyle, custom_id="RecruitButton")
-        Self.RecruitButton.callback = lambda Interaction: Self._Construct_Recruit_Panel(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.RecruitButton)
-
-        Self.HomepageButton = Button(label="Home", style=ButtonStyle.grey, row=3, custom_id="HomePageButton")
-        Self.HomepageButton.callback = lambda Interaction: Self._Construct_Home(Interaction=Interaction)
-        Self.BaseViewFrame.add_item(Self.HomepageButton)
-
-        await Self._Send_New_Panel(Interaction)
 
 
     async def _Construct_Recruit_Panel(Self, Interaction:DiscordInteraction, InfantrySelected=None, InfantryRecruited=None):
