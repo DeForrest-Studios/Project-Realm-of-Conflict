@@ -11,10 +11,10 @@ class ProductionFacility:
 
     def Upgrade(Self):
         Self.Level += 1
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
-    def Stat_Refresh(Self):
+    def Refresh_Stats(Self):
         Self.Capacity = Self.CapacityMultiplier * Self.Level
         Self.UnitsPerTick = round(((Self.UnitsPerTickMultiplier + (Self.UnitsPerTickMultiplier*Self.Level)) * Self.Level), 2)
         Self.UpgradeCost = Self.UpgradeCostMultiplier * Self.Level
@@ -29,7 +29,7 @@ class Well(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.480
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class SandQuarry(ProductionFacility):
@@ -40,7 +40,7 @@ class SandQuarry(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.440
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class GravelPit(ProductionFacility):
@@ -51,7 +51,7 @@ class GravelPit(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.440
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class CottonFarm(ProductionFacility):
@@ -62,7 +62,7 @@ class CottonFarm(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.400
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class LimestoneQuarry(ProductionFacility):
@@ -73,7 +73,7 @@ class LimestoneQuarry(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.360
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class WheatFarm(ProductionFacility):
@@ -84,7 +84,7 @@ class WheatFarm(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.300
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class TreeFarm(ProductionFacility):
@@ -95,7 +95,7 @@ class TreeFarm(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.260
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class CoalMine(ProductionFacility):
@@ -106,7 +106,7 @@ class CoalMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.200
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class MyceliumFarm(ProductionFacility):
@@ -117,7 +117,7 @@ class MyceliumFarm(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.160
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class CopperMine(ProductionFacility):
@@ -128,7 +128,7 @@ class CopperMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.100
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class IronMine(ProductionFacility):
@@ -139,7 +139,7 @@ class IronMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.060
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class BauxiteMine(ProductionFacility):
@@ -150,7 +150,7 @@ class BauxiteMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.020
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class SilverMine(ProductionFacility):
@@ -161,7 +161,7 @@ class SilverMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.010
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class GoldMine(ProductionFacility):
@@ -172,7 +172,7 @@ class GoldMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.010
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class LithiumMine(ProductionFacility):
@@ -183,7 +183,7 @@ class LithiumMine(ProductionFacility):
         Self.UnitsPerTickMultiplier: float = 0.004
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
-        Self.Stat_Refresh()
+        Self.Refresh_Stats()
 
 
 class ManufacturingFacility:

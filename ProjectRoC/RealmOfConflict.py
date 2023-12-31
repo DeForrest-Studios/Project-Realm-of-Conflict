@@ -170,6 +170,7 @@ class RealmOfConflict(Bot):
                     Name:str = Contents[0]
                     Value = int(Contents[1])
                     Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Level = Value
+                    Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Refresh_Stats()
 
 
     def Load_Player_Army(Self) -> None:

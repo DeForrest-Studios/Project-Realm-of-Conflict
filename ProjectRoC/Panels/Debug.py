@@ -49,13 +49,14 @@ class DebugPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         if Ether.Data["Players"][InitialContext.author.id].Data["Team"] == "Analis":
-            await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Analis"])
+            await Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Ether.Roles["Analis"])
         if Ether.Data["Players"][InitialContext.author.id].Data["Team"] == "Titan":
-            await Self.Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Self.Ether.Roles["Titan"])
-        Self.Ether.Data["Players"][SubmittedUUID] = None
-        Self.Ether.Data["Players"].pop(SubmittedUUID)
-        remove(join("Data", "PlayerData", f"{SubmittedUUID}.roc"))
-        remove(join("Data", "PlayerInventories", f"{SubmittedUUID}.roc"))
-        remove(join("Data", "PlayerProductionFacilities", f"{SubmittedUUID}.roc"))
+            await Ether.Data["Players"][SubmittedUUID].Data["Member Object"].remove_roles(Ether.Roles["Titan"])
+        Ether.Data["Players"][SubmittedUUID] = None
+        Ether.Data["Players"].pop(SubmittedUUID)
+        remove(join("Data", "PlayerData", f"{SubmittedUUID}.data.roc"))
+        remove(join("Data", "PlayerInventories", f"{SubmittedUUID}.inventory.roc"))
+        remove(join("Data", "PlayerProductionFacilities", f"{SubmittedUUID}.production.roc"))
+        remove(join("Data", "PlayerArmy", f"{SubmittedUUID}.army.roc"))
 
         await Self._Send_New_Panel(Interaction)
