@@ -16,7 +16,7 @@ class ProfilePanel(Panel):
         Self.Player = Ether.Data['Players'][InitialContext.author.id]
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Profile Panel")
-        await Self._Generate_Info(Ether, InitialContext, Inclusions=["Offensive Power", "Defensive Power", "Healing Power",
+        await Self._Generate_Info(Ether, InitialContext, Inclusions=["Skill Points", "Offensive Power", "Defensive Power", "Healing Power",
                                               "Production Power", "Manufacturing Power", "Energy Sapping",])
 
         Self.ChangeNicknameButton = Button(label="Change Nickname", style=ButtonStyle, custom_id="ChangeNicknameButton")

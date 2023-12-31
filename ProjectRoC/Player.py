@@ -12,9 +12,10 @@ class Player:
                 "Name": "TestPlayer",
                 "Team": "None",
                 "Wallet": 0.00,
-                "Experience": 0.0,
-                "Level": 1,
                 "Power": 0,
+                "Level": 1,
+                "Experience": 0.0,
+                "Skill Points": 0,
                 "Attack Power": 0,
                 "Defensive Power": 0,
                 "Production Power": 0,
@@ -36,9 +37,10 @@ class Player:
                 "Name": Member.name,
                 "Team": "None",
                 "Wallet": 0.00,
-                "Experience": 0.0,
-                "Level": 1,
                 "Power": 0,
+                "Level": 1,
+                "Experience": 0.0,
+                "Skill Points": 0,
                 "Offensive Power": 0,
                 "Defensive Power": 0,
                 "Healing Power": 0,
@@ -113,10 +115,14 @@ class Player:
         Self.Data["Power"] = Self.Data["Offensive Power"] + Self.Data["Defensive Power"] + Self.Data["Healing Power"]
 
 
-
-    def Refresh_Stats(Self):
+    def Refresh_Stats(Self) -> str:
         Self.ExperienceForNextLevel = Self.Data["Level"] * (325 + (135 * Self.Data["Level"]) - (Self.Data["Maiden's Grace"] * (5 * Self.Data["Level"])))
-        print(Self.ExperienceForNextLevel)
         if Self.Data["Experience"] >= Self.ExperienceForNextLevel:
-            Self.Data["Level"] += 1
-            Self.Refresh_Stats()
+            Self.Level_Up()
+            return "Level Up"
+
+    
+    def Level_Up(Self):
+        Self.Data["Level"] += 1
+        Self.Data["Skill Points"] += 1
+        Self.Refresh_Stats()

@@ -14,6 +14,8 @@ from Panels.Sentents import SententPanel
 from Panels.Inventory import InventoryPanel
 from Panels.Profile import ProfilePanel
 from Panels.Debug import DebugPanel
+from Panels.Skills import SkillsPanel
+from Player import Player
 
 
 class PlayPanel(Panel):
@@ -40,11 +42,7 @@ class PlayPanel(Panel):
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
 
-        Self.Player = Ether.Data["Players"][InitialContext.author.id]
-
-        if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
-            Self.Player.Data["Level"] += 1
-            Self.Player.Refresh_Stats()
+        Self.Player:Player = Ether.Data["Players"][InitialContext.author.id]
 
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Home Panel")
@@ -75,6 +73,10 @@ class PlayPanel(Panel):
         Self.ProfileButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.ProfileButton)
 
+        Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, custom_id="SkillsButton")
+        Self.SkillsButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.SkillsButton)
+
         if InitialContext.author.id in Whitelist:
             Self.Mapping.update({"DebugButton":DebugPanel})
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3, custom_id="DebugButton")
@@ -97,6 +99,7 @@ class PlayPanel(Panel):
             "SententsButton":SententPanel,
             "InventoryButton":InventoryPanel,
             "ProfileButton":ProfilePanel,
+            "SkillsButton":SkillsPanel
         })
         Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
         
@@ -123,9 +126,7 @@ class PlayPanel(Panel):
                 Self.Player.Inventory[MaterialScavenged] = round(Self.Player.Inventory[MaterialScavenged] + MaterialScavengedAmount + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
                 ScavengedString += f"Found {MaterialScavengedAmount} {MaterialScavenged}\n"
 
-        if Self.Player.Data["Experience"] >= Self.Player.ExperienceForNextLevel:
-            Self.Player.Data["Level"] += 1
-            Self.Player.Refresh_Stats()
+        if Self.Player.Refresh_Stats() == "Level Up":
             Self.EmbedFrame.insert_field_at(0, name=f"You leveled up!", value="\u200b", inline=False)
             
         await Self._Generate_Info(Ether, InitialContext)

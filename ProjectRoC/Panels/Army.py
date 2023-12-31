@@ -19,7 +19,7 @@ class ArmyPanel(Panel):
             return
         Self.Player = Ether.Data['Players'][InitialContext.author.id]
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player}'s Army Panel")
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")
         await Self._Generate_Info(Ether, InitialContext)
 
         ArmyString = ""
