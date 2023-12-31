@@ -17,45 +17,66 @@ class FacilitiesPanel(Panel):
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        Self.FacilitySelected = None
+        
         Self.Player = Ether.Data['Players'][InitialContext.author.id]
-        if Interaction.data["custom_id"] == "ItemSelection":
-            Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
-            Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
 
         if Interaction.data["custom_id"] == "FacilityUpgradeButton":
-            Self.FacilitySelected.Upgrade()
+            if Self.Player.Data['Wallet'] < Self.FacilitySelected.UpgradeCost:
+                Self.EmbedFrame.clear_fields()
+                FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
+                                    f"Capacity: {Self.FacilitySelected.Capacity}\n"+
+                                    f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
+                                    f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
+                await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
+                Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+                Self.EmbedFrame.add_field(name="Insufficient Funds", value="\u200b", inline=False)
+            else:
+                Self.FacilitySelected.Upgrade()
+                Self.Player.Data['Wallet'] = round(Self.Player.Data['Wallet'] - Self.FacilitySelected.UpgradeCost, 2)
+                Self.EmbedFrame.clear_fields()
+                FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Level, ',')}\n"+
+                                      f"Capacity: {format(Self.FacilitySelected.Capacity, ',')}\n"+
+                                      f"Units Per Second: {format(Self.FacilitySelected.UnitsPerTick, ',')}\n"+
+                                      f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
+                await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
+                Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+        elif Interaction.data["custom_id"] == "ItemSelection":
+            Self.FacilitySelected:ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
+            Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
+            Self.EmbedFrame.clear_fields()
+            try:
+                Self.FacilitiesSelected
+            except AttributeError:
+                Self.FacilityUpgradeButton = Button(label="Upgrade", style=ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
+                Self.BaseViewFrame.add_item(Self.FacilityUpgradeButton)
+                Self.FacilityUpgradeButton.callback = lambda SelectInteraction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, SelectInteraction, PlayPanel)
+            FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Level, ',')}\n"+
+                                  f"Capacity: {format(Self.FacilitySelected.Capacity, ',')}\n"+
+                                  f"Units Per Second: {format(Self.FacilitySelected.UnitsPerTick, ',')}\n"+
+                                  f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
+            await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
+            Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
             # Do not refresh BaseViewFrame, and EmbedFrame
         else:
+            Self.FacilitiesSelected = None
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{InitialContext.author.name}'s Facilities Panel")
 
             Self.CollectProductionButton = Button(label="Collect Production", style=ButtonStyle, custom_id="CollectProductionButton")
-            Self.CollectProductionButton.callback = lambda Interaction: Self._Collect_Production_Facilities(Ether, InitialContext, ButtonStyle, Interaction)
+            Self.CollectProductionButton.callback = lambda ButtonInteraction: Self._Collect_Production_Facilities(Ether, InitialContext, ButtonStyle, ButtonInteraction)
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
             # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-            Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
+            Self.HomepageButton.callback = lambda ButtonInteraction: PlayPanel._Construct_Home(Ether, InitialContext, ButtonInteraction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
 
             Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
             Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
-            Self.FacilitiesSelect.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
+            Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, SelectInteraction, PlayPanel)
             Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
 
             await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
-        
-        if Self.FacilitySelected:
-            Self.EmbedFrame.clear_fields()
-            Self.FacilityUpgradeButton = Button(label="Upgrade", style=ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
-            Self.BaseViewFrame.add_item(Self.FacilityUpgradeButton)
-            Self.FacilityUpgradeButton.callback = lambda SelectInteraction: Self._Construct_Facilities_Panel(SelectInteraction)
-            FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
-                                    f"Capacity: {Self.FacilitySelected.Capacity}\n"+
-                                    f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
-                                    f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
-            Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
 
         Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
         await Self._Send_New_Panel(Interaction)
