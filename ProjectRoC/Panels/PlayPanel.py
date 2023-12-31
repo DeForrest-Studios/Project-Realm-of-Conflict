@@ -42,7 +42,9 @@ class PlayPanel(Panel):
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
 
+        Self.PlayPanel = PlayPanel
         Self.Player:Player = Ether.Data["Players"][InitialContext.author.id]
+        Self.Interaction:DiscordInteraction = Interaction
 
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Home Panel")
@@ -101,7 +103,8 @@ class PlayPanel(Panel):
             "ProfileButton":ProfilePanel,
             "SkillsButton":SkillsPanel
         })
-        Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
+        # Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
+        Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
         
 
     async def _Scavenge(Self, Ether, InitialContext, Interaction:DiscordInteraction):

@@ -18,6 +18,8 @@ class FacilitiesPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         
+        Self.PlayPanel = PlayPanel
+        Self.Interaction = Interaction
         Self.Player = Ether.Data['Players'][InitialContext.author.id]
 
         if Interaction.data["custom_id"] == "FacilityUpgradeButton":
@@ -44,7 +46,7 @@ class FacilitiesPanel(Panel):
             Self.FacilitySelected:ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
             Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
             Self.EmbedFrame.clear_fields()
-            try:
+            try: # This is fucking stupid. There has to be a better way I don't know about
                 Self.FacilitiesSelected
             except AttributeError:
                 Self.FacilityUpgradeButton = Button(label="Upgrade", style=ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
@@ -56,7 +58,6 @@ class FacilitiesPanel(Panel):
                                   f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
             await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
-            # Do not refresh BaseViewFrame, and EmbedFrame
         else:
             Self.FacilitiesSelected = None
             Self.BaseViewFrame = View(timeout=144000)

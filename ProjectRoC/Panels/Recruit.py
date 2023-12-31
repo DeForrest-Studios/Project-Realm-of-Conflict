@@ -16,6 +16,7 @@ class RecruitPanel(Panel):
 
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, InfantrySelected=None, InfantryRecruited=None):
         if InfantrySelected == None:
+            Self.PlayPanel = PlayPanel
             Self.Player = Ether.Data['Players'][InitialContext.author.id]
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
