@@ -24,6 +24,10 @@ class Player:
                 "Offensive Skill": 0,
                 "Defensive Skill": 0,
                 "Counter Operations Skill": 0,
+                "Maiden's Grace": False,
+                "Join TimeStamp": int(time()),
+                "Time of Last Production Collection": "Never",
+                "Time of Last Manufacturing Collection": "Never",
             }
         else:
             Self.Data:{str:...} = {

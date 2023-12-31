@@ -62,7 +62,7 @@ if __name__ == '__main__':
         Ether.Load_Players()
         create_task(Ether.Autosave())
         print("\nBot is alive.\n")
-        CoreSimulation = Simulation(Ether, Ether.Data["Planets"]["Analis"], Ether.Data["Planets"]["Titan"])
+        # CoreSimulation = Simulation(Ether, Ether.Data["Planets"]["Analis"], Ether.Data["Planets"]["Titan"])
 
 
     # Override of existing on_member_join from discord.py

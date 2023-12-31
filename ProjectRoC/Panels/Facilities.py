@@ -18,7 +18,7 @@ class FacilitiesPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         Self.FacilitySelected = None
-        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
+        Self.Player = Ether.Data['Players'][InitialContext.author.id]
         if Interaction.data["custom_id"] == "ItemSelection":
             Self.FacilitySelected: ProductionFacility = Self.Player.ProductionFacilities[Interaction.data["values"][0]]
             Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]

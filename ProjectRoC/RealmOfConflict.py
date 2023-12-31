@@ -283,6 +283,7 @@ class RealmOfConflict(Bot):
 
         Self.Data["Players"].update({NewMember.id:Player(NewMember)})
         Self.Data["Players"][NewMember.id].Data["Team"] = Choice.Data["Name"]
+        Self.Data["Players"][NewMember.id].Data["Maiden's Grace"] = True
         Choice.Data["Protector Count"] += 1
         await NewMember.add_roles(Self.Roles[Choice.Data["Name"]])
 

@@ -16,7 +16,7 @@ class AvargoPanel(Panel):
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        Self.Player = Ether.Data['Players'][InitialContext.author.id].Data['Name']
+        Self.Player = Ether.Data['Players'][InitialContext.author.id]
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player}'s Avargo Panel")
 

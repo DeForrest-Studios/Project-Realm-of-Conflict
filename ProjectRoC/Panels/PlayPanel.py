@@ -91,7 +91,7 @@ class PlayPanel(Panel):
 
         
     async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction):
-        Self.Mapping:{str:Panel}.update({
+        Self.Mapping.update({
             "FacilitiesButton":FacilitiesPanel,
             "AvargoButton":AvargoPanel,
             "SententsButton":SententPanel,
