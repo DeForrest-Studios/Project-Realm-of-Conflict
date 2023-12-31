@@ -72,7 +72,7 @@ class RealmOfConflict(Bot):
         Self.Load_Player_Inventories()
         Self.Load_Player_Army()
         Self.Load_Planet_Data()
-        # Self.Load_Player_Production_Facilities()
+        Self.Load_Player_Production_Facilities()
 
 
     def Load_Player_Data(Self) -> None:
@@ -169,7 +169,7 @@ class RealmOfConflict(Bot):
                     Contents:str = Field.split(":")
                     Name:str = Contents[0]
                     Value = int(Contents[1])
-                    Self.Data["Players"][PlayerUUID].Facilities[Name].Level = Value
+                    Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Level = Value
 
 
     def Load_Player_Army(Self) -> None:

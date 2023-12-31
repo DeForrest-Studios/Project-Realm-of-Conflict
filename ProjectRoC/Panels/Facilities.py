@@ -47,7 +47,7 @@ class FacilitiesPanel(Panel):
             Self.FacilitiesSelect.placeholder = Interaction.data["values"][0]
             Self.EmbedFrame.clear_fields()
             try: # This is fucking stupid. There has to be a better way I don't know about
-                Self.FacilitiesSelected
+                Self.FacilityUpgradeButton
             except AttributeError:
                 Self.FacilityUpgradeButton = Button(label="Upgrade", style=ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
                 Self.BaseViewFrame.add_item(Self.FacilityUpgradeButton)
