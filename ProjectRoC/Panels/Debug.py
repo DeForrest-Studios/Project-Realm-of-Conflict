@@ -36,7 +36,7 @@ class DebugPanel(Panel):
 
 
         Self.PlayerUUIDSubmission = Modal(title="Submit Player UUID")
-        Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Interaction, int(Self.PlayerSubmittedUUID.value))
+        Self.PlayerUUIDSubmission.on_submit = lambda Interaction: Self._Reset_Player(Ether, InitialContext, Interaction, int(Self.PlayerSubmittedUUID.value))
         Self.PlayerSubmittedUUID = TextInput(label="Player UUID") 
         Self.PlayerUUIDSubmission.add_item(Self.PlayerSubmittedUUID)
 

@@ -24,7 +24,7 @@ class Player:
                 "Offensive Skill": 0,
                 "Defensive Skill": 0,
                 "Counter Operations Skill": 0,
-                "Maiden's Grace": False,
+                "Maiden's Grace": 0, # 0 for False, 1 for True
                 "Join TimeStamp": int(time()),
                 "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
@@ -49,7 +49,7 @@ class Player:
                 "Offensive Skill": 0,
                 "Defensive Skill": 0,
                 "Counter Operations Skill": 0,
-                "Maiden's Grace": False,
+                "Maiden's Grace": 0, # 0 for False, 1 for True
                 "Join TimeStamp": int(time()),
                 "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
@@ -115,7 +115,8 @@ class Player:
 
 
     def Refresh_Stats(Self):
-        Self.ExperienceForNextLevel = Self.Data["Level"] * (325 + (135 * Self.Data["Level"]))
+        Self.ExperienceForNextLevel = Self.Data["Level"] * (325 + (135 * Self.Data["Level"]) - (Self.Data["Maiden's Grace"] * (5 * Self.Data["Level"])))
+        print(Self.ExperienceForNextLevel)
         if Self.Data["Experience"] >= Self.ExperienceForNextLevel:
             Self.Data["Level"] += 1
             Self.Refresh_Stats()

@@ -129,14 +129,14 @@ class AvargoPanel(Panel):
         EarnedExperience:float = 0.00
         for Material, Quantity in Self.Receipt.items():
             if SaleType == "Buy":
-                Total += round(MaterialWorthTable[Material] * Quantity, 2)
-                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]/4), 2)
+                Total += round(MaterialWorthTable[Material] * Quantity, 2) + (Self.Player.Data["Maiden's Grace"] * (0.02 * Self.Player.Data["Level"]))
+                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]/4), 2) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))
             if SaleType == "Sell":
                 if Quantity > Ether.Data['Players'][InitialContext.author.id].Inventory[Material]:
                     Self.InsufficientMaterial = Material
                     await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientMaterials=True)
                     return
-                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]/8), 2)
+                EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Material]/8)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
                 Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
         
         Self.BaseViewFrame = View(timeout=144000)
@@ -161,7 +161,7 @@ class AvargoPanel(Panel):
             if Total <= Ether.Data['Players'][InitialContext.author.id].Data["Wallet"]:
                 for Material, Quantity in Self.Receipt.items():
                     Ether.Data['Players'][InitialContext.author.id].Inventory[Material] = round(Ether.Data['Players'][InitialContext.author.id].Inventory[Material] + Quantity, 2)
-                Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] - Total, 2)
+                Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] - Total + (Self.Player.Data["Maiden's Grace"] * (0.07 * Self.Player.Data["Level"])), 2)
                 Ether.Data['Players'][InitialContext.author.id].Data["Experience"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Experience"] + EarnedExperience, 2)
                 await Self._Generate_Info(Ether, InitialContext)
                 await Self._Send_New_Panel(Interaction)
@@ -170,7 +170,7 @@ class AvargoPanel(Panel):
         if SaleType == "Sell":
             for Material, Quantity in Self.Receipt.items():
                 Ether.Data['Players'][InitialContext.author.id].Inventory[Material] = round(Ether.Data['Players'][InitialContext.author.id].Inventory[Material] - Quantity, 2)
-                Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] + Total, 2)
+                Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Wallet"] + Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
                 Ether.Data['Players'][InitialContext.author.id].Data["Experience"] = round(Ether.Data['Players'][InitialContext.author.id].Data["Experience"] + EarnedExperience, 2)
                 await Self._Generate_Info(Ether, InitialContext)
                 await Self._Send_New_Panel(Interaction)

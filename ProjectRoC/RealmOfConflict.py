@@ -82,7 +82,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join("Data", "PlayerData")):
             PlayerUUID:int = int(PlayerDataFileName.split(".")[0])
-            with open(join("Data", "PlayerData", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
+            with open(join("Data", "PlayerData", f"{PlayerUUID}.data.roc"), 'r') as PlayerDataFile:
                 PlayerData:[str] = [Line.strip() for Line in PlayerDataFile.readlines()]
                 if PlayerUUID == 42069: continue
                 MemberObject:DiscordMember = Self.Members[PlayerUUID]
@@ -116,7 +116,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlanetDataFileName in listdir(join("Data", "PlanetData")):
             PlanetName:str = PlanetDataFileName.split(".")[0]
-            with open(join("Data", "PlanetData", f"{PlanetName}.roc"), 'r') as PlanetDataFile:
+            with open(join("Data", "PlanetData", f"{PlanetName}.data.roc"), 'r') as PlanetDataFile:
                 PlanetData:str = [Line.strip() for Line in PlanetDataFile.readlines()]
                 Field:str
                 for Field in PlanetData:
@@ -145,7 +145,7 @@ class RealmOfConflict(Bot):
         for PlayerDataFileName in listdir(join("Data", "PlayerInventories")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerInventories", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
+            with open(join("Data", "PlayerInventories", f"{PlayerUUID}.inventory.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 Field:str
                 for Field in PlayerData:
@@ -162,7 +162,7 @@ class RealmOfConflict(Bot):
         for PlayerDataFileName in listdir(join("Data", "PlayerProductionFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerProductionFacilities", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
+            with open(join("Data", "PlayerProductionFacilities", f"{PlayerUUID}.production.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 Field:str
                 for Field in PlayerData:
@@ -179,7 +179,7 @@ class RealmOfConflict(Bot):
         for PlayerDataFileName in listdir(join("Data", "PlayerArmy")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerArmy", f"{PlayerUUID}.roc"), 'r') as PlayerDataFile:
+            with open(join("Data", "PlayerArmy", f"{PlayerUUID}.army.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 for Field in PlayerData:
                     Contents = Field.split(":")
@@ -221,7 +221,7 @@ class RealmOfConflict(Bot):
         PlanetObject:Planet
         for Name, PlanetObject in Self.Data["Planets"].items():
             SaveData = ""
-            with open(join("Data", "PlanetData", f"{Name}.roc"), 'w+') as PlayerDataFile:
+            with open(join("Data", "PlanetData", f"{Name}.data.roc"), 'w+') as PlayerDataFile:
                 for Name, Value in PlanetObject.Data.items():
                     SaveData += f"{Name}:{Value}\n"
                 PlayerDataFile.write(SaveData)
@@ -231,7 +231,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerData", f"{UUID}.roc"), 'w+') as PlayerDataFile:
+            with open(join("Data", "PlayerData", f"{UUID}.data.roc"), 'w+') as PlayerDataFile:
                 for Name, Value in PlayerObject.Data.items():
                     SaveData += f"{Name}:{Value}\n"
                 PlayerDataFile.write(SaveData)
@@ -242,7 +242,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerInventories", f"{UUID}.roc"), 'w+') as PlayerDataFile:
+            with open(join("Data", "PlayerInventories", f"{UUID}.inventory.roc"), 'w+') as PlayerDataFile:
                 for Name, Value in PlayerObject.Inventory.items():
                     SaveData += f"{Name}:{Value}\n"
                 PlayerDataFile.write(SaveData)
@@ -253,7 +253,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerProductionFacilities", f"{UUID}.roc"), 'w+') as PlayerDataFile:
+            with open(join("Data", "PlayerProductionFacilities", f"{UUID}.production.roc"), 'w+') as PlayerDataFile:
                 for Facility in PlayerObject.ProductionFacilities.values():
                     SaveData += f"{Facility.Name}:{Facility.Level}\n"
                 PlayerDataFile.write(SaveData)
@@ -264,7 +264,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerArmy", f"{UUID}.roc"), 'w+') as PlayerDataFile:
+            with open(join("Data", "PlayerArmy", f"{UUID}.army.roc"), 'w+') as PlayerDataFile:
                 for InfantryID, Infantry in PlayerObject.Army.items():
                     SaveData += f"{InfantryID}:{Infantry.Level}:{Infantry.Type}\n"
                 PlayerDataFile.write(SaveData)
@@ -280,10 +280,12 @@ class RealmOfConflict(Bot):
                 RandomNumber = randrange(0, 2)
                 print(RandomNumber)
                 Choice = list(Self.Data["Planets"].values())[RandomNumber]
+        else:
+            Choice:Planet = Self.Data["Planets"][Choice]
 
         Self.Data["Players"].update({NewMember.id:Player(NewMember)})
         Self.Data["Players"][NewMember.id].Data["Team"] = Choice.Data["Name"]
-        Self.Data["Players"][NewMember.id].Data["Maiden's Grace"] = True
+        Self.Data["Players"][NewMember.id].Data["Maiden's Grace"] = 1
         Choice.Data["Protector Count"] += 1
         await NewMember.add_roles(Self.Roles[Choice.Data["Name"]])
 

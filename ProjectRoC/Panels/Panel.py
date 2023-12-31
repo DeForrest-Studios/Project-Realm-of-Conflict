@@ -13,6 +13,8 @@ class Panel:
             if Name in Fields:
                 if Name == 'Wallet':
                     Info +=f"**{Name}** ~ ${format(float(Value), ',')}\n"
+                elif Name == 'Experience':
+                    Info +=f"**{Name}** ~ {format(float(Value), ',')} / {format(float(Ether.Data['Players'][InitialContext.author.id].ExperienceForNextLevel))}\n"
                 elif type(Value) == float:
                     Info +=f"**{Name}** ~ {format(float(Value), ',')}\n"
                 elif type(Value) == int:
