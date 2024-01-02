@@ -94,18 +94,16 @@ class FacilitiesPanel(Panel):
         for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
             if Self.Player.Data["Time of Last Production Collection"] == "Never":
                 EarnedAmount = round((Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
-                SkillBonus = ((Self.Player.Skills["Production"] + 1) * (5 * EarnedAmount)/100)
-                print(SkillBonus)
             else:
                 EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
-                SkillBonus = ((Self.Player.Skills["Production"] + 1) * (5 * EarnedAmount)/100)
-                print(SkillBonus)
 
             if Index == ProductionFacilityLength:
                 CollectionString += f"{EarnedAmount} {Facility.OutputItem}"
             else:
                 CollectionString += f"{EarnedAmount} {Facility.OutputItem}\n"
 
+            SkillBonus = ((Self.Player.Skills["Production"] + 1) * (5 * EarnedAmount)/100)
+            EarnedAmount = round(EarnedAmount + SkillBonus, 2)
             Self.Player.Inventory[Facility.OutputItem] = round(Self.Player.Inventory[Facility.OutputItem] + EarnedAmount, 2)
         
         Self.Player.Data["Time of Last Production Collection"] = CollectionTime

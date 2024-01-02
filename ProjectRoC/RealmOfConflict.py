@@ -73,6 +73,7 @@ class RealmOfConflict(Bot):
         Self.Load_Player_Army()
         Self.Load_Planet_Data()
         Self.Load_Player_Production_Facilities()
+        Self.Load_Player_Skills()
 
 
     def Load_Player_Data(Self) -> None:
@@ -191,6 +192,22 @@ class RealmOfConflict(Bot):
             Self.Data["Players"][PlayerUUID].Refresh_Power()
             
 
+    def Load_Player_Skills(Self):
+        if not exists(join("Data", "PlayerSkills")):
+            return
+        PlayerDataFileName:str
+        for PlayerDataFileName in listdir(join("Data", "PlayerSkills")):
+            PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID == 42069: continue
+            with open(join("Data", "PlayerSkills", f"{PlayerUUID}.skills.roc"), 'r') as PlayerDataFile:
+                PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
+                Field:str
+                for Field in PlayerData:
+                    Contents:str = Field.split(":")
+                    Name:str = Contents[0]
+                    Value = int(Contents[1])
+                    Self.Data["Players"][PlayerUUID].Skills[Name] = Value
+
         
 
     async def Autosave(Self) -> None:
@@ -206,6 +223,8 @@ class RealmOfConflict(Bot):
             mkdir(join("Data", "PlayerManufacturingFacilities"))
         if not exists(join("Data", "PlayerArmy")):
             mkdir(join("Data", "PlayerArmy"))
+        if not exists(join("Data", "PlayerSkills")):
+            mkdir(join("Data", "PlayerSkills"))
         if not exists(join("Data", "PlanetData")):
             mkdir(join("Data", "PlanetData"))
         while True:
@@ -216,6 +235,7 @@ class RealmOfConflict(Bot):
             await Self.Save_Player_ProductionFacilities()
             await Self.Save_Player_Army()
             await Self.Save_Planet_Data()
+            await Self.Save_Player_Skills()
 
     async def Save_Planet_Data(Self) -> None:
         Name:str
@@ -268,6 +288,17 @@ class RealmOfConflict(Bot):
             with open(join("Data", "PlayerArmy", f"{UUID}.army.roc"), 'w+') as PlayerDataFile:
                 for InfantryID, Infantry in PlayerObject.Army.items():
                     SaveData += f"{InfantryID}:{Infantry.Level}:{Infantry.Type}\n"
+                PlayerDataFile.write(SaveData)
+
+
+    async def Save_Player_Skills(Self) -> None:
+        UUID:int
+        PlayerObject:Player
+        for UUID, PlayerObject in Self.Data["Players"].items():
+            SaveData = ""
+            with open(join("Data", "PlayerSkills", f"{UUID}.skills.roc"), 'w+') as PlayerDataFile:
+                for Name, Level in PlayerObject.Skills.items():
+                    SaveData += f"{Name}:{Level}\n"
                 PlayerDataFile.write(SaveData)
 
 
