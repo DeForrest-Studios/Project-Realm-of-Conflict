@@ -207,6 +207,7 @@ class RealmOfConflict(Bot):
                     Name:str = Contents[0]
                     Value = int(Contents[1])
                     Self.Data["Players"][PlayerUUID].Skills[Name] = Value
+            Self.Data["Players"][PlayerUUID].Refresh_All_Skills()
 
         
 

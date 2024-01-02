@@ -110,12 +110,37 @@ class Player:
 
     
     def Add_Skill_Point(Self, ChosenSkill):
+        Mapping = {
+            "Production":"General Skill",
+            "Manufacturing":"General Skill",
+            "Offensive":"Offensive Skill",
+            "Domination":"Offensive Skill",
+            "Defensive":"Defensive Skill",
+            "Healing":"Defensive Skill",
+            "Hacking":"Counter Operations Skill",
+            "Raiding":"Counter Operations Skill",
+            "General Skill": ["Production", "Manufacturing"],
+            "Offensive Skill": ["Offensive", "Domination"],
+            "Defensive Skill": ["Defensive", "Healing"],
+            "Counter Operations Skill": ["Hacking", "Raiding"],
+        }
         if Self.Data["Skill Points"] < 1:
             return False
         Self.Skills[ChosenSkill] += 1
         Self.Data["Skill Points"] -= 1
         Self.Refresh_Power()
+        Self.Refresh_Skills(Mapping[ChosenSkill], Mapping[Mapping[ChosenSkill]])
         return True
+
+    def Refresh_All_Skills(Self):
+        Self.Data["General Skill"] = sum([SkillLevel for SkillLevel in [Self.Skills["Production"], Self.Skills["Manufacturing"]]])
+        Self.Data["Offensive Skill"] = sum([SkillLevel for SkillLevel in [Self.Skills["Offensive"], Self.Skills["Domination"]]])
+        Self.Data["Defensive Skill"] = sum([SkillLevel for SkillLevel in [Self.Skills["Defensive"], Self.Skills["Healing"]]])
+        Self.Data["Counter Operations Skill"] = sum([SkillLevel for SkillLevel in [Self.Skills["Hacking"], Self.Skills["Raiding"]]])
+
+
+    def Refresh_Skills(Self, Category, Skills):
+        Self.Data[Category] = sum([SkillLevel for SkillLevel in [Self.Skills[Skill] for Skill in Skills]])
 
 
     def Refresh_Power(Self):
