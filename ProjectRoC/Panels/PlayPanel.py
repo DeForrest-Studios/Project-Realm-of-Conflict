@@ -19,9 +19,9 @@ from Player import Player
 
 
 class PlayPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, PlayerContext:DiscordContext):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext):
         super().__init__()
-        create_task(Self._Construct_Home(Ether, PlayerContext))
+        create_task(Self._Construct_Home(Ether, InitialContext))
 
 
     async def _Determine_Team(Self, InitialContext):
@@ -49,7 +49,7 @@ class PlayPanel(Panel):
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Home Panel")
 
-        await Self._Generate_Info(Ether, InitialContext, )
+        await Self._Generate_Info(Ether, InitialContext)
 
         Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
         Self.ScavengeButton.callback = lambda Interaction: Self._Scavenge(Ether, InitialContext, Interaction)
