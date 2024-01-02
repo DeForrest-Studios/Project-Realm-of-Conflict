@@ -9,13 +9,18 @@ from Panels.Panel import Panel
 from Player import Player
 
 class SkillsPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle:DiscordButtonStyle,
+                 Interaction:DiscordInteraction, PlayPanel:Panel):
         super().__init__()
         create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
 
-    async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle:DiscordButtonStyle,
+                               Interaction:DiscordInteraction, PlayPanel:Panel):
         if Interaction.user != InitialContext.author:
             return
+        Self.Ether = Ether
+        Self.InitialContext = InitialContext
+        Self.ButtonStyle = ButtonStyle
         Self.PlayPanel = PlayPanel
         Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
         Self.BaseViewFrame = View(timeout=144000)
@@ -24,24 +29,116 @@ class SkillsPanel(Panel):
                                                                      "Defensive Skill", "Counter Operations Skill"])
 
         Self.GeneralSkillsButton = Button(label="General Skills", style=ButtonStyle, custom_id="GeneralSkillsButton")
-        Self.GeneralSkillsButton.callback = lambda Interaction: ...
+        Self.GeneralSkillsButton.callback = Self._Construct_General_Skills
         Self.BaseViewFrame.add_item(Self.GeneralSkillsButton)
 
         Self.OffensiveSkill = Button(label="Offensive Skill", style=ButtonStyle, custom_id="OffensiveSkill")
-        Self.OffensiveSkill.callback = lambda Interaction: ...
+        Self.OffensiveSkill.callback = Self._Construct_Offensive_Skills
         Self.BaseViewFrame.add_item(Self.OffensiveSkill)
 
         Self.DefensiveSkill = Button(label="Defensive Skill", style=ButtonStyle, custom_id="DefensiveSkill")
-        Self.DefensiveSkill.callback = lambda Interaction: ...
+        Self.DefensiveSkill.callback = Self._Construct_Defensive_Skills
         Self.BaseViewFrame.add_item(Self.DefensiveSkill)
 
         Self.CounterOperationsSkill = Button(label="Counter Operations Skill", style=ButtonStyle, custom_id="CounterOperationsSkill")
-        Self.CounterOperationsSkill.callback = lambda Interaction: ...
+        Self.CounterOperationsSkill.callback = Self._Construct_Counter_Operations_Skills
         Self.BaseViewFrame.add_item(Self.CounterOperationsSkill)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-        Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
+        Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
+
+    async def _Construct_General_Skills(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s General Skills Panel")
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "General Skill"])
+        
+        Self.ManufacturingSkillButton = Button(label="Manufacturing", style=Self.ButtonStyle, custom_id="ManufacturingSkillButton")
+        Self.ManufacturingSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.ManufacturingSkillButton)
+
+        Self.ProductionSkillButton = Button(label="Production", style=Self.ButtonStyle, custom_id="ProductionSkillButton")
+        Self.ProductionSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.ProductionSkillButton)
+
+        Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.BaseViewFrame.add_item(Self.SkillsButton)
+
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
+
+    async def _Construct_Offensive_Skills(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Offensive Skills Panel")
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Offensive Skill"])
+        
+        Self.OffensivePowerSkillButton = Button(label="Offensive Power", style=Self.ButtonStyle, custom_id="OffensivePowerSkillButton")
+        Self.OffensivePowerSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.OffensivePowerSkillButton)
+
+        Self.DominationSkillButton = Button(label="Domination", style=Self.ButtonStyle, custom_id="DominationSkillButton")
+        Self.DominationSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.DominationSkillButton)
+
+        Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.BaseViewFrame.add_item(Self.SkillsButton)
+
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
+
+    async def _Construct_Defensive_Skills(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Defensive Skills Panel")
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Defensive Skill"])
+        
+        Self.DefensiveSkillButton = Button(label="Defensive Power", style=Self.ButtonStyle, custom_id="DefensiveSkillButton")
+        Self.DefensiveSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.DefensiveSkillButton)
+
+        Self.HealingSkillButton = Button(label="Healing", style=Self.ButtonStyle, custom_id="HealingSkillButton")
+        Self.HealingSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.HealingSkillButton)
+
+        Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.BaseViewFrame.add_item(Self.SkillsButton)
+
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
+
+        await Self._Send_New_Panel(Interaction)
+
+    async def _Construct_Counter_Operations_Skills(Self, Interaction):
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Counter Operations Skills Panel")
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Counter Operations Skill"])
+        
+        Self.HackingSkillButton = Button(label="Hacking", style=Self.ButtonStyle, custom_id="HackingSkillButton")
+        Self.HackingSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.HackingSkillButton)
+
+        Self.RaidingSkillButton = Button(label="Raiding", style=Self.ButtonStyle, custom_id="RaidingSkillButton")
+        Self.RaidingSkillButton.callback = lambda ButtonInteraction: ...
+        Self.BaseViewFrame.add_item(Self.RaidingSkillButton)
+
+        Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.BaseViewFrame.add_item(Self.SkillsButton)
+
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         await Self._Send_New_Panel(Interaction)
