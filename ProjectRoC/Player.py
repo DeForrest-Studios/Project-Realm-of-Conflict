@@ -43,10 +43,8 @@ class Player:
                 "Skill Points": 0,
                 "Offensive Power": 0,
                 "Defensive Power": 0,
-                "Healing Power": 0,
                 "Production Power": 0,
                 "Manufacturing Power": 0,
-                "Energy Sapping": 0,
                 "General Skill": 0, 
                 "Offensive Skill": 0,
                 "Defensive Skill": 0,
@@ -56,6 +54,16 @@ class Player:
                 "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
             }
+        Self.Skills = {
+            "Production":0,
+            "Manufacturing":0,
+            "Offensive":0,
+            "Domination":0,
+            "Defensive":0,
+            "Healing":0,
+            "Hacking":0,
+            "Raiding":0,
+        }
         Self.Inventory:{str:float} = {
             "Water": 0.0,
             "Sand": 0.0,
@@ -100,19 +108,26 @@ class Player:
         Self.Army = {}
         Self.Refresh_Stats()
 
+    
+    def Add_Skill_Point(Self, ChosenSkill):
+        if Self.Data["Skill Points"] < 1:
+            return False
+        Self.Skills[ChosenSkill] += 1
+        Self.Data["Skill Points"] -= 1
+        Self.Refresh_Power()
+        return True
+
 
     def Refresh_Power(Self):
-        Self.Data["Offensive Power"] = 0
-        Self.Data["Defensive Power"] = 0
-        Self.Data["Healing Power"] = 0
+        Self.Data["Offensive Power"] = Self.Skills["Offensive"] * 2500
+        Self.Data["Defensive Power"] = Self.Skills["Defensive"] * 2500
         for Infantry in Self.Army.values():
             if hasattr(Infantry, "OffensivePower"):
-                Self.Data["Offensive Power"] += Infantry.OffensivePower
+                Self.Data["Offensive Power"] += Infantry.OffensivePower +  (Self.Skills["Offense"])
             if hasattr(Infantry, "DefensivePower"):
                 Self.Data["Defensive Power"] += Infantry.DefensivePower
-            if hasattr(Infantry, "HealingPower"):
-                Self.Data["Healing Power"] += Infantry.HealingPower
-        Self.Data["Power"] = Self.Data["Offensive Power"] + Self.Data["Defensive Power"] + Self.Data["Healing Power"]
+        Self.Data["Power"] = (Self.Data["Offensive Power"] + Self.Data["Defensive Power"] +
+                              Self.Data["Production Power"] + Self.Data["Manufacturing Power"])
 
 
     def Refresh_Stats(Self) -> str:

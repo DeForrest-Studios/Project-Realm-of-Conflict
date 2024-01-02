@@ -12,7 +12,7 @@ class Panel:
         if Ether.Data["Players"][InitialContext.author.id].Data["Skill Points"] > 0:
             Info +=f"**You have {format(int(Ether.Data['Players'][InitialContext.author.id].Data['Skill Points']), ',')} unspent skill point**\n"
 
-        for Name, Value in Ether.Data["Players"][InitialContext.author.id].Data.items():
+        for Name, Value in Self.Player.Data.items():
             if Name in Fields:
                 if Name == 'Wallet':
                     Info +=f"**{Name}** ~ ${format(float(Value), ',')}\n"
@@ -24,5 +24,9 @@ class Panel:
                     Info +=f"**{Name}** ~ {format(int(Value), ',')}\n"
                 else:
                     Info +=f"**{Name}** ~ {Value}\n"
+
+        for Name, Value in Self.Player.Skills.items():
+            if Name in Fields:
+                Info += f"**{Name}** ~ {format(int(Value), ',')}\n"
 
         Self.EmbedFrame.insert_field_at(0, name="\u200b", value=Info, inline=False)
