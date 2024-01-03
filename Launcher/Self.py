@@ -1,5 +1,5 @@
 from sys import exit
-from os import remove
+from os import remove, system
 from os.path import join
 from subprocess import *
 from glob import glob
@@ -14,7 +14,8 @@ class Launcher:
                                   "exit": Self.Exit,
                                   "stop": Self.Stop,
                                   "//": Self.Emergency_Stop,
-                                  "clear logs": Self.Clear_Logs}
+                                  "clear logs": Self.Clear_Logs,
+                                  "clear": Self.Clear_Lines}
         
         Self.Read_User_Settings()
         Self.Read_Key_File()
@@ -106,3 +107,7 @@ class Launcher:
                 remove(File)
             except OSError:
                 print("Error removing log files for some reason")
+
+    
+    def Clear_Lines(Self):
+        system("cls")
