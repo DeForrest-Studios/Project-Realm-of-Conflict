@@ -47,4 +47,5 @@ class ArmyPanel(Panel):
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
+        Self.Ether.Logger.info(f"Sent Army panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Self.Interaction)

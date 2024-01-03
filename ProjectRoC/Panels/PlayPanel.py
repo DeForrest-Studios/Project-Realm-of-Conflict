@@ -20,11 +20,16 @@ from Player import Player
 
 
 class PlayPanel:
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext) -> None:
         create_task(Self._Construct_Home(Ether, InitialContext))
 
-    async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]): return await Panel._Generate_Info(Self, Ether, InitialContext, Exclusions, Inclusions)
-    async def _Send_New_Panel(Self, Interaction): return await Panel._Send_New_Panel(Self, Interaction)
+
+    async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]):
+        return await Panel._Generate_Info(Self, Ether, InitialContext, Exclusions, Inclusions)
+    
+
+    async def _Send_New_Panel(Self, Interaction):
+        return await Panel._Send_New_Panel(Self, Interaction)
 
 
     async def _Determine_Team(Self, InitialContext):
@@ -121,8 +126,10 @@ class PlayPanel:
         if Interaction:
             if Interaction.user != InitialContext.author:
                 return
+            Self.Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
             await Self._Send_New_Panel(Interaction)
         else:
+            Self.Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
             Self.DashboardMessage:DiscordMessage = await InitialContext.send(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
 
         

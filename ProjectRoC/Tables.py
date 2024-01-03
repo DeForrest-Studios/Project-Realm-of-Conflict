@@ -6,7 +6,7 @@ ScavengeTable:{str:int} = {
     "Bonus Material": 25,
     "Component": 35,
     "Bonus Component": 10,
-    "Soldier": 5
+    "Infantry": 5
 }
 
 MaterialTable:{str:tuple} = {

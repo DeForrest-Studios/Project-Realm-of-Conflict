@@ -31,6 +31,7 @@ class AvargoPanel(Panel):
         Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
+        Self.Ether.Logger.info(f"Sent Avargo panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Self.Interaction)
 
 

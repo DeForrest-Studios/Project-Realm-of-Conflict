@@ -8,7 +8,7 @@ from Panels.Panel import Panel
 class InventoryPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         super().__init__(Ether, InitialContext,
-                         PlayPanel, "Debug",
+                         PlayPanel, "Inventory",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
 
     async def _Construct_Panel(Self):
@@ -38,5 +38,4 @@ class InventoryPanel(Panel):
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         Self.Ether.Logger.info(f"Sent Inventory panel to {Self.Player.Data['Name']}")
-
         await Self._Send_New_Panel(Self.Interaction)

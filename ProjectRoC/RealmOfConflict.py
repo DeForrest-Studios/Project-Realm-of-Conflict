@@ -12,6 +12,7 @@ from Planet import Planet
 from Player import Player
 from random import randrange
 from Tables import InfantryToObject
+from Simulation import Simulation
 
 
 class RealmOfConflict(Bot):
@@ -30,21 +31,26 @@ class RealmOfConflict(Bot):
         Self.Guild = None
         Self.Roles = None
         Self.Members = None
+        Self.CoreSimulation = None
         Self.Materials:[str] = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
         Self.Initalize_Logger()
 
 
     def Get_Token(Self, Key:str) -> None:
+        Self.Logger.info("Getting token")
         with open(join("Keys.txt")) as KeyFile:
             Line:str
             for Line in KeyFile:
                 LineData:[str] = Line.split("~")
                 if Key == LineData[0]:
                     return LineData[1].strip()
+        Self.Logger.info("Got dat token")
 
 
     def Initialize(Self) -> None:
+        Self.Logger.info("Running on the bot")
         Self.run(Self.Get_Token("Cavan"))
+        Self.Logger.info("The bot should be running now")
 
     
     def Initalize_Logger(Self) -> None:
@@ -62,10 +68,11 @@ class RealmOfConflict(Bot):
         Self.Formatter = Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', DateTimeFormat, style='{')
         Self.Handler.setFormatter(Self.Formatter)
         Self.Logger.addHandler(Self.Handler)
+        Self.Logger.info("Logger is setup")
 
 
     def Load_Players(Self) -> None:
-        print("Players have been loaded")
+        Self.Logger.info("Loading Players")
         if not exists("Data"):
             return
         Self.Load_Player_Data()
@@ -74,11 +81,13 @@ class RealmOfConflict(Bot):
         Self.Load_Planet_Data()
         Self.Load_Player_Production_Facilities()
         Self.Load_Player_Skills()
+        Self.Logger.info("Players have been loaded")
 
 
     def Load_Player_Data(Self) -> None:
         if not exists(join("Data", "PlayerData")):
             return
+        Self.Logger.info("Loading Player Data")
         Self.Members:{int:DiscordMember} = {M.id:M for M in Self.Guild.members}
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join("Data", "PlayerData")):
@@ -114,6 +123,7 @@ class RealmOfConflict(Bot):
     def Load_Planet_Data(Self) -> None:
         if not exists(join("Data", "PlanetData")):
             return
+        Self.Logger.info("Loading Planet Data")
         PlayerDataFileName:str
         for PlanetDataFileName in listdir(join("Data", "PlanetData")):
             PlanetName:str = PlanetDataFileName.split(".")[0]
@@ -142,6 +152,7 @@ class RealmOfConflict(Bot):
     def Load_Player_Inventories(Self) -> None:
         if not exists(join("Data", "PlayerInventories")):
             return
+        Self.Logger.info("Loading Player Inventories")
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join("Data", "PlayerInventories")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
@@ -159,6 +170,7 @@ class RealmOfConflict(Bot):
     def Load_Player_Production_Facilities(Self) -> None:
         if not exists(join("Data", "PlayerProductionFacilities")):
             return
+        Self.Logger.info("Loading Player Production Facilities")
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join("Data", "PlayerProductionFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
@@ -177,6 +189,7 @@ class RealmOfConflict(Bot):
     def Load_Player_Army(Self) -> None:
         if not exists(join("Data", "PlayerArmy")):
             return
+        Self.Logger.info("Loading Player Armies")
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join("Data", "PlayerArmy")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
@@ -195,6 +208,7 @@ class RealmOfConflict(Bot):
     def Load_Player_Skills(Self):
         if not exists(join("Data", "PlayerSkills")):
             return
+        Self.Logger.info("Loading Player Skills")
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join("Data", "PlayerSkills")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
@@ -209,7 +223,16 @@ class RealmOfConflict(Bot):
                     Self.Data["Players"][PlayerUUID].Skills[Name] = Value
             Self.Data["Players"][PlayerUUID].Refresh_All_Skills()
 
-        
+    
+    async def Engage_Simulation(Self) -> bool:
+        if Self.CoreSimulation is None:
+            Self.Logger.info("Engaging Simulation")
+            Self.CoreSimulation = Simulation(Self, Self.Data["Planets"]["Analis"], Self.Data["Planets"]["Titan"])
+            return True
+        else:
+            Self.Logger.info("Failed to engage simulation")
+            return False
+
 
     async def Autosave(Self) -> None:
         if not exists("Data"):
@@ -230,7 +253,7 @@ class RealmOfConflict(Bot):
             mkdir(join("Data", "PlanetData"))
         while True:
             await sleep(5)
-            print("Autosaving")
+            Self.Logger.info("Autosaving")
             await Self.Save_Player_Data()
             await Self.Save_Player_Inventories()
             await Self.Save_Player_ProductionFacilities()
@@ -239,6 +262,7 @@ class RealmOfConflict(Bot):
             await Self.Save_Player_Skills()
 
     async def Save_Planet_Data(Self) -> None:
+        Self.Logger.info("Saving Planet Data")
         Name:str
         PlanetObject:Planet
         for Name, PlanetObject in Self.Data["Planets"].items():
@@ -249,6 +273,7 @@ class RealmOfConflict(Bot):
                 PlayerDataFile.write(SaveData)
 
     async def Save_Player_Data(Self) -> None:
+        Self.Logger.info("Saving Player Data")
         UUID:int
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
@@ -260,6 +285,7 @@ class RealmOfConflict(Bot):
 
 
     async def Save_Player_Inventories(Self) -> None:
+        Self.Logger.info("Saving Player Inventories")
         UUID:int
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
@@ -271,6 +297,7 @@ class RealmOfConflict(Bot):
 
 
     async def Save_Player_ProductionFacilities(Self) -> None:
+        Self.Logger.info("Saving Player Production Facilities")
         UUID:int
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
@@ -282,6 +309,7 @@ class RealmOfConflict(Bot):
 
 
     async def Save_Player_Army(Self) -> None:
+        Self.Logger.info("Saving Player Armies")
         UUID:int
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
@@ -293,6 +321,7 @@ class RealmOfConflict(Bot):
 
 
     async def Save_Player_Skills(Self) -> None:
+        Self.Logger.info("Saving Player Skills")
         UUID:int
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
@@ -311,7 +340,6 @@ class RealmOfConflict(Bot):
                 Choice:Planet = Self.Data["Planets"]["Analis"]
             else:
                 RandomNumber = randrange(0, 2)
-                print(RandomNumber)
                 Choice = list(Self.Data["Planets"].values())[RandomNumber]
         else:
             Choice:Planet = Self.Data["Planets"][Choice]
@@ -346,6 +374,7 @@ class RealmOfConflict(Bot):
         MessageView.add_item(ChooseTitanButton)
         MessageView.add_item(MaidensChoice)
 
+        Self.Logger.info(f"Sending welcome to {NewMember.name}")
         await NewMember.send(embed=MessageEmbed, view=MessageView)
 
 

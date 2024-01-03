@@ -12,44 +12,35 @@ from Player import Player
 
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        super().__init__()
-        create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
+        super().__init__(Ether, InitialContext,
+                         PlayPanel, "Sentents",
+                         Interaction=Interaction, ButtonStyle=ButtonStyle)
 
+    async def _Construct_Panel(Self):
+        if Self.Interaction.user != Self.InitialContext.author: return
 
-    async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        if Interaction.user != InitialContext.author:
-            return
-        
-        Self.Ether:RealmOfConflict = Ether
-        Self.InitialContext:DiscordContext = InitialContext
-        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
-        Self.PlayPanel:Panel = PlayPanel
-        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+        await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Sentents Panel")
-
-        await Self._Generate_Info(Ether, InitialContext)
-
-        Self.ArmyButton = Button(label="My Army", style=ButtonStyle, custom_id="ArmyButton")
-        Self.ArmyButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
+        Self.ArmyButton = Button(label="My Army", style=Self.ButtonStyle, custom_id="ArmyButton")
+        Self.ArmyButton.callback = lambda Interaction: Self._Construct_New_Panel(Interaction)
         Self.BaseViewFrame.add_item(Self.ArmyButton)
 
-        Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")
-        Self.RecruitButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
+        Self.RecruitButton = Button(label="Recruit", style=Self.ButtonStyle, custom_id="RecruitButton")
+        Self.RecruitButton.callback = lambda Interaction: Self._Construct_New_Panel(Interaction)
         Self.BaseViewFrame.add_item(Self.RecruitButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-        Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
+        Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
-        await Self._Send_New_Panel(Interaction)
+        Self.Ether.Logger.info(f"Sent Sentents panel to {Self.Player.Data['Name']}")
+        await Self._Send_New_Panel(Self.Interaction)
 
 
-    async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    async def _Construct_New_Panel(Self, Interaction:DiscordInteraction):
         Mapping:{str:Panel} = {
             "ArmyButton":ArmyPanel,
             "RecruitButton":RecruitPanel,
         }
-        Ether.Data["Panels"][InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, PlayPanel)
+        Self.Ether.Data["Panels"][Self.InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)

@@ -11,7 +11,7 @@ from Player import Player
 class ProfilePanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         super().__init__(Ether, InitialContext,
-                         PlayPanel, "Avargo",
+                         PlayPanel, "Profile",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
 
     async def _Construct_Panel(Self):
@@ -29,4 +29,5 @@ class ProfilePanel(Panel):
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
+        Self.Ether.Logger.info(f"Sent Profile panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Self.Interaction)

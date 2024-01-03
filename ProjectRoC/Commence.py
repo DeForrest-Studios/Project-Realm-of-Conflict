@@ -5,7 +5,6 @@ from discord.ext.commands import Context
 from RealmOfConflict import RealmOfConflict
 from Panels.PlayPanel import PlayPanel
 from asyncio import create_task
-from Simulation import Simulation
 from sys import exit
 
 if __name__ == '__main__':
@@ -28,15 +27,15 @@ if __name__ == '__main__':
     # Override of existing on_ready from discord.py
     @Ether.event
     async def on_guild_available(Guild):
-        print(f"Guild available: {Guild.name}")
+        Ether.Logger.info(f"Guild available: {Guild.name}")
         if len(Ether.guilds) > 1:
-            print("Your bot is in two places, whatever you're doing, just stop please.")
-            print("Killing the bot.")
+            Ether.Logger.info("Your bot is in two places, whatever you're doing, just stop please.")
+            Ether.Logger.info("Killing the bot.")
             exit()
         Ether.Guild:DiscordGuild = Ether.guilds[0]
 
         if Ether.Guild.id == 1190385562604015626:
-            print("Running on Developer Server")
+            Ether.Logger.info("Running on Developer Server")
             Ether.Roles:{str:DiscordRole} = {
                 "Titan":Ether.Guild.get_role(1190385562604015629),
                 "Analis":Ether.Guild.get_role(1190385562604015628),
@@ -44,7 +43,7 @@ if __name__ == '__main__':
             Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190385563505791017)})
 
         if Ether.Guild.id == 1135093444734361702:
-            print("Running on Unstable Server")
+            Ether.Logger.info("Running on Unstable Server")
             Ether.Roles:{str:DiscordRole} = {
                 "Titan":Ether.Guild.get_role(1135093444734361705),
                 "Analis":Ether.Guild.get_role(1135093444734361704),
@@ -52,7 +51,7 @@ if __name__ == '__main__':
             Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1135093445191532607)})
 
         if Ether.Guild.id == 1063056213589368953:
-            print("Running on Official Server")
+            Ether.Logger.info("Running on Official Server")
             Ether.Roles:{str:DiscordRole} = {
                 "Titan":Ether.Guild.get_role(1190386754327412870),
                 "Analis":Ether.Guild.get_role(1190386754327412869),
@@ -61,8 +60,7 @@ if __name__ == '__main__':
 
         Ether.Load_Players()
         create_task(Ether.Autosave())
-        print("\nBot is alive.\n")
-        # CoreSimulation = Simulation(Ether, Ether.Data["Planets"]["Analis"], Ether.Data["Planets"]["Titan"])
+        Ether.Logger.info("Bot is alive")
 
 
     # Override of existing on_member_join from discord.py
