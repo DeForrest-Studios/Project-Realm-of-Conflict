@@ -7,6 +7,7 @@ from discord import SelectOption, Embed
 from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
 from Tables import InfantryTable, InfantryToObject
+from Player import Player
 
 class RecruitPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -16,10 +17,15 @@ class RecruitPanel(Panel):
 
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, InfantrySelected=None, InfantryRecruited=None):
         if InfantrySelected == None:
-            Self.PlayPanel = PlayPanel
-            Self.Player = Ether.Data['Players'][InitialContext.author.id]
+            Self.Ether:RealmOfConflict = Ether
+            Self.InitialContext:DiscordContext = InitialContext
+            Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+            Self.PlayPanel:Panel = PlayPanel
+            Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
+
             await Self._Generate_Info(Ether, InitialContext)
 
             Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")

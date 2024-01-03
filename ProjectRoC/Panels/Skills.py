@@ -19,13 +19,16 @@ class SkillsPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         Self.SelectedPanel = "None"
-        Self.Ether = Ether
-        Self.InitialContext = InitialContext
-        Self.ButtonStyle = ButtonStyle
-        Self.PlayPanel = PlayPanel
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.PlayPanel:Panel = PlayPanel
         Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Skill Panel")
+
         await Self._Generate_Info(Ether, InitialContext, Inclusions=["Skill Points", "General Skill", "Offensive Skill",
                                                                      "Defensive Skill", "Counter Operations Skill"])
 

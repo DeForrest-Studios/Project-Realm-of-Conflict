@@ -148,7 +148,7 @@ class Player:
         Self.Data["Defensive Power"] = Self.Skills["Defensive"] * 2500
         for Infantry in Self.Army.values():
             if hasattr(Infantry, "OffensivePower"):
-                Self.Data["Offensive Power"] += Infantry.OffensivePower +  (Self.Skills["Offense"])
+                Self.Data["Offensive Power"] += Infantry.OffensivePower
             if hasattr(Infantry, "DefensivePower"):
                 Self.Data["Defensive Power"] += Infantry.DefensivePower
         Self.Data["Power"] = (Self.Data["Offensive Power"] + Self.Data["Defensive Power"] +

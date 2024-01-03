@@ -2,13 +2,14 @@ from asyncio import create_task
 from discord import ButtonStyle, Embed
 from discord import Interaction as DiscordInteraction
 from discord import Message as DiscordMessage
+from discord import ButtonStyle as DiscordButtonStyle
 from discord.ext.commands import Context as DiscordContext
 from discord.ui import View, Button
 from random import randrange
 from RealmOfConflict import RealmOfConflict
 from Tables import ScavengeTable, MaterialTable
 from Panels.Panel import Panel
-from Panels.Facilities import FacilitiesPanel
+from Panels.ProductionFacilities import ProductionFacilitiesPanel
 from Panels.Avargo import AvargoPanel
 from Panels.Sentents import SententPanel
 from Panels.Inventory import InventoryPanel
@@ -41,10 +42,11 @@ class PlayPanel(Panel):
         Self.ReceiptString = ""
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
-
-        Self.PlayPanel = PlayPanel
-        Self.Player:Player = Ether.Data["Players"][InitialContext.author.id]
-        Self.Interaction:DiscordInteraction = Interaction
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.PlayPanel:Panel = PlayPanel
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
 
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Home Panel")
@@ -55,9 +57,17 @@ class PlayPanel(Panel):
         Self.ScavengeButton.callback = lambda Interaction: Self._Scavenge(Ether, InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.ScavengeButton)
 
-        Self.FacilitiesButton = Button(label="Facilities", style=Self.ButtonStyle, custom_id="FacilitiesButton")
-        Self.FacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
-        Self.BaseViewFrame.add_item(Self.FacilitiesButton)
+        Self.ProductionFacilitiesButton = Button(label="Production Facilities", style=Self.ButtonStyle, custom_id="ProductionFacilitiesButton")
+        Self.ProductionFacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.ProductionFacilitiesButton)
+
+        Self.ManufacturingFacilitiesButton = Button(label="Manufacturing Facilities (WIP)", style=Self.ButtonStyle, custom_id="ManufacturingFacilitiesButton")
+        Self.ManufacturingFacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.ManufacturingFacilitiesButton)
+
+        Self.CraftingButton = Button(label="Crafting (WIP)", style=Self.ButtonStyle, custom_id="CraftingButton")
+        Self.CraftingButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.CraftingButton)
 
         Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, custom_id="AvargoButton")
         Self.AvargoButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
@@ -71,6 +81,10 @@ class PlayPanel(Panel):
         Self.InventoryButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.InventoryButton)
 
+        Self.PlanetButton = Button(label="Planet (WIP)", style=Self.ButtonStyle, custom_id="PlanetButton")
+        Self.PlanetButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.PlanetButton)
+
         Self.ProfileButton = Button(label="Profile", style=Self.ButtonStyle, custom_id="ProfileButton")
         Self.ProfileButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.ProfileButton)
@@ -78,6 +92,22 @@ class PlayPanel(Panel):
         Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, custom_id="SkillsButton")
         Self.SkillsButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
+
+        Self.P2PMarketButton = Button(label="P2P Market (WIP)", style=Self.ButtonStyle, custom_id="P2PMarketButton")
+        Self.P2PMarketButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.P2PMarketButton)
+
+        Self.InfoButton = Button(label="Info (WIP)", style=Self.ButtonStyle, custom_id="InfoButton")
+        Self.InfoButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.InfoButton)
+
+        Self.CreaturesButton = Button(label="Creatures (WIP)", style=Self.ButtonStyle, custom_id="CreaturesButton")
+        Self.CreaturesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.CreaturesButton)
+
+        Self.TerrariumButton = Button(label="Terrarium (WIP)", style=Self.ButtonStyle, custom_id="TerrariumButton")
+        Self.TerrariumButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.TerrariumButton)
 
         if InitialContext.author.id in Whitelist:
             Self.Mapping.update({"DebugButton":DebugPanel})
@@ -96,7 +126,7 @@ class PlayPanel(Panel):
         
     async def _Construct_New_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction):
         Self.Mapping.update({
-            "FacilitiesButton":FacilitiesPanel,
+            "ProductionFacilitiesButton":ProductionFacilitiesPanel,
             "AvargoButton":AvargoPanel,
             "SententsButton":SententPanel,
             "InventoryButton":InventoryPanel,

@@ -7,6 +7,7 @@ from discord import SelectOption, Embed
 from discord.ui import View, Select, Button
 from Panels.Panel import Panel
 from time import time as Time
+from Player import Player
 
 class InventoryPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -17,26 +18,33 @@ class InventoryPanel(Panel):
         if Interaction.user != InitialContext.author:
             return
         
-        Self.PlayPanel = PlayPanel
-        Self.Player = Ether.Data['Players'][InitialContext.author.id]
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.PlayPanel:Panel = PlayPanel
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{InitialContext.author.name}'s Inventory Panel")
+        
+        await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
 
         InventoryString = ""
 
         PlayerInventoryLength = len(Self.Player.Inventory.items()) - 1
+
         Index:int
         Name:str
         Amount:float
         for Index, (Name, Amount) in enumerate(Self.Player.Inventory.items()):
-            if Index == PlayerInventoryLength:
-                InventoryString += f"{Amount} {Name}"
-            else:
-                InventoryString += f"{Amount} {Name}\n"
+            FormattedAmount = str(Amount).split('.')
+            InventoryString += f"**__{Name}__** ~ **{format(int(FormattedAmount[0]), ',')}**.{FormattedAmount[1]}"
+            if Index != PlayerInventoryLength:
+                InventoryString += "\n"
 
-        await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
 
-        Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
+        # Self.EmbedFrame.add_field(name="Inventory", value=InventoryString)
+        Self.EmbedFrame.description += InventoryString
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.

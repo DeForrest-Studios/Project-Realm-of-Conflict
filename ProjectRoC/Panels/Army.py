@@ -7,6 +7,7 @@ from discord import Embed
 from discord.ui import View, Button
 from Panels.Panel import Panel
 from time import time as Time
+from Player import Player
 
 class ArmyPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -16,10 +17,16 @@ class ArmyPanel(Panel):
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        Self.PlayPanel = PlayPanel
-        Self.Player = Ether.Data['Players'][InitialContext.author.id]
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.PlayPanel:Panel = PlayPanel
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Army Panel")
+
         await Self._Generate_Info(Ether, InitialContext)
 
         ArmyString = ""

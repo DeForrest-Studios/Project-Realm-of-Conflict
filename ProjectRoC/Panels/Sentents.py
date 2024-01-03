@@ -8,6 +8,7 @@ from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
 from Panels.Recruit import RecruitPanel
 from Panels.Army import ArmyPanel
+from Player import Player
 
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -18,10 +19,16 @@ class SententPanel(Panel):
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        Self.PlayPanel = PlayPanel
-        Self.Player = Ether.Data['Players'][InitialContext.author.id]
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.PlayPanel:Panel = PlayPanel
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Sentents Panel")
+
         await Self._Generate_Info(Ether, InitialContext)
 
         Self.ArmyButton = Button(label="My Army", style=ButtonStyle, custom_id="ArmyButton")

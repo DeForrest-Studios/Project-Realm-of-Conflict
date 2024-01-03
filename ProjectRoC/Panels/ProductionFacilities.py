@@ -8,8 +8,9 @@ from discord.ui import View, Select, Button
 from Panels.Panel import Panel
 from Structures import ProductionFacility
 from time import time as Time
+from Player import Player
 
-class FacilitiesPanel(Panel):
+class ProductionFacilitiesPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         super().__init__()
         create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
@@ -17,10 +18,6 @@ class FacilitiesPanel(Panel):
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        
-        Self.PlayPanel = PlayPanel
-        Self.Interaction = Interaction
-        Self.Player = Ether.Data['Players'][InitialContext.author.id]
 
         if Interaction.data["custom_id"] == "FacilityUpgradeButton":
             if Self.Player.Data['Wallet'] < Self.FacilitySelected.UpgradeCost:
@@ -59,6 +56,12 @@ class FacilitiesPanel(Panel):
             await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
         else:
+            Self.Ether:RealmOfConflict = Ether
+            Self.InitialContext:DiscordContext = InitialContext
+            Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+            Self.PlayPanel:Panel = PlayPanel
+            Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+            
             Self.FacilitiesSelected = None
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{InitialContext.author.name}'s Facilities Panel")

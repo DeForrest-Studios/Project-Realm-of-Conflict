@@ -7,6 +7,7 @@ from discord import SelectOption, Embed
 from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
 from Tables import MaterialWorthTable
+from Player import Player
 
 class AvargoPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -16,11 +17,13 @@ class AvargoPanel(Panel):
     async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        Self.Ether = Ether
-        Self.PlayPanel = PlayPanel
-        Self.Player = Ether.Data['Players'][InitialContext.author.id]
-        Self.InitialContext = InitialContext
-        Self.ButtonStyle = ButtonStyle
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.PlayPanel:Panel = PlayPanel
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Panel")
 
@@ -76,12 +79,12 @@ class AvargoPanel(Panel):
             Self.BaseViewFrame.add_item(Self.CheckoutButton)
 
             Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
-            Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
+            Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
             Self.BaseViewFrame.add_item(Self.AvargoButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
             # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-            Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(ButtonInteraction)
+            Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
         
             if Self.SaleType == "Buy":
@@ -133,13 +136,13 @@ class AvargoPanel(Panel):
         for Material, Quantity in Self.Receipt.items():
             if SaleType == "Buy":
                 Total += round(MaterialWorthTable[Material] * Quantity, 2) + (Self.Player.Data["Maiden's Grace"] * (0.02 * Self.Player.Data["Level"]))
-                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]/4), 2) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))
+                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]), 2) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))
             if SaleType == "Sell":
                 if Quantity > Self.Ether.Data['Players'][Self.InitialContext.author.id].Inventory[Material]:
                     Self.InsufficientMaterial = Material
                     await Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, InsufficientMaterials=True)
                     return
-                EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Material]/8)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+                EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Material]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
                 Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
         
         Self.BaseViewFrame = View(timeout=144000)
@@ -150,13 +153,13 @@ class AvargoPanel(Panel):
         Self.EmbedFrame.add_field(name="Experienced Earned", value=f"{EarnedExperience}", inline=False)
 
         Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
-        Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
+        Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
         Self.BaseViewFrame.add_item(Self.AvargoButton)
 
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-        Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Interaction)
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         if SaleType == "Buy":

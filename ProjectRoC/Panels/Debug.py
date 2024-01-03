@@ -10,6 +10,7 @@ from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
 from Structures import ProductionFacility
 from time import time as Time
+from Player import Player
 
 class DebugPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -19,8 +20,13 @@ class DebugPanel(Panel):
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
             return
-        Self.PlayPanel = PlayPanel
-        Self.Player = Ether.Data['Players'][InitialContext.author.id]
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.PlayPanel:Panel = PlayPanel
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Debug Panel")
 
