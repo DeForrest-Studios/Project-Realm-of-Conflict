@@ -16,9 +16,15 @@ class ProductionFacilitiesPanel(Panel):
                          PlayPanel, "Production",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
 
-    async def _Construct_Panel(Self, FacilitySelected=None, FacilityUpgraded=False):
+    async def _Construct_Panel(Self, Interaction:DiscordInteraction=None, FacilitySelected=None, FacilityUpgraded=False):
         if Self.Interaction.user != Self.InitialContext.author:
             return
+        
+        if Interaction is not None:
+            await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
+            Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
+            await Self._Send_New_Panel(Interaction)
+
 
         if FacilityUpgraded == True:
             if Self.Player.Data['Wallet'] < Self.FacilitySelected.UpgradeCost:
@@ -64,7 +70,7 @@ class ProductionFacilitiesPanel(Panel):
             await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
             Self.FacilitiesSelected = None
             Self.CollectProductionButton = Button(label="Collect Production", style=Self.ButtonStyle, custom_id="CollectProductionButton")
-            Self.CollectProductionButton.callback = lambda ButtonInteraction: Self._Collect_Production_Facilities(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction)
+            Self.CollectProductionButton.callback = lambda ButtonInteraction: Self._Collect_Production_Facilities(ButtonInteraction)
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")

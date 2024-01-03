@@ -43,4 +43,6 @@ class SententPanel(Panel):
             "ArmyButton":ArmyPanel,
             "RecruitButton":RecruitPanel,
         }
-        Self.Ether.Data["Panels"][Self.InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+        Self.Ether.Data["Panels"][Self.InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Self.Ether, Self.InitialContext,
+                                                                                                          Self.ButtonStyle, Interaction,
+                                                                                                          Self.PlayPanel, Self)

@@ -20,7 +20,7 @@ class ProfilePanel(Panel):
         await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Offensive Power", "Defensive Power", "Healing Power",
                                               "Production Power", "Manufacturing Power", "Energy Sapping",])
 
-        Self.ChangeNicknameButton = Button(label="Change Nickname", style=Self.ButtonStyle, custom_id="ChangeNicknameButton")
+        Self.ChangeNicknameButton = Button(label="Change Nickname (WIP)", style=Self.ButtonStyle, custom_id="ChangeNicknameButton")
         Self.ChangeNicknameButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
         Self.BaseViewFrame.add_item(Self.ChangeNicknameButton)
 

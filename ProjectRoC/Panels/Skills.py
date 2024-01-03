@@ -14,11 +14,15 @@ class SkillsPanel(Panel):
                          PlayPanel, "Avargo",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
 
-    async def _Construct_Panel(Self):
+    async def _Construct_Panel(Self, Interaction:DiscordInteraction=None):
         if Self.Interaction.user != Self.InitialContext.author: return
-
+        
         await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "General Skill", "Offensive Skill",
                                                                      "Defensive Skill", "Counter Operations Skill"])
+        
+        if Interaction is not None:
+            await Self._Send_New_Panel(Interaction)
+            return
 
         Self.GeneralSkillsButton = Button(label="General Skills", style=Self.ButtonStyle, custom_id="GeneralSkillsButton")
         Self.GeneralSkillsButton.callback = Self._Construct_General_Skills
@@ -60,7 +64,7 @@ class SkillsPanel(Panel):
         Self.BaseViewFrame.add_item(Self.ManufacturingSkillButton)
 
         Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
-        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")

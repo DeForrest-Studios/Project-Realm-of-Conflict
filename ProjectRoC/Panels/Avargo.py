@@ -14,9 +14,13 @@ class AvargoPanel(Panel):
                          PlayPanel, "Avargo",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
 
-    async def _Construct_Panel(Self):
+    async def _Construct_Panel(Self, Interaction:DiscordInteraction=None):
         if Self.Interaction.user != Self.InitialContext.author: return
+        
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
+        Self.Ether.Logger.info(f"Sent Avargo panel to {Self.Player.Data['Name']}")
 
         Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
         Self.BuyButton.callback = lambda ButtonInteraction : Self._Avargo_Sale(ButtonInteraction, "Buy")
@@ -32,7 +36,10 @@ class AvargoPanel(Panel):
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
         Self.Ether.Logger.info(f"Sent Avargo panel to {Self.Player.Data['Name']}")
-        await Self._Send_New_Panel(Self.Interaction)
+        if Interaction is not None:
+            await Self._Send_New_Panel(Interaction)
+        else:
+            await Self._Send_New_Panel(Self.Interaction)
 
 
     async def _Construct_Buy_Panel(Self, Interaction:DiscordInteraction) -> None:
@@ -47,7 +54,7 @@ class AvargoPanel(Panel):
         if Interaction.user != Self.InitialContext.author:
             return
         Self.AvargoItemQuantityModal = Modal(title="Enter Quantity")
-        Self.AvargoItemQuantityModal.on_submit = lambda Interaction: Self._Avargo_Sale(Interaction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, Quantity=float(Self.AvargoItemQuantity.value))
+        Self.AvargoItemQuantityModal.on_submit = lambda ButtonInteraction: Self._Avargo_Sale(ButtonInteraction, Self.SaleType, MaterialChosen=Self.MaterialChosen, ReceiptStarted=True, Quantity=float(Self.AvargoItemQuantity.value))
 
         Self.AvargoItemQuantity = TextInput(label="Enter item quantity")
         Self.AvargoItemQuantityModal.add_item(Self.AvargoItemQuantity)
@@ -75,7 +82,7 @@ class AvargoPanel(Panel):
             Self.BaseViewFrame.add_item(Self.CheckoutButton)
 
             Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
-            Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+            Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
             Self.BaseViewFrame.add_item(Self.AvargoButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -90,7 +97,7 @@ class AvargoPanel(Panel):
 
             Self.AvargoItemChoice = Select(placeholder="Select a material", options=Self.AvargoItemChoices, custom_id=f"ItemSelection", row=2)
             Self.BaseViewFrame.add_item(Self.AvargoItemChoice)
-            Self.AvargoItemChoice.callback = lambda Interaction: Self._Avargo_Sale(Interaction, SaleType, ReceiptStarted=ReceiptStarted, MaterialChosen=Interaction.data["values"][0])
+            Self.AvargoItemChoice.callback = lambda ButtonInteraction: Self._Avargo_Sale(ButtonInteraction, SaleType, ReceiptStarted=ReceiptStarted, MaterialChosen=ButtonInteraction.data["values"][0])
             
 
         if MaterialChosen:
@@ -149,7 +156,7 @@ class AvargoPanel(Panel):
         Self.EmbedFrame.add_field(name="Experienced Earned", value=f"{EarnedExperience}", inline=False)
 
         Self.AvargoButton = Button(label="Avargo", style=Self.ButtonStyle, row=3, custom_id="AvargoButton")
-        Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.AvargoButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.AvargoButton)
 
 

@@ -10,17 +10,18 @@ from Tables import InfantryTable, InfantryToObject
 from Player import Player
 
 class RecruitPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, SententsPanel):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Recruit",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
+        Self.SententsPanel = SententsPanel
 
     async def _Construct_Panel(Self, InfantrySelected=None, InfantryRecruited=None):
         if Self.Interaction.user != Self.InitialContext.author: return
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
-        Self.RecruitButton = Button(label="Recruit", style=Self.ButtonStyle, custom_id="RecruitButton")
+        Self.RecruitButton = Button(label="Recruit Selection", style=Self.ButtonStyle, custom_id="RecruitButton")
         Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Self.InfantrySelected, Self.InfantrySelected)
         Self.BaseViewFrame.add_item(Self.RecruitButton)
 
@@ -28,6 +29,10 @@ class RecruitPanel(Panel):
         Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices, custom_id=f"InfantrySelection", row=2)
         Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Panel(Interaction.data["values"][0])
         Self.BaseViewFrame.add_item(Self.InfantryChoice)
+
+        Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle, row=2, custom_id="SententsButton")
+        Self.SententsButton.callback = lambda Interaction: Self.SententsPanel._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+        Self.BaseViewFrame.add_item(Self.SententsButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
