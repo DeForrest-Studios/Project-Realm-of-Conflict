@@ -1,8 +1,33 @@
 from discord import Interaction as DiscordInteraction
+from discord.ext.commands import Context as DiscordContext
+from discord import ButtonStyle as DiscordButtonStyle
+from discord import Embed
+from discord.ui import View
+from RealmOfConflict import RealmOfConflict
+from Player import Player
+from asyncio import create_task
 
 class Panel:
-    async def _Send_New_Panel(Self, Interaction:DiscordInteraction):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
+                       PlayPanel, PanelType:str,
+                       Interaction:DiscordInteraction=None, ButtonStyle:DiscordButtonStyle=None) -> None:
+        
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.PlayPanel:Panel = PlayPanel
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s {PanelType} Panel")
+        if Interaction is not None:
+            Self.Interaction:DiscordInteraction = Interaction
+            create_task(Self._Construct_Panel())
+
+
+    async def _Send_New_Panel(Self, Interaction:DiscordInteraction) -> None:
         await Interaction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+
 
     async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]):
         Self.EmbedFrame.description = ""

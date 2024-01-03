@@ -19,10 +19,12 @@ from Panels.Skills import SkillsPanel
 from Player import Player
 
 
-class PlayPanel(Panel):
+class PlayPanel:
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext):
-        super().__init__()
         create_task(Self._Construct_Home(Ether, InitialContext))
+
+    async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]): return await Panel._Generate_Info(Self, Ether, InitialContext, Exclusions, Inclusions)
+    async def _Send_New_Panel(Self, Interaction): return await Panel._Send_New_Panel(Self, Interaction)
 
 
     async def _Determine_Team(Self, InitialContext):
@@ -35,21 +37,21 @@ class PlayPanel(Panel):
 
 
     async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, Interaction:DiscordInteraction=None):
-        Ether:RealmOfConflict = Ether
+        Self.Ether:RealmOfConflict = Ether
+        Self.InitialContext:DiscordContext = InitialContext
+        Self.PlayPanel:Panel = PlayPanel
+        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
+
         Whitelist:[int] = [897410636819083304, # Robert Reynolds, Cavan
         ]
         Self.Mapping = {}
         Self.ReceiptString = ""
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
-        
-        Self.Ether:RealmOfConflict = Ether
-        Self.InitialContext:DiscordContext = InitialContext
-        Self.PlayPanel:Panel = PlayPanel
-        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
-
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Ether.Data['Players'][InitialContext.author.id].Data['Name']}'s Home Panel")
 
         await Self._Generate_Info(Ether, InitialContext)
 

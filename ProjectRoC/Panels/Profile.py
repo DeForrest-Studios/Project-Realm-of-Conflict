@@ -10,29 +10,23 @@ from Player import Player
 
 class ProfilePanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        super().__init__()
-        create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
+        super().__init__(Ether, InitialContext,
+                         PlayPanel, "Avargo",
+                         Interaction=Interaction, ButtonStyle=ButtonStyle)
 
-    async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        Self.Ether:RealmOfConflict = Ether
-        Self.InitialContext:DiscordContext = InitialContext
-        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
-        Self.PlayPanel:Panel = PlayPanel
-        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+    async def _Construct_Panel(Self):
+        if Self.Interaction.user != Self.InitialContext.author: return
 
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Profile Panel")
-
-        await Self._Generate_Info(Ether, InitialContext, Inclusions=["Skill Points", "Offensive Power", "Defensive Power", "Healing Power",
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Offensive Power", "Defensive Power", "Healing Power",
                                               "Production Power", "Manufacturing Power", "Energy Sapping",])
 
-        Self.ChangeNicknameButton = Button(label="Change Nickname", style=ButtonStyle, custom_id="ChangeNicknameButton")
+        Self.ChangeNicknameButton = Button(label="Change Nickname", style=Self.ButtonStyle, custom_id="ChangeNicknameButton")
         Self.ChangeNicknameButton.callback = lambda Interaction: Self._Construct_Army_Panel(Interaction=Interaction)
         Self.BaseViewFrame.add_item(Self.ChangeNicknameButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-        Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
+        Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
-        await Self._Send_New_Panel(Interaction)
+        await Self._Send_New_Panel(Self.Interaction)

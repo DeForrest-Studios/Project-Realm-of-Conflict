@@ -7,42 +7,39 @@ from discord import SelectOption, Embed
 from discord.ui import View, Select, Button, Modal, TextInput
 from Panels.Panel import Panel
 from Tables import MaterialWorthTable
-from Player import Player
 
 class AvargoPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        super().__init__()
-        create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
-    
-    async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        if Interaction.user != InitialContext.author:
-            return
-        
-        Self.Ether:RealmOfConflict = Ether
-        Self.InitialContext:DiscordContext = InitialContext
-        Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
-        Self.PlayPanel:Panel = PlayPanel
-        Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+        super().__init__(Ether, InitialContext,
+                         PlayPanel, "Avargo",
+                         Interaction=Interaction, ButtonStyle=ButtonStyle)
 
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Panel")
+    async def _Construct_Panel(Self):
+        if Self.Interaction.user != Self.InitialContext.author: return
+        await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
-        await Self._Generate_Info(Ether, InitialContext)
-
-        Self.BuyButton = Button(label="Buy", style=ButtonStyle, custom_id="BuyButton")
+        Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
         Self.BuyButton.callback = lambda ButtonInteraction : Self._Avargo_Sale(ButtonInteraction, "Buy")
         Self.BaseViewFrame.add_item(Self.BuyButton)
 
-        Self.SellButton = Button(label="Sell", style=ButtonStyle, custom_id="SellButton")
+        Self.SellButton = Button(label="Sell", style=Self.ButtonStyle, custom_id="SellButton")
         Self.SellButton.callback = lambda ButtonInteraction: Self._Avargo_Sale(ButtonInteraction, "Sell")
         Self.BaseViewFrame.add_item(Self.SellButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-        Self.HomepageButton.callback = lambda ButtonInteraction: PlayPanel._Construct_Home(Ether, InitialContext, ButtonInteraction)
+        Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
-        await Self._Send_New_Panel(Interaction)
+        await Self._Send_New_Panel(Self.Interaction)
+
+
+    async def _Construct_Buy_Panel(Self, Interaction:DiscordInteraction) -> None:
+        ...
+
+
+    async def _Construct_Sell_Panel(Self, Interaction:DiscordInteraction) -> None:
+        ...
 
 
     async def _Construct_Quantity_Modal(Self, Interaction:DiscordInteraction):
@@ -58,8 +55,6 @@ class AvargoPanel(Panel):
 
     async def _Avargo_Sale(Self, Interaction, SaleType, MaterialChosen=None, ReceiptStarted=False, Quantity=None, InsufficientFunds=False, InsufficientMaterials=False):
         if Interaction.user != Self.InitialContext.author:
-            print(Interaction.user)
-            print(Self.InitialContext.author)
             return
         Self.SaleType = SaleType
         if MaterialChosen is None or InsufficientFunds:

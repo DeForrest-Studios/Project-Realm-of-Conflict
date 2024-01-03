@@ -11,35 +11,27 @@ from Player import Player
 
 class RecruitPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        super().__init__()
-        create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
+        super().__init__(Ether, InitialContext,
+                         PlayPanel, "Avargo",
+                         Interaction=Interaction, ButtonStyle=ButtonStyle)
 
+    async def _Construct_Panel(Self):
+        if Self.Interaction.user != Self.InitialContext.author: return
 
-    async def _Construct_Panel(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, InfantrySelected=None, InfantryRecruited=None):
-        if InfantrySelected == None:
-            Self.Ether:RealmOfConflict = Ether
-            Self.InitialContext:DiscordContext = InitialContext
-            Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
-            Self.PlayPanel:Panel = PlayPanel
-            Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
+        await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
-            Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Recruit Panel")
+        Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")
+        Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, Self.InfantrySelected, Self.InfantrySelected)
+        Self.BaseViewFrame.add_item(Self.RecruitButton)
 
-            await Self._Generate_Info(Ether, InitialContext)
+        Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
+        Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices, custom_id=f"InfantrySelection", row=2)
+        Self.BaseViewFrame.add_item(Self.InfantryChoice)
 
-            Self.RecruitButton = Button(label="Recruit", style=ButtonStyle, custom_id="RecruitButton")
-            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel, Self.InfantrySelected, Self.InfantrySelected)
-            Self.BaseViewFrame.add_item(Self.RecruitButton)
-
-            Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
-            Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices, custom_id=f"InfantrySelection", row=2)
-            Self.BaseViewFrame.add_item(Self.InfantryChoice)
-
-            Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
-            # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
-            Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
-            Self.BaseViewFrame.add_item(Self.HomepageButton)
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
+        Self.HomepageButton.callback = lambda Interaction: PlayPanel._Construct_Home(Ether, InitialContext, Interaction)
+        Self.BaseViewFrame.add_item(Self.HomepageButton)
         
         if InfantrySelected:
             Self.InfantrySelected = InfantrySelected

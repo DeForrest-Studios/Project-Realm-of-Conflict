@@ -12,8 +12,9 @@ from Player import Player
 
 class ProductionFacilitiesPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
-        super().__init__()
-        create_task(Self._Construct_Panel(Ether, InitialContext, ButtonStyle, Interaction, PlayPanel))
+        super().__init__(Ether, InitialContext,
+                         PlayPanel, "Debug",
+                         Interaction=Interaction, ButtonStyle=ButtonStyle)
 
     async def _Construct_Panel(Self, Ether, InitialContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
         if Interaction.user != InitialContext.author:
@@ -56,16 +57,8 @@ class ProductionFacilitiesPanel(Panel):
             await Self._Generate_Info(Ether, InitialContext, Exclusions=["Team", "Power"])
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
         else:
-            Self.Ether:RealmOfConflict = Ether
-            Self.InitialContext:DiscordContext = InitialContext
-            Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
-            Self.PlayPanel:Panel = PlayPanel
-            Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
-            
+            await Self._Generate_Info(Self.Ether, Self.InitialContext)
             Self.FacilitiesSelected = None
-            Self.BaseViewFrame = View(timeout=144000)
-            Self.EmbedFrame = Embed(title=f"{InitialContext.author.name}'s Facilities Panel")
-
             Self.CollectProductionButton = Button(label="Collect Production", style=ButtonStyle, custom_id="CollectProductionButton")
             Self.CollectProductionButton.callback = lambda ButtonInteraction: Self._Collect_Production_Facilities(Ether, InitialContext, ButtonStyle, ButtonInteraction)
             Self.BaseViewFrame.add_item(Self.CollectProductionButton)
