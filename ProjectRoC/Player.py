@@ -80,12 +80,12 @@ class Player:
             "Silver Ore": 0.0,
             "Gold Ore": 0.0,
             "Lithium Ore": 0.0,
-            "Refined Copper": 0.0,
-            "Refined Iron": 0.0,
-            "Refined Aluminum": 0.0,
-            "Refined Silver": 0.0,
-            "Refined Gold": 0.0,
-            "Refined Lithium": 0.0,
+            "Copper": 0.0,
+            "Iron": 0.0,
+            "Aluminum": 0.0,
+            "Silver": 0.0,
+            "Gold": 0.0,
+            "Lithium": 0.0,
         }
         Self.ProductionFacilities:{str:ProductionFacility} = {
             "Well": Well(),
