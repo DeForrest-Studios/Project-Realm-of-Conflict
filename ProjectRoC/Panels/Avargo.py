@@ -169,6 +169,12 @@ class AvargoPanel(Panel):
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
         Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
         await Self._Send_New_Panel(Interaction)
+        Self.MaterialChosen = None
+        Self.MaterialRaw = None
+        Self.ReceiptStarted = False
+        Self.Quantity = None
+        Self.ReceiptString = ""
+        Self.Receipt = {}
 
 
     async def _Construct_Quantity_Modal(Self, Interaction:DiscordInteraction):
@@ -187,10 +193,8 @@ class AvargoPanel(Panel):
 
     async def _Avargo_Checkout(Self, Interaction:DiscordInteraction):
         if Interaction.user != Self.InitialContext.author:
-            print("Cum")
             return
         if len(Self.Receipt) == 0:
-            print("Fuck")
             return
         
         Self.BaseViewFrame = View(timeout=144000)
@@ -245,3 +249,10 @@ class AvargoPanel(Panel):
                 Self.EmbedFrame.add_field(name="Total", value=f"${Total}", inline=False)
                 Self.EmbedFrame.add_field(name="Experienced Earned", value=f"{EarnedExperience}", inline=False)
                 await Self._Send_New_Panel(Interaction)
+
+        Self.MaterialChosen = None
+        Self.MaterialRaw = None
+        Self.ReceiptStarted = False
+        Self.Quantity = None
+        Self.ReceiptString = ""
+        Self.Receipt = {}
