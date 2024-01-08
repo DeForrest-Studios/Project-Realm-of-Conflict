@@ -168,17 +168,23 @@ class CraftingPanel(Panel):
                 Self.BaseViewFrame.add_item(Self.CraftingItemChoice)
 
         if CraftingItemSelection is not None:
+            try:
+                Self.CraftItem
+            except AttributeError:
+                Self.CraftItem = Button(label="Craft (WIP)", style=Self.ButtonStyle, row=0, custom_id="CraftItem")
+                Self.CraftItem.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
+                Self.BaseViewFrame.add_item(Self.CraftItem)
             Self.CraftingItemSelection = CraftingItemSelection
             Self.CraftingItemChoice.placeholder = Self.CraftingItemSelection
             Recipe = TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection]
             Self.EmbedFrame.description += f"### Recipe\n"
             if type(Recipe) == tuple:
-                OutputQuantity = Recipe[1]
                 Recipe = Recipe[0]
+                OutputQuantity = Recipe[1]
                 Self.EmbedFrame.description += f"**Outputs** - {OutputQuantity}\n"
                 for Name, Quantity in Recipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
-            elif type(Recipe) == dict:
+            if type(Recipe) == dict:
                 for Name, Quantity in Recipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
 
