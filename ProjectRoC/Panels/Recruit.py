@@ -10,7 +10,9 @@ from Tables import InfantryTable, InfantryToObject
 from Player import Player
 
 class RecruitPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, SententsPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
+                 ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
+                 PlayPanel, SententsPanel):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Recruit",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
@@ -21,20 +23,24 @@ class RecruitPanel(Panel):
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
-        Self.RecruitButton = Button(label="Recruit Selection", style=Self.ButtonStyle, custom_id="RecruitButton")
+        Self.RecruitButton = Button(label="Recruit Selection", style=Self.ButtonStyle,
+                                    row=0, custom_id="RecruitButton")
         Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Self.InfantrySelected, Self.InfantrySelected)
         Self.BaseViewFrame.add_item(Self.RecruitButton)
 
         Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
-        Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices, custom_id=f"InfantrySelection", row=2)
+        Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices,
+                                     row=1, custom_id=f"InfantrySelection")
         Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Panel(Interaction.data["values"][0])
         Self.BaseViewFrame.add_item(Self.InfantryChoice)
 
-        Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle, row=2, custom_id="SententsButton")
-        Self.SententsButton.callback = lambda Interaction: Self.SententsPanel._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+        Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle,
+                                     row=2, custom_id="SententsButton")
+        Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__ainit__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
         Self.BaseViewFrame.add_item(Self.SententsButton)
 
-        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,
+                                     row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)

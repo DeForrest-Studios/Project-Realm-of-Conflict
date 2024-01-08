@@ -10,10 +10,13 @@ from time import time as Time
 from Player import Player
 
 class ArmyPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
+                 ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
+                 PlayPanel, SententsPanel):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Army",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
+        Self.SententsPanel = SententsPanel
 
     async def _Construct_Panel(Self):
         if Self.Interaction.user != Self.InitialContext.author: return
@@ -34,15 +37,23 @@ class ArmyPanel(Panel):
 
         Self.EmbedFrame.add_field(name="\u200b", value=ArmyString, inline=False)
 
-        Self.NextPageButton = Button(label="Next Page", style=Self.ButtonStyle, custom_id="NextPageButton")
+        Self.NextPageButton = Button(label="Next Page", style=Self.ButtonStyle,
+                                     row=0, custom_id="NextPageButton")
         Self.NextPageButton.callback = lambda Interaction: ...
         Self.BaseViewFrame.add_item(Self.NextPageButton)
 
-        Self.PreviousPageButton = Button(label="Previous Page", style=Self.ButtonStyle, custom_id="PreviousPageButton")
+        Self.PreviousPageButton = Button(label="Previous Page", style=Self.ButtonStyle,
+                                         row=0, custom_id="PreviousPageButton")
         Self.PreviousPageButton.callback = lambda Interaction: ...
         Self.BaseViewFrame.add_item(Self.PreviousPageButton)
 
-        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle,
+                                     row=2, custom_id="SententsButton")
+        Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__ainit__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+        Self.BaseViewFrame.add_item(Self.SententsButton)
+
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,
+                                     row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)

@@ -11,7 +11,16 @@ from Panels.Army import ArmyPanel
 from Player import Player
 
 class SententPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
+                 ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
+                 PlayPanel):
+        super().__init__(Ether, InitialContext,
+                         PlayPanel, "Sentents",
+                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+
+    async def __ainit__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, # I'm sorry for this, but this is how the recruit panel,
+                        ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction, # and the army panel get back to the sentent panel
+                        PlayPanel):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Sentents",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
