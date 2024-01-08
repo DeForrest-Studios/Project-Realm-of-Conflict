@@ -52,63 +52,76 @@ Weapons = {"Tier 1 Missile":{"Copper":500,
                              "Iron":500,
                              "Aluminum":360,
                              "Steel":280,
+                             "Wire":400,
                              "Fuel":205},
            "Tier 2 Missile":{"Copper":1250,
                              "Iron":1250,
                              "Aluminum":920,
                              "Steel":685,
+                             "Wire":860,
                              "Fuel":465},
            "Tier 3 Missile":{"Copper":2900,
                              "Iron":2900,
                              "Aluminum":2360,
                              "Steel":1545,
+                             "Wire":1880,
                              "Fuel":720},
            "Tier 4 Missile":{"Copper":6400,
                              "Iron":6400,
                              "Aluminum":5450,
                              "Steel":3740,
+                             "Wire":4000,
                              "Fuel":1310},
            "Tier 5 Missile":{"Copper":144000,
                              "Iron":144000,
                              "Aluminum":133000,
                              "Steel":7980,
+                             "Wire":8200,
                              "Fuel":3610},
            "Tier 1 Shield":{"Copper":500,
                              "Iron":500,
                              "Aluminum":360,
                              "Steel":280,
+                             "Wire":400,
                              "Batteries":180},
            "Tier 2 Shield":{"Copper":1250,
                              "Iron":1250,
                              "Aluminum":920,
                              "Steel":685,
+                             "Wire":860,
                              "Batteries":420},
            "Tier 3 Shield":{"Copper":2900,
                              "Iron":2900,
                              "Aluminum":2360,
                              "Steel":1545,
+                             "Wire":1880,
                              "Batteries":860},
            "Tier 4 Shield":{"Copper":6400,
                              "Iron":6400,
                              "Aluminum":5450,
                              "Steel":3740,
+                             "Wire":4000,
                              "Batteries":1920},
            "Tier 5 Shield":{"Copper":144000,
                              "Iron":144000,
                              "Aluminum":133000,
                              "Steel":7980,
+                             "Wire":8200,
                              "Batteries":4250},
            "Tier 1 EMP":{"Iron": 600,
                          "Copper": 900,
                          "Aluminum":450,
+                         "Wire":750,
                          "Batteries":400},
            "Tier 2 EMP":{"Iron": 1450,
                          "Copper": 1980,
                          "Aluminum":1000,
+                         "Wire":1700,
                          "Batteries":960},
            "Tier 3 EMP":{"Iron": 3400,
                          "Copper": 3900,
                          "Aluminum":1550,
+                         "Wire":3725,
                          "Batteries":2000},}
 
 TypeMapping = {"Components":Components,
@@ -156,15 +169,16 @@ class CraftingPanel(Panel):
 
         if CraftingItemSelection is not None:
             Self.CraftingItemSelection = CraftingItemSelection
+            Self.CraftingItemChoice.placeholder = Self.CraftingItemSelection
             Recipe = TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection]
             Self.EmbedFrame.description += f"### Recipe\n"
             if type(Recipe) == tuple:
-                Recipe = Recipe[0]
                 OutputQuantity = Recipe[1]
+                Recipe = Recipe[0]
                 Self.EmbedFrame.description += f"**Outputs** - {OutputQuantity}\n"
                 for Name, Quantity in Recipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
-            if type(Recipe) == dict:
+            elif type(Recipe) == dict:
                 for Name, Quantity in Recipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
 
