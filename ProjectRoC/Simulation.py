@@ -87,7 +87,7 @@ class Simulation:
         Self.DestroyedPlanet = None
 
         while True:
-            Self.Logger.info("Starting core simulation loop")
+            Ether.Logger.info("Starting core simulation loop")
             Self.AnalisDefended = False
             Self.TitanDefended = False
             Ether.Data['Skirmish Count'] += 1
