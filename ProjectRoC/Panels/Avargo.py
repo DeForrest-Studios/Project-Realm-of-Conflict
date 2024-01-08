@@ -1,4 +1,3 @@
-from asyncio import create_task
 from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
@@ -9,7 +8,9 @@ from Panels.Panel import Panel
 from Tables import MaterialWorthTable
 
 class AvargoPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
+                 ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
+                 PlayPanel):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Avargo",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)

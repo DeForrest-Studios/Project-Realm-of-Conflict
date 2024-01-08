@@ -129,7 +129,7 @@ class Player:
         Self.Skills[ChosenSkill] += 1
         Self.Data["Skill Points"] -= 1
         Self.Refresh_Power()
-        Self.Refresh_Skills(Mapping[ChosenSkill], Mapping[Mapping[ChosenSkill]])
+        Self.Refresh_Skill_Category(Mapping[ChosenSkill], Mapping[Mapping[ChosenSkill]])
         return True
 
     def Refresh_All_Skills(Self):
@@ -139,7 +139,7 @@ class Player:
         Self.Data["Counter Operations Skill"] = sum([SkillLevel for SkillLevel in [Self.Skills["Hacking"], Self.Skills["Raiding"]]])
 
 
-    def Refresh_Skills(Self, Category, Skills):
+    def Refresh_Skill_Category(Self, Category, Skills):
         Self.Data[Category] = sum([SkillLevel for SkillLevel in [Self.Skills[Skill] for Skill in Skills]])
 
 

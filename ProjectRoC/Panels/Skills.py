@@ -9,7 +9,9 @@ from Panels.Panel import Panel
 from Player import Player
 
 class SkillsPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
+                 ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
+                 PlayPanel):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Avargo",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
@@ -17,30 +19,42 @@ class SkillsPanel(Panel):
     async def _Construct_Panel(Self, Interaction:DiscordInteraction=None):
         if Self.Interaction.user != Self.InitialContext.author: return
         
+        if Interaction is not None:
+            Self.BaseViewFrame = View(timeout=144000)
+            Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Skills Panel")
+            Self.Interaction = Interaction
+
         await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "General Skill", "Offensive Skill",
                                                                      "Defensive Skill", "Counter Operations Skill"])
         
-        if Interaction is not None:
-            await Self._Send_New_Panel(Interaction)
-            return
-
-        Self.GeneralSkillsButton = Button(label="General Skills", style=Self.ButtonStyle, custom_id="GeneralSkillsButton")
+        Self.GeneralSkillsButton = Button(label="General Skills", style=Self.ButtonStyle,
+                                          row=1, custom_id="GeneralSkillsButton")
         Self.GeneralSkillsButton.callback = Self._Construct_General_Skills
         Self.BaseViewFrame.add_item(Self.GeneralSkillsButton)
 
-        Self.OffensiveSkillButton = Button(label="Offensive Skill", style=Self.ButtonStyle, custom_id="OffensiveSkillButton")
+        Self.OffensiveSkillButton = Button(label="Offensive Skill", style=Self.ButtonStyle,
+                                           row=1, custom_id="OffensiveSkillButton")
         Self.OffensiveSkillButton.callback = Self._Construct_Offensive_Skills
         Self.BaseViewFrame.add_item(Self.OffensiveSkillButton)
 
-        Self.DefensiveSkillButton = Button(label="Defensive Skill", style=Self.ButtonStyle, custom_id="DefensiveSkillButton")
+        Self.DefensiveSkillButton = Button(label="Defensive Skill", style=Self.ButtonStyle,
+                                           row=1, custom_id="DefensiveSkillButton")
         Self.DefensiveSkillButton.callback = Self._Construct_Defensive_Skills
         Self.BaseViewFrame.add_item(Self.DefensiveSkillButton)
 
-        Self.CounterOperationsSkillButton = Button(label="Counter Operations Skill", style=Self.ButtonStyle, custom_id="CounterOperationsSkillButton")
+        Self.CounterOperationsSkillButton = Button(label="Counter Operations Skill", style=Self.ButtonStyle,
+                                                   row=1, custom_id="CounterOperationsSkillButton")
         Self.CounterOperationsSkillButton.callback = Self._Construct_Counter_Operations_Skills
         Self.BaseViewFrame.add_item(Self.CounterOperationsSkillButton)
 
-        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
+        Self.CounterOperationsSkillButton = Button(label="Respec", style=Self.ButtonStyle,
+                                                   row=2, custom_id="RespecButton")
+        Self.CounterOperationsSkillButton.callback = Self._Respec_Player
+        Self.BaseViewFrame.add_item(Self.CounterOperationsSkillButton)
+
+
+        Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,
+                                     row=3, custom_id="HomePageButton")
         # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
@@ -166,4 +180,25 @@ class SkillsPanel(Panel):
             Self.Ether.Logger.info(f"Denied {Self.Player.Data['Name']} skill level up")
 
         Self.Ether.Logger.info(f"Sent Skills panel to {Self.Player.Data['Name']} after attempted skill")
+        await Self._Send_New_Panel(Interaction)
+
+
+    async def _Respec_Player(Self, Interaction):
+        Self.EmbedFrame.clear_fields()
+        SkillPointsAmount = 0
+        for Level in Self.Player.Skills.values():
+            SkillPointsAmount += Level
+
+        Self.Player.Skills = {SkillName:0 for SkillName in Self.Player.Skills.keys()}
+
+        Self.Player.Refresh_All_Skills()
+
+        Self.Player.Data["Skill Points"] = SkillPointsAmount
+
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "General Skill", "Offensive Skill",
+                                                                     "Defensive Skill", "Counter Operations Skill"])
+        
+        Self.EmbedFrame.add_field(name=f"You gained {SkillPointsAmount} during respecing", value="\u200b")
+
+        Self.Ether.Logger.info(f"Sent Skills panel to {Self.Player.Data['Name']} after respec")
         await Self._Send_New_Panel(Interaction)
