@@ -1,14 +1,11 @@
-from asyncio import create_task
 from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
 from discord import ButtonStyle as DiscordButtonStyle
-from discord import SelectOption, Embed
-from discord.ui import View, Select, Button, Modal, TextInput
+from discord.ui import Button
 from Panels.Panel import Panel
 from Panels.Recruit import RecruitPanel
 from Panels.Army import ArmyPanel
-from Player import Player
 
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
