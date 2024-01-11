@@ -168,6 +168,21 @@ class CraftingPanel(Panel):
                                                                                             CraftingItemSelection=Interaction.data["values"][0])
                 Self.BaseViewFrame.add_item(Self.CraftingItemChoice)
 
+        if CraftedAmount is not None:
+            for Item, AmountRequired in TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection].items():
+                if Self.Player.Inventory[Item] <= AmountRequired * CraftedAmount:
+                    Self.EmbedFrame.description += f"**Insufficient Resources** {Item}\n"
+                    Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")
+                    await Self._Send_New_Panel(Self.Interaction)
+                    return
+
+            for Item, AmountRequired in TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection].items():
+                Self.Player.Inventory[Item] = round(Self.Player.Inventory[Item] - AmountRequired * CraftedAmount, 2)
+            
+            PreviousAmount = Self.Player.Inventory[CraftingItemSelection]
+            Self.Player.Inventory[CraftingItemSelection] = round(Self.Player.Inventory[CraftingItemSelection] + CraftedAmount, 2)
+            Self.EmbedFrame.description += f"**You crafted:** {CraftedAmount} {CraftingItemSelection}, you had {PreviousAmount} and now have {Self.Player.Inventory[CraftingItemSelection]}\n"
+
         if CraftingItemSelection is not None:
             try:
                 Self.CraftItem
@@ -188,23 +203,6 @@ class CraftingPanel(Panel):
             if type(Recipe) == dict:
                 for Name, Quantity in Recipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
-
-
-        if CraftedAmount is not None:
-            Self.EmbedFrame.description += f"**Crafting** - {CraftedAmount} {Self.CraftingItemSelection}\n"
-            for Item, AmountRequired in Recipe.items():
-                if Self.Player.Inventory[Item] <= AmountRequired * CraftedAmount:
-                    Self.EmbedFrame.description += f"**Insufficient Resources** {Item}\n"
-                    Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")
-                    await Self._Send_New_Panel(Self.Interaction)
-                    return
-
-            for Item, AmountRequired in Recipe.items():
-                Self.Player.Inventory[Item] = round(Self.Player.Inventory[Item] - AmountRequired * CraftedAmount, 2)
-            
-            PreviousAmount = Self.Player.Inventory[CraftingItemSelection]
-            Self.Player.Inventory[CraftingItemSelection] = round(Self.Player.Inventory[CraftingItemSelection] + CraftedAmount, 2)
-            Self.EmbedFrame.description += f"**You crafted:** {CraftedAmount} {CraftingItemSelection}, you had {PreviousAmount} and now have {Self.Player.Inventory[CraftingItemSelection]}\n"
 
         Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Self.Interaction)
