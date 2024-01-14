@@ -141,7 +141,6 @@ class CraftingPanel(Panel):
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
         if Interaction == None:
-
             Self.CraftingTypeChoices = [SelectOption(label="Components"), SelectOption(label="Weapons")]
             Self.CraftingTypes = Select(placeholder="Select a Crafting Type", options=Self.CraftingTypeChoices,
                                         row=1, custom_id=f"InfantrySelection")
@@ -159,14 +158,14 @@ class CraftingPanel(Panel):
             Self.CraftingTypeSelected = CraftingTypeSelected
             Self.CraftingTypes.placeholder = Self.CraftingTypeSelected
             
-            try:
-                Self.CraftingItemChoice
-            except AttributeError:
-                Self.CraftingItemChoice = Select(placeholder="Select an Item", options=[SelectOption(label=Key) for Key in TypeMapping[Self.CraftingTypeSelected].keys()],
-                                            row=2, custom_id=f"CraftingItemChoice")
-                Self.CraftingItemChoice.callback = lambda Interaction: Self._Construct_Panel(Interaction=Interaction, CraftingTypeSelected=Self.CraftingTypeSelected,
-                                                                                            CraftingItemSelection=Interaction.data["values"][0])
-                Self.BaseViewFrame.add_item(Self.CraftingItemChoice)
+            if hasattr(Self, "CraftingItemChoice"):
+                Self.BaseViewFrame.remove_item(Self.CraftingItemChoice)
+            
+            Self.CraftingItemChoice = Select(placeholder="Select an Item", options=[SelectOption(label=Key) for Key in TypeMapping[Self.CraftingTypeSelected].keys()],
+                                        row=2, custom_id=f"CraftingItemChoice")
+            Self.CraftingItemChoice.callback = lambda Interaction: Self._Construct_Panel(Interaction=Interaction, CraftingTypeSelected=Self.CraftingTypeSelected,
+                                                                                        CraftingItemSelection=Interaction.data["values"][0])
+            Self.BaseViewFrame.add_item(Self.CraftingItemChoice)
 
         if CraftedAmount is not None:
             for Item, AmountRequired in TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection].items():
