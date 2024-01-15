@@ -53,6 +53,7 @@ class Player:
                 "Join TimeStamp": int(time()),
                 "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
+                "Land Plots":1,
             }
         Self.Skills = {
             "Production":0,

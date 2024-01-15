@@ -187,15 +187,25 @@ class LithiumMine(ProductionFacility):
 
 
 class ManufacturingFacility:
-    def __init__(Self):
-        Self.Name: str = None
-        Self.Level: int = 1
+    def __init__(Self, Name):
+        Self.Data = {
+            "Name":Name,
+            "Level":1,
+            "Recipe":"None",
+            "Capacity":0,
+            "Upgrade Cost":0,
+            "Experience On Upgrade":0,
+            "Capacity Multiplier": 5000,
+            "Upgrade Cost Multiplier": 800,
+        }
 
 
     def Upgrade(Self):
-        Self.Level += 1
-        Self.Stat_Refresh()
+        Self.Data["Level"] += 1
+        Self.Refresh_Stats()
     
     
-    def Stat_Refresh(Self):
-        ...# This is where stats are multiplied by level, and reassigned
+    def Refresh_Stats(Self):
+        Self.Data["Capacity"] = Self.Data["Capacity Multiplier"] * Self.Data["Level"]
+        Self.Data["Upgrade Cost"] = Self.Data["Upgrade Cost Multiplier"] * Self.Data["Level"]
+        Self.Data["Experience On Upgrade"] = (Self.Data["Upgrade Cost"] * 1.5) * Self.Data["Level"]
