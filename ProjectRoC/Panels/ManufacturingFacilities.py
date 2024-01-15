@@ -24,13 +24,17 @@ class ManufacturingFacilitiesPanel(Panel):
             Self.Interaction = Interaction
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
-        Self.BuyFacility = Button(label="Buy Facility ~ $35,000", style=Self.ButtonStyle, row=0, custom_id="BuyFacilityButton")
-        Self.BuyFacility.callback = lambda Interaction: Self._Construct_Panel(Interaction, BoughtFacility=True)
-        Self.BaseViewFrame.add_item(Self.BuyFacility)
+        Self.CollectButton = Button(label="Collect from Facilities", style=Self.ButtonStyle, row=0, custom_id="CollectButton")
+        Self.CollectButton.callback = lambda Interaction: Self._Construct_Panel(Interaction)
+        Self.BaseViewFrame.add_item(Self.CollectButton)
 
-        Self.BuyLandPlot = Button(label="Buy Land Plot ~ $1,750,000", style=Self.ButtonStyle, row=0, custom_id="BuyLandPlotButton")
-        Self.BuyLandPlot.callback = lambda Interaction: Self._Construct_Panel(Interaction, BoughtLandPlot=True)
-        Self.BaseViewFrame.add_item(Self.BuyLandPlot)
+        Self.BuyFacilityButton = Button(label="Buy Facility ~ $35,000", style=Self.ButtonStyle, row=0, custom_id="BuyFacilityButton")
+        Self.BuyFacilityButton.callback = lambda Interaction: Self._Construct_Panel(Interaction, BoughtFacility=True)
+        Self.BaseViewFrame.add_item(Self.BuyFacilityButton)
+
+        Self.BuyLandPlotButton = Button(label="Buy Land Plot ~ $1,750,000", style=Self.ButtonStyle, row=0, custom_id="BuyLandPlotButton")
+        Self.BuyLandPlotButton.callback = lambda Interaction: Self._Construct_Panel(Interaction, BoughtLandPlot=True)
+        Self.BaseViewFrame.add_item(Self.BuyLandPlotButton)
 
         if BoughtFacility:
             if Self.Player.Data["Wallet"] >= 35000:
@@ -59,12 +63,20 @@ class ManufacturingFacilitiesPanel(Panel):
             Self.EmbedFrame.description += f"**Level:** {Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data['Level']}\n"
             Self.EmbedFrame.description += f"**Recipe:** {Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data['Recipe']}\n"
 
-            Self.ChangeFacilityName = Button(label="Change Facility Name (WIP)", style=Self.ButtonStyle, row=1, custom_id="ChangeFacilityNameButton")
+            Self.ChangeFacilityNameButton = Button(label="Change Facility Name (WIP)", style=Self.ButtonStyle, row=1, custom_id="ChangeFacilityNameButton")
             if hasattr(Self, "GroupSelected"):
-                Self.ChangeFacilityName.callback = lambda Interaction: Self._Send_Change_Name_Modal((Interaction, Self.GroupSelected, Self.FacilitySelected))
+                Self.ChangeFacilityNameButton.callback = lambda Interaction: Self._Send_Change_Name_Modal((Interaction, Self.GroupSelected, Self.FacilitySelected))
             else:
-                Self.ChangeFacilityName.callback = lambda Interaction: Self._Send_Change_Name_Modal((Interaction, Self.FacilitySelected))
-            Self.BaseViewFrame.add_item(Self.ChangeFacilityName)
+                Self.ChangeFacilityNameButton.callback = lambda Interaction: Self._Send_Change_Name_Modal((Interaction, Self.FacilitySelected))
+            Self.BaseViewFrame.add_item(Self.ChangeFacilityNameButton)
+
+            Self.UpgradeFacilityButton = Button(label="Upgrade Facility (WIP)", style=Self.ButtonStyle, row=1, custom_id="UpgradeFacilityButton")
+            Self.UpgradeFacilityButton.callback = lambda Interaction: Self._Construct_Panel(Interaction)
+            Self.BaseViewFrame.add_item(Self.UpgradeFacilityButton)
+
+            Self.ChangeRecipeButton = Button(label="Change Recipe (WIP)", style=Self.ButtonStyle, row=1, custom_id="ChangeRecipeButton")
+            Self.ChangeRecipeButton.callback = lambda Interaction: Self._Construct_Panel(Interaction)
+            Self.BaseViewFrame.add_item(Self.ChangeRecipeButton)
 
         if Self.Player.Data["Land Plots"] > 1 or Interaction is not None and Self.Player.Data["Land Plots"] > 1:
             Self.GroupSelectionChoices = [SelectOption(label=str(Index)) for Index in Self.Player.Data["Land Plots"]]
