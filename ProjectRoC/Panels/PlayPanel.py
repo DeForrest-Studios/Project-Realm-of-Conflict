@@ -17,6 +17,7 @@ from Panels.Profile import ProfilePanel
 from Panels.Debug import DebugPanel
 from Panels.Skills import SkillsPanel
 from Panels.Crafting import CraftingPanel
+from Panels.Planet import PlanetPanel
 from Player import Player
 
 
@@ -89,7 +90,7 @@ class PlayPanel:
         Self.InventoryButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.InventoryButton)
 
-        Self.PlanetButton = Button(label="Planet (WIP)", style=Self.ButtonStyle, custom_id="PlanetButton")
+        Self.PlanetButton = Button(label="Planet", style=Self.ButtonStyle, custom_id="PlanetButton")
         Self.PlanetButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.PlanetButton)
 
@@ -142,7 +143,8 @@ class PlayPanel:
             "InventoryButton":InventoryPanel,
             "ProfileButton":ProfilePanel,
             "SkillsButton":SkillsPanel,
-            "CraftingButton":CraftingPanel
+            "CraftingButton":CraftingPanel,
+            "PlanetButton":PlanetPanel
         })
         # Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
         Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
