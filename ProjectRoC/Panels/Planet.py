@@ -17,8 +17,8 @@ class PlanetPanel(Panel):
 
         PlanetString = ""
 
-        PlanetString += f"*Planet Population:* {Self.Ether.Data['Planets'][Self.Player.Data['Team']].Data['Population']}\n"
-        PlanetString += f"*Planet Protector Count:* {Self.Ether.Data['Planets'][Self.Player.Data['Team']].Data['Protector Count']}\n"
+        PlanetString += f"**Planet Population:** {Self.Ether.Data['Planets'][Self.Player.Data['Team']].Data['Population']}\n"
+        PlanetString += f"**Planet Protector Count:** {Self.Ether.Data['Planets'][Self.Player.Data['Team']].Data['Protector Count']}\n"
 
         Self.EmbedFrame.description += PlanetString
 
