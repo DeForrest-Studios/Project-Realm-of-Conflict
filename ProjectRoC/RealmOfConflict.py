@@ -13,6 +13,7 @@ from Player import Player
 from random import randrange
 from Tables import InfantryToObject
 from Simulation import Simulation
+from Structures import ManufacturingFacility
 
 
 class RealmOfConflict(Bot):
@@ -80,6 +81,7 @@ class RealmOfConflict(Bot):
         Self.Load_Player_Army()
         Self.Load_Planet_Data()
         Self.Load_Player_Production_Facilities()
+        Self.Load_Player_Manufacturing_Facilities()
         Self.Load_Player_Skills()
         Self.Logger.info("Players have been loaded")
 
@@ -186,6 +188,28 @@ class RealmOfConflict(Bot):
                     Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Refresh_Stats()
 
 
+    def Load_Player_Manufacturing_Facilities(Self) -> None:
+        if not exists(join("Data", "PlayerManufacturingFacilities")):
+            return
+        Self.Logger.info("Loading Player Manufacturing Facilities")
+        PlayerDataFileName:str
+        for PlayerDataFileName in listdir(join("Data", "PlayerManufacturingFacilities")):
+            PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID == 42069: continue
+            with open(join("Data", "PlayerManufacturingFacilities", f"{PlayerUUID}.manufacturing.roc"), 'r') as PlayerDataFile:
+                PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
+                Field:str
+                for Field in PlayerData:
+                    Contents:str = Field.split(":")
+                    Name:str = Contents[0]
+                    Level = int(Contents[1])
+                    Recipe = Contents[2]
+                    Self.Data["Players"][PlayerUUID].ManufacturingFacilities.update({Name:ManufacturingFacility(Name)})
+                    Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Data["Level"] = Level
+                    Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Data["Recipe"] = Recipe
+                    Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Refresh_Stats()
+
+
     def Load_Player_Army(Self) -> None:
         if not exists(join("Data", "PlayerArmy")):
             return
@@ -257,6 +281,7 @@ class RealmOfConflict(Bot):
             await Self.Save_Player_Data()
             await Self.Save_Player_Inventories()
             await Self.Save_Player_ProductionFacilities()
+            await Self.Save_Player_ManufacturingFacilities()
             await Self.Save_Player_Army()
             await Self.Save_Planet_Data()
             await Self.Save_Player_Skills()
@@ -305,6 +330,18 @@ class RealmOfConflict(Bot):
             with open(join("Data", "PlayerProductionFacilities", f"{UUID}.production.roc"), 'w+') as PlayerDataFile:
                 for Facility in PlayerObject.ProductionFacilities.values():
                     SaveData += f"{Facility.Name}:{Facility.Level}\n"
+                PlayerDataFile.write(SaveData)
+
+
+    async def Save_Player_ManufacturingFacilities(Self) -> None:
+        Self.Logger.info("Saving Player Manufacturing Facilities")
+        UUID:int
+        PlayerObject:Player
+        for UUID, PlayerObject in Self.Data["Players"].items():
+            SaveData = ""
+            with open(join("Data", "PlayerManufacturingFacilities", f"{UUID}.manufacturing.roc"), 'w+') as PlayerDataFile:
+                for Facility in PlayerObject.ManufacturingFacilities.values():
+                    SaveData += f"{Facility.Data['Name']}:{Facility.Data['Level']}:{Facility.Data['Recipe']}\n"
                 PlayerDataFile.write(SaveData)
 
 

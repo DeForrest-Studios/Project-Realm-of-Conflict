@@ -39,7 +39,6 @@ class AvargoPanel(Panel):
         Self.BaseViewFrame.add_item(Self.SellButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
-        # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 
@@ -85,7 +84,6 @@ class AvargoPanel(Panel):
         Self.BaseViewFrame.add_item(Self.AvargoButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
-        # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda ButtonInteraction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
         

@@ -1,14 +1,12 @@
-from asyncio import create_task
 from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
 from discord import ButtonStyle as DiscordButtonStyle
-from discord import SelectOption, Embed
-from discord.ui import View, Select, Button
+from discord import SelectOption
+from discord.ui import Select, Button
 from Panels.Panel import Panel
 from Structures import ProductionFacility
 from time import time as Time
-from Player import Player
 
 class ProductionFacilitiesPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):

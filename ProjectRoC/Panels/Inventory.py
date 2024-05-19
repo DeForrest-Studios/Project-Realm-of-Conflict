@@ -33,7 +33,6 @@ class InventoryPanel(Panel):
         Self.EmbedFrame.description += InventoryString
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
-        # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 

@@ -1,14 +1,11 @@
-from asyncio import create_task
 from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
 from discord import ButtonStyle as DiscordButtonStyle
-from discord import SelectOption, Embed
-from discord.ui import View, Select, Button, Modal, TextInput
+from discord.ui import Button
 from Panels.Panel import Panel
 from Panels.Recruit import RecruitPanel
 from Panels.Army import ArmyPanel
-from Player import Player
 
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
@@ -39,7 +36,6 @@ class SententPanel(Panel):
         Self.BaseViewFrame.add_item(Self.RecruitButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
-        # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)
 

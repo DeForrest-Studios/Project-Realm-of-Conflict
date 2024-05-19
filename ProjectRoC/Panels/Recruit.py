@@ -1,4 +1,3 @@
-from asyncio import create_task
 from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
@@ -42,7 +41,6 @@ class RecruitPanel(Panel):
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,
                                         row=3, custom_id="HomePageButton")
-            # This is a bad callback. This is really bad, I'm well aware. But you know what, fuck it.
             Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
             Self.BaseViewFrame.add_item(Self.HomepageButton)
         else:
