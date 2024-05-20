@@ -9,8 +9,7 @@ from sys import exit
 
 if __name__ == '__main__':
     Ether = RealmOfConflict()
-
-
+    
     @Ether.command(aliases=["oc", "oC", "OC"])
     async def Play_Interaction(InitialContext: Context):
         if await Ether.Guild_Guard(InitialContext) == "Unprotected":
@@ -32,27 +31,11 @@ if __name__ == '__main__':
             Ether.Logger.info("Your bot is in two places, whatever you're doing, just stop please.")
             Ether.Logger.info("Killing the bot.")
             exit()
-        Ether.Guild:DiscordGuild = Ether.guilds[0]
+        Ether.Guild = Ether.guilds[0]
 
-        if Ether.Guild.id == 1190385562604015626:
+        if Ether.Guild.id == 1190386754327412867:
             Ether.Logger.info("Running on Developer Server")
-            Ether.Roles:{str:DiscordRole} = {
-                "Titan":Ether.Guild.get_role(1190385562604015629),
-                "Analis":Ether.Guild.get_role(1190385562604015628),
-            }
-            Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190385563505791017)})
-
-        if Ether.Guild.id == 1135093444734361702:
-            Ether.Logger.info("Running on Unstable Server")
-            Ether.Roles:{str:DiscordRole} = {
-                "Titan":Ether.Guild.get_role(1135093444734361705),
-                "Analis":Ether.Guild.get_role(1135093444734361704),
-            }
-            Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1135093445191532607)})
-
-        if Ether.Guild.id == 1063056213589368953:
-            Ether.Logger.info("Running on Official Server")
-            Ether.Roles:{str:DiscordRole} = {
+            Ether.Roles = {
                 "Titan":Ether.Guild.get_role(1190386754327412870),
                 "Analis":Ether.Guild.get_role(1190386754327412869),
             }
@@ -69,4 +52,4 @@ if __name__ == '__main__':
     async def on_member_join(NewMember:Member) -> None:
         await Ether.Send_Welcome(NewMember)
 
-    Ether.run(Ether.Get_Token("Cavan"))
+    Ether.run(Ether.Get_Token("Official"))

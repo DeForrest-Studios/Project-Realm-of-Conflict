@@ -192,6 +192,7 @@ class ManufacturingFacility:
             "Name":Name,
             "Level":1,
             "Recipe":"None",
+            "Priority":0,
             "Capacity":0,
             "Upgrade Cost":0,
             "Experience On Upgrade":0,
