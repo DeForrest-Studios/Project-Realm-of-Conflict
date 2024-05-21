@@ -18,12 +18,12 @@ class Launcher:
                                   "clear": Self.Clear_Lines}
         
         Self.Read_User_Settings()
-        # Self.Read_Key_File()
-        # Self.Key_Selection()
+        Self.Read_Key_File()
+        Self.Key_Selection()
 
         Self.VirtualEnvironmentPath = join(".venv","Scripts","python")
 
-        Self.CallCommand = f"{Self.VirtualEnvironmentPath} -B {join(Self.ProjectFilePath)}"
+        Self.CallCommand = f"{Self.VirtualEnvironmentPath} -B {join(Self.ProjectFilePath)} {Self.KeySelection.capitalize()}"
 
         Self.User_Input()
 
@@ -40,14 +40,12 @@ class Launcher:
         with open("Keys.txt"):
             Self.KeyData = open("Keys.txt", "r").readlines()
             Self.Keys = {Line.split("~")[0].lower():Line.split("~")[1].strip() for Line in Self.KeyData}
-            print(Self.Keys)
 
 
     def Key_Selection(Self):
         while Self.Key is None:
             print(f"Please select the key you'd like to run with.\nSelections:{Self.Keys.keys()}")
             Self.KeySelection = input("> ").lower()
-            print(Self.KeySelection)
             if Self.KeySelection in Self.Keys.keys():
                 Self.Key = Self.Keys[Self.KeySelection.lower()]
             else:

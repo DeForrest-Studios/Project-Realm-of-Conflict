@@ -36,8 +36,8 @@ class ProductionFacilitiesPanel(Panel):
                 Self.EmbedFrame.add_field(name="Insufficient Funds", value="\u200b", inline=False)
                 await Self._Send_New_Panel(Interaction)
             else:
-                Self.FacilitySelected.Upgrade()
                 Self.Player.Data['Wallet'] = round(Self.Player.Data['Wallet'] - Self.FacilitySelected.UpgradeCost, 2)
+                Self.FacilitySelected.Upgrade()
                 Self.EmbedFrame.clear_fields()
                 FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Level, ',')}\n"+
                                       f"Capacity: {format(Self.FacilitySelected.Capacity, ',')}\n"+

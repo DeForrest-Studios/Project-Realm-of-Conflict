@@ -6,8 +6,10 @@ from RealmOfConflict import RealmOfConflict
 from Panels.PlayPanel import PlayPanel
 from asyncio import create_task
 from sys import exit
+from sys import argv
 
 if __name__ == '__main__':
+    KeyUser = argv[1]
     Ether = RealmOfConflict()
     
     @Ether.command(aliases=["oc", "oC", "OC"])
@@ -33,6 +35,7 @@ if __name__ == '__main__':
             exit()
         Ether.Guild = Ether.guilds[0]
 
+        # Official Server Setup
         if Ether.Guild.id == 1190386754327412867:
             Ether.Logger.info("Running on Developer Server")
             Ether.Roles = {
@@ -42,6 +45,18 @@ if __name__ == '__main__':
             Ether.Data["Planets"]["Titan"].Data["Role"] = Ether.Roles["Titan"]
             Ether.Data["Planets"]["Analis"].Data["Role"] = Ether.Roles["Analis"]
             Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190386761831039096)})
+
+        # Dev Server Setup
+        if Ether.Guild.id == 1190385562604015626:
+            Ether.Dev_Mode()
+            Ether.Logger.info("Running on Developer Server")
+            Ether.Roles = {
+                "Titan":Ether.Guild.get_role(1190385562604015629),
+                "Analis":Ether.Guild.get_role(1190385562604015628),
+            }
+            Ether.Data["Planets"]["Titan"].Data["Role"] = Ether.Roles["Titan"]
+            Ether.Data["Planets"]["Analis"].Data["Role"] = Ether.Roles["Analis"]
+            Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190385563505791017)})
 
         Ether.Load_Players()
         create_task(Ether.Autosave())
@@ -54,4 +69,4 @@ if __name__ == '__main__':
     async def on_member_join(NewMember:Member) -> None:
         await Ether.Send_Welcome(NewMember)
 
-    Ether.run(Ether.Get_Token("Official"))
+    Ether.run(Ether.Get_Token(argv[1]))

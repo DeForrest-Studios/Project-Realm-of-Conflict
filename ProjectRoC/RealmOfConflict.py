@@ -29,12 +29,17 @@ class RealmOfConflict(Bot):
             "Panels": {},
             "Skirmish Count": 0,
         }
+        Self.DataDirectory = "Data"
         Self.Guild = None
         Self.Roles = None
         Self.Members = None
         Self.CoreSimulation = None
         Self.Materials:[str] = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
         Self.Initalize_Logger()
+
+    
+    def Dev_Mode(Self):
+        Self.DataDirectory = "DevData"
 
 
     def Get_Token(Self, Key:str) -> None:
@@ -74,7 +79,7 @@ class RealmOfConflict(Bot):
 
     def Load_Players(Self) -> None:
         Self.Logger.info("Loading Players")
-        if not exists("Data"):
+        if not exists(Self.DataDirectory):
             return
         Self.Load_Player_Data()
         Self.Load_Player_Inventories()
@@ -87,14 +92,14 @@ class RealmOfConflict(Bot):
 
 
     def Load_Player_Data(Self) -> None:
-        if not exists(join("Data", "PlayerData")):
+        if not exists(join(Self.DataDirectory, "PlayerData")):
             return
         Self.Logger.info("Loading Player Data")
         Self.Members:{int:DiscordMember} = {M.id:M for M in Self.Guild.members}
         PlayerDataFileName:str
-        for PlayerDataFileName in listdir(join("Data", "PlayerData")):
+        for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerData")):
             PlayerUUID:int = int(PlayerDataFileName.split(".")[0])
-            with open(join("Data", "PlayerData", f"{PlayerUUID}.data.roc"), 'r') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerData", f"{PlayerUUID}.data.roc"), 'r') as PlayerDataFile:
                 PlayerData:[str] = [Line.strip() for Line in PlayerDataFile.readlines()]
                 if PlayerUUID == 42069: continue
                 MemberObject:DiscordMember = Self.Members[PlayerUUID]
@@ -123,13 +128,13 @@ class RealmOfConflict(Bot):
 
 
     def Load_Planet_Data(Self) -> None:
-        if not exists(join("Data", "PlanetData")):
+        if not exists(join(Self.DataDirectory, "PlanetData")):
             return
         Self.Logger.info("Loading Planet Data")
         PlayerDataFileName:str
-        for PlanetDataFileName in listdir(join("Data", "PlanetData")):
+        for PlanetDataFileName in listdir(join(Self.DataDirectory, "PlanetData")):
             PlanetName:str = PlanetDataFileName.split(".")[0]
-            with open(join("Data", "PlanetData", f"{PlanetName}.data.roc"), 'r') as PlanetDataFile:
+            with open(join(Self.DataDirectory, "PlanetData", f"{PlanetName}.data.roc"), 'r') as PlanetDataFile:
                 PlanetData:str = [Line.strip() for Line in PlanetDataFile.readlines()]
                 Field:str
                 for Field in PlanetData:
@@ -152,14 +157,14 @@ class RealmOfConflict(Bot):
 
 
     def Load_Player_Inventories(Self) -> None:
-        if not exists(join("Data", "PlayerInventories")):
+        if not exists(join(Self.DataDirectory, "PlayerInventories")):
             return
         Self.Logger.info("Loading Player Inventories")
         PlayerDataFileName:str
-        for PlayerDataFileName in listdir(join("Data", "PlayerInventories")):
+        for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerInventories")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerInventories", f"{PlayerUUID}.inventory.roc"), 'r') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerInventories", f"{PlayerUUID}.inventory.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 Field:str
                 for Field in PlayerData:
@@ -170,14 +175,14 @@ class RealmOfConflict(Bot):
 
 
     def Load_Player_Production_Facilities(Self) -> None:
-        if not exists(join("Data", "PlayerProductionFacilities")):
+        if not exists(join(Self.DataDirectory, "PlayerProductionFacilities")):
             return
         Self.Logger.info("Loading Player Production Facilities")
         PlayerDataFileName:str
-        for PlayerDataFileName in listdir(join("Data", "PlayerProductionFacilities")):
+        for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerProductionFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerProductionFacilities", f"{PlayerUUID}.production.roc"), 'r') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerProductionFacilities", f"{PlayerUUID}.production.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 Field:str
                 for Field in PlayerData:
@@ -189,14 +194,14 @@ class RealmOfConflict(Bot):
 
 
     def Load_Player_Manufacturing_Facilities(Self) -> None:
-        if not exists(join("Data", "PlayerManufacturingFacilities")):
+        if not exists(join(Self.DataDirectory, "PlayerManufacturingFacilities")):
             return
         Self.Logger.info("Loading Player Manufacturing Facilities")
         PlayerDataFileName:str
-        for PlayerDataFileName in listdir(join("Data", "PlayerManufacturingFacilities")):
+        for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerManufacturingFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerManufacturingFacilities", f"{PlayerUUID}.manufacturing.roc"), 'r') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerManufacturingFacilities", f"{PlayerUUID}.manufacturing.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 Field:str
                 for Field in PlayerData:
@@ -211,14 +216,14 @@ class RealmOfConflict(Bot):
 
 
     def Load_Player_Army(Self) -> None:
-        if not exists(join("Data", "PlayerArmy")):
+        if not exists(join(Self.DataDirectory, "PlayerArmy")):
             return
         Self.Logger.info("Loading Player Armies")
         PlayerDataFileName:str
-        for PlayerDataFileName in listdir(join("Data", "PlayerArmy")):
+        for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerArmy")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerArmy", f"{PlayerUUID}.army.roc"), 'r') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerArmy", f"{PlayerUUID}.army.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 for Field in PlayerData:
                     Contents = Field.split(":")
@@ -231,14 +236,14 @@ class RealmOfConflict(Bot):
             
 
     def Load_Player_Skills(Self):
-        if not exists(join("Data", "PlayerSkills")):
+        if not exists(join(Self.DataDirectory, "PlayerSkills")):
             return
         Self.Logger.info("Loading Player Skills")
         PlayerDataFileName:str
-        for PlayerDataFileName in listdir(join("Data", "PlayerSkills")):
+        for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerSkills")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID == 42069: continue
-            with open(join("Data", "PlayerSkills", f"{PlayerUUID}.skills.roc"), 'r') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerSkills", f"{PlayerUUID}.skills.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
                 Field:str
                 for Field in PlayerData:
@@ -261,22 +266,22 @@ class RealmOfConflict(Bot):
 
 
     async def Autosave(Self) -> None:
-        if not exists("Data"):
-            mkdir("Data")
-        if not exists(join("Data", "PlayerData")):
-            mkdir(join("Data", "PlayerData"))
-        if not exists(join("Data", "PlayerInventories")):
-            mkdir(join("Data", "PlayerInventories"))
-        if not exists(join("Data", "PlayerProductionFacilities")):
-            mkdir(join("Data", "PlayerProductionFacilities"))
-        if not exists(join("Data", "PlayerManufacturingFacilities")):
-            mkdir(join("Data", "PlayerManufacturingFacilities"))
-        if not exists(join("Data", "PlayerArmy")):
-            mkdir(join("Data", "PlayerArmy"))
-        if not exists(join("Data", "PlayerSkills")):
-            mkdir(join("Data", "PlayerSkills"))
-        if not exists(join("Data", "PlanetData")):
-            mkdir(join("Data", "PlanetData"))
+        if not exists(Self.DataDirectory):
+            mkdir(Self.DataDirectory)
+        if not exists(join(Self.DataDirectory, "PlayerData")):
+            mkdir(join(Self.DataDirectory, "PlayerData"))
+        if not exists(join(Self.DataDirectory, "PlayerInventories")):
+            mkdir(join(Self.DataDirectory, "PlayerInventories"))
+        if not exists(join(Self.DataDirectory, "PlayerProductionFacilities")):
+            mkdir(join(Self.DataDirectory, "PlayerProductionFacilities"))
+        if not exists(join(Self.DataDirectory, "PlayerManufacturingFacilities")):
+            mkdir(join(Self.DataDirectory, "PlayerManufacturingFacilities"))
+        if not exists(join(Self.DataDirectory, "PlayerArmy")):
+            mkdir(join(Self.DataDirectory, "PlayerArmy"))
+        if not exists(join(Self.DataDirectory, "PlayerSkills")):
+            mkdir(join(Self.DataDirectory, "PlayerSkills"))
+        if not exists(join(Self.DataDirectory, "PlanetData")):
+            mkdir(join(Self.DataDirectory, "PlanetData"))
         while True:
             await sleep(5)
             Self.Logger.info("Autosaving")
@@ -294,7 +299,7 @@ class RealmOfConflict(Bot):
         PlanetObject:Planet
         for Name, PlanetObject in Self.Data["Planets"].items():
             SaveData = ""
-            with open(join("Data", "PlanetData", f"{Name}.data.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlanetData", f"{Name}.data.roc"), 'w+') as PlayerDataFile:
                 for Name, Value in PlanetObject.Data.items():
                     SaveData += f"{Name}:{Value}\n"
                 PlayerDataFile.write(SaveData)
@@ -305,7 +310,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerData", f"{UUID}.data.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerData", f"{UUID}.data.roc"), 'w+') as PlayerDataFile:
                 for Name, Value in PlayerObject.Data.items():
                     SaveData += f"{Name}:{Value}\n"
                 PlayerDataFile.write(SaveData)
@@ -317,7 +322,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerInventories", f"{UUID}.inventory.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerInventories", f"{UUID}.inventory.roc"), 'w+') as PlayerDataFile:
                 for Name, Value in PlayerObject.Inventory.items():
                     SaveData += f"{Name}:{Value}\n"
                 PlayerDataFile.write(SaveData)
@@ -329,7 +334,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerProductionFacilities", f"{UUID}.production.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerProductionFacilities", f"{UUID}.production.roc"), 'w+') as PlayerDataFile:
                 for Facility in PlayerObject.ProductionFacilities.values():
                     SaveData += f"{Facility.Name}:{Facility.Level}\n"
                 PlayerDataFile.write(SaveData)
@@ -341,7 +346,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerManufacturingFacilities", f"{UUID}.manufacturing.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerManufacturingFacilities", f"{UUID}.manufacturing.roc"), 'w+') as PlayerDataFile:
                 for Facility in PlayerObject.ManufacturingFacilities.values():
                     SaveData += f"{Facility.Data['Name']}:{Facility.Data['Level']}:{Facility.Data['Recipe']}\n"
                 PlayerDataFile.write(SaveData)
@@ -353,7 +358,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerArmy", f"{UUID}.army.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerArmy", f"{UUID}.army.roc"), 'w+') as PlayerDataFile:
                 for InfantryID, Infantry in PlayerObject.Army.items():
                     SaveData += f"{InfantryID}:{Infantry.Level}:{Infantry.Type}\n"
                 PlayerDataFile.write(SaveData)
@@ -365,7 +370,7 @@ class RealmOfConflict(Bot):
         PlayerObject:Player
         for UUID, PlayerObject in Self.Data["Players"].items():
             SaveData = ""
-            with open(join("Data", "PlayerSkills", f"{UUID}.skills.roc"), 'w+') as PlayerDataFile:
+            with open(join(Self.DataDirectory, "PlayerSkills", f"{UUID}.skills.roc"), 'w+') as PlayerDataFile:
                 for Name, Level in PlayerObject.Skills.items():
                     SaveData += f"{Name}:{Level}\n"
                 PlayerDataFile.write(SaveData)

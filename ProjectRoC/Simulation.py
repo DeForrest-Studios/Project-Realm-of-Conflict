@@ -254,4 +254,4 @@ class Simulation:
                 await Ether["Simulation Channel"].send(embed=Self.ReportEmbed)
                 break
 
-            await sleep(5)
+            await sleep(300)
