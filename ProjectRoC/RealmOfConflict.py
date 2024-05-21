@@ -23,8 +23,8 @@ class RealmOfConflict(Bot):
         Self.Data = {
             "Players": {"42069": Player("Test")},
             "Planets": {
-                "Analis": Planet("Analis"),
-                "Titan": Planet("Titan"),
+                "Analis": Planet("Analis", Self),
+                "Titan": Planet("Titan", Self),
             },
             "Panels": {},
             "Skirmish Count": 0,
@@ -226,6 +226,7 @@ class RealmOfConflict(Bot):
                     Level = int(Contents[1])
                     Type:str = Contents[2]
                     Self.Data["Players"][PlayerUUID].Army.update({Name:InfantryToObject[Type](Level, Type, Self.Data["Players"][PlayerUUID], Name=Name)})
+            [Self.Data["Planets"][_].Refresh_Power() for _ in Self.Data["Planets"]]
             Self.Data["Players"][PlayerUUID].Refresh_Power()
             
 
@@ -249,6 +250,7 @@ class RealmOfConflict(Bot):
 
     
     async def Engage_Simulation(Self) -> bool:
+        print("Attempting to engage simulation")
         if Self.CoreSimulation is None:
             Self.Logger.info("Engaging Simulation")
             Self.CoreSimulation = Simulation(Self, Self.Data["Planets"]["Analis"], Self.Data["Planets"]["Titan"])

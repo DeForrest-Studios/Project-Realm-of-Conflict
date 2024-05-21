@@ -103,22 +103,6 @@ class PlayPanel:
         Self.SkillsButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
 
-        Self.P2PMarketButton = Button(label="P2P Market (WIP)", style=Self.ButtonStyle, custom_id="P2PMarketButton")
-        Self.P2PMarketButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
-        Self.BaseViewFrame.add_item(Self.P2PMarketButton)
-
-        Self.InfoButton = Button(label="Info (WIP)", style=Self.ButtonStyle, custom_id="InfoButton")
-        Self.InfoButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
-        Self.BaseViewFrame.add_item(Self.InfoButton)
-
-        Self.CreaturesButton = Button(label="Creatures (WIP)", style=Self.ButtonStyle, custom_id="CreaturesButton")
-        Self.CreaturesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
-        Self.BaseViewFrame.add_item(Self.CreaturesButton)
-
-        Self.TerrariumButton = Button(label="Terrarium (WIP)", style=Self.ButtonStyle, custom_id="TerrariumButton")
-        Self.TerrariumButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
-        Self.BaseViewFrame.add_item(Self.TerrariumButton)
-
         if InitialContext.author.id in Whitelist:
             Self.Mapping.update({"DebugButton":DebugPanel})
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3, custom_id="DebugButton")

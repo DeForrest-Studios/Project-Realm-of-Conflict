@@ -39,6 +39,8 @@ if __name__ == '__main__':
                 "Titan":Ether.Guild.get_role(1190386754327412870),
                 "Analis":Ether.Guild.get_role(1190386754327412869),
             }
+            Ether.Data["Planets"]["Titan"].Data["Role"] = Ether.Roles["Titan"]
+            Ether.Data["Planets"]["Analis"].Data["Role"] = Ether.Roles["Analis"]
             Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190386761831039096)})
 
         Ether.Load_Players()

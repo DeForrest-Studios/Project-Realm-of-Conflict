@@ -1,7 +1,8 @@
 class Planet():
-    def __init__(Self, Name:str):
+    def __init__(Self, Name:str, ROC):
         Self.Data:{str:...} = {
             "Name": Name,
+            "ROC": ROC,
             "Population": 78542986762964,
             "Protector Count": 0,
             "Damage": 0,
@@ -20,4 +21,9 @@ class Planet():
             "Offensive Leaderboard": {},
             "Defensive Leaderboard": {},
             "Energy Sapping Leaderboard": {},
+            "Role": None,
         }
+
+    def Refresh_Power(Self) -> None:
+        for Player in Self.Data["Role"].members:
+            Self.Data["Offensive Power"] += Self.Data["ROC"].Data["Players"][Player.id].Data["Offensive Power"]
