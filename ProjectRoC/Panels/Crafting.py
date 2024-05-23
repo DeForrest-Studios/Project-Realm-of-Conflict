@@ -5,7 +5,7 @@ from discord import ButtonStyle as DiscordButtonStyle
 from discord import SelectOption
 from discord.ui import Button, Select, Modal, TextInput
 from Panels.Panel import Panel
-from Tables import TypeMapping, Components, Weapons
+from Tables import TypeMapping
 
 class CraftingPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
