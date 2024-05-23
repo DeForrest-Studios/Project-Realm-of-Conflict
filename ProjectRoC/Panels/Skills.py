@@ -101,7 +101,7 @@ class SkillsPanel(Panel):
         Self.BaseViewFrame.add_item(Self.DominationSkillButton)
 
         Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
-        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -127,7 +127,7 @@ class SkillsPanel(Panel):
         Self.BaseViewFrame.add_item(Self.HealingSkillButton)
 
         Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
-        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
@@ -153,7 +153,7 @@ class SkillsPanel(Panel):
         Self.BaseViewFrame.add_item(Self.RaidingSkillButton)
 
         Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, row=2, custom_id="SkillsButton")
-        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(Self.Ether, Self.InitialContext, Self.ButtonStyle, ButtonInteraction, Self.PlayPanel)
+        Self.SkillsButton.callback = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")

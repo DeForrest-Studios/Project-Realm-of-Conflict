@@ -136,11 +136,23 @@ class AvargoPanel(Panel):
 
 
     async def _Add_To_Cart(Self, Interaction, Quantity):
-        Self.Quantity = Quantity
-        Self.ReceiptStarted = True
-        Self.EmbedFrame.description += f"You have {Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialRaw}"
-        Self.Receipt.update({Self.MaterialRaw:Self.Quantity})
-        Self.ReceiptString += f"{Self.Quantity} {Self.MaterialChosen} for ${format(round(MaterialWorthTable[Self.MaterialRaw] * int(Self.Quantity)/4, 2), ',')}"
+        if Self.SaleType == "Buy":
+            print("Fuick")
+            if (MaterialWorthTable[Self.MaterialRaw] * Quantity) > Self.Player.Data["Wallet"]:
+                Self.EmbedFrame.description += f"\nYou do not have enough money"
+                await Self._Send_New_Panel(Interaction)
+                return
+        if Self.SaleType == "Sell":
+            if Quantity > Self.Player.Inventory[Self.MaterialRaw]:
+                Self.EmbedFrame.description += f"\nYou do not have enough {Self.MaterialRaw}"
+                await Self._Send_New_Panel(Interaction)
+                return
+        else:
+            Self.Quantity = Quantity
+            Self.ReceiptStarted = True
+            Self.EmbedFrame.description += f"You have {Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialRaw}"
+            Self.Receipt.update({Self.MaterialRaw:Self.Quantity})
+            Self.ReceiptString += f"{Self.Quantity} {Self.MaterialChosen} for ${format(round(MaterialWorthTable[Self.MaterialRaw] * int(Self.Quantity)/4, 2), ',')}"
         if Self.SaleType == "Buy":
             await Self._Construct_Buy_Panel(Interaction)
         if Self.SaleType == "Sell":

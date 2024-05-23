@@ -4,6 +4,7 @@ from discord import Embed
 
 class Simulation:
     def __init__(Self, Ether, Analis, Titan) -> None:
+        print("Initializing Simulation Object")
         create_task(Self._Core_Simulation(Ether, Analis, Titan))
 
     async def _Generate_Simulation_Reports(Self, Analis, Titan) -> None:
@@ -118,17 +119,17 @@ class Simulation:
                 if Player.Data["Team"] == "Analis":
                     Analis.Data["Offensive Power"] += Player.Data["Offensive Power"]
                     Analis.Data["Defensive Power"] += Player.Data["Defensive Power"]
-                    # Analis.Data["Energy Sapping"] += Player.Data["Energy Sapping"]
-                    # Analis.Data["Domination"] += Player.skills["Domination"]
-                    # Analis.Data["Healing"] += Player.skills["Healing"]
-                    # Analis.Data["Hacking"] += Player.skills["Hacking"]
+                    Analis.Data["Healing"] += Player.Skills["Healing"]
+                    Analis.Data["Energy Sapping"] += Player.Data["Energy Sapping"]
+                    Analis.Data["Domination"] += Player.Skills["Domination"]
+                    Analis.Data["Hacking"] += Player.Skills["Hacking"]
                 if Player.Data["Team"] == "Titan":
                     Titan.Data["Offensive Power"] += Player.Data["Offensive Power"]
                     Titan.Data["Defensive Power"] += Player.Data["Defensive Power"]
-                    # Titan.Data["Energy Sapping"] += Player.Data["Energy Sapping"]
-                    # Titan.Data["Domination"] += Player.skills["Domination"]
-                    # Titan.Data["Healing"] += Player.skills["Healing"]
-                    # Titan.Data["Hacking"] += Player.skills["Hacking"]
+                    Titan.Data["Healing"] += Player.Skills["Healing"]
+                    Titan.Data["Energy Sapping"] += Player.Data["Energy Sapping"]
+                    Titan.Data["Domination"] += Player.Skills["Domination"]
+                    Titan.Data["Hacking"] += Player.Skills["Hacking"]
 
             # Energy Sapping Phase
             # if Analis.Data['Defensive Power'] - Titan.Data['Energy Sapping'] <= 0:
@@ -150,7 +151,7 @@ class Simulation:
                     Self.VictoriousPlanet = "Titan"
                     Self.DestroyedPlanet = "Analis"
                 else:
-                    Analis.Data['Population Loss'] += (Titan.Data['Damage'] * 2)
+                    Analis.Data['Population Loss'] = (Titan.Data['Damage'] * 2)
                     Analis.Data['Population'] -= (Titan.Data['Damage'] * 2)
             else:
                 Ether.Logger.info("Analis defended against Titan")
@@ -159,31 +160,30 @@ class Simulation:
             # Analis Attacking Titan Phase
             if Analis.Data['Offensive Power'] >= Titan.Data['Defensive Power']:
                 Ether.Logger.info("Analis attacked Titan")
-                Analis.Data['Damage'] += (Analis.Data['Offensive Power'] - Titan.Data['Defensive Power'])
+                Analis.Data['Damage'] = (Analis.Data['Offensive Power'] - Titan.Data['Defensive Power'])
                 if Titan.Data['Population'] - Analis.Data['Damage'] * 2 <= 0:
                     Titan.Data['Population'] = 0
                     Self.VictoriousPlanet = "Analis"
                     Self.DestroyedPlanet = "Titan"
                 else:
-                    Titan.Data['Population Loss'] += (Analis.Data['Damage'] * 2)
-                    Titan.Data['Population'] -= Analis.Data['Damage']
+                    Titan.Data['Population Loss'] = (Analis.Data['Damage'] * 2)
+                    Titan.Data['Population'] -= (Analis.Data['Damage'] * 2)
             else:
                 Ether.Logger.info("Titan defended against Analis")
                 Self.TitanDefended = True
-
             # # Domination Damage Phase
             # Titan.Data['Population Dominated'] = Analis.Data['Domination'] * 40000
             # Titan.Data['Population'] -= Titan.Data['Population Dominated']
             # Analis.Data['Population Dominated'] = Titan.Data['Domination'] * 40000
             # Analis.Data['Population'] -= Analis.Data['Population Dominated']
 
-            # # Healing Phase
+            # # # Healing Phase
             # Titan.Data['Population Healed'] = Titan.Data['Healing'] * 80000
             # Titan.Data['Population'] += Titan.Data['Population Healed']
             # Analis.Data['Population Healed'] = Analis.Data['Healing'] * 80000
             # Analis.Data['Population'] += Analis.Data['Population Healed']
 
-            # # Hacking Phase
+            # # # Hacking Phase
             # Analis.Data["Earned Pool"] = Analis.Data["Hacking"] * 25000
             # Titan.Data["Earned Pool"] = Titan.Data["Hacking"] * 25000
             # Self.EarnedPool = Analis.Data["Earned Pool"] + Titan.Data["Earned Pool"]
@@ -202,14 +202,14 @@ class Simulation:
             #             Player.wallet = round(Player.wallet + Titan.Data["Average Earnings"], 2)
             #             Self.EarnedPool = round(Self.EarnedPool - Titan.Data["Average Earnings"], 4)
 
-            # # Raiding Phase
+            # Raiding Phase
             # Self.Raids = ""
             # for Player in Ether['Online Players'].values():
-            #     if Player.skills["Raiding"] != 0:
-            #         for rotation_count in range(Player.skills["Raiding"]):
+            #     if Player.Skills["Raiding"] != 0:
+            #         for rotation_count in range(Player.Skills["Raiding"]):
             #             Self.player_items = []
             #             Self.player_materials = {}
-            #             Self.experience_earned = randrange((Player.skills["Raiding"]+1)//8, 5 + Player.skills["Raiding"])
+            #             Self.experience_earned = randrange((Player.Skills["Raiding"]+1)//8, 5 + Player.Skills["Raiding"])
             #             Player.experience = round(Player.experience + Self.experience_earned, 2)
             #             for item in raiding_references["Items"].items():
             #                 roll = randrange(0, 100)
@@ -229,7 +229,7 @@ class Simulation:
             #             for material in raiding_references["Materials"].items():
             #                 roll = randrange(0, 100)
             #                 if roll <= material[1]:
-            #                     quantity = randrange(1, Player.skills["Raiding"] * 4)
+            #                     quantity = randrange(1, Player.Skills["Raiding"] * 4)
             #                     Player.inventory[material[0]] += quantity
             #                     Self.player_materials.update({material[0]: quantity})
             #         Self.Raids += f"\n{Player.Data['Name']} raided and got:\n"
@@ -254,4 +254,4 @@ class Simulation:
                 await Ether["Simulation Channel"].send(embed=Self.ReportEmbed)
                 break
 
-            await sleep(120)
+            await sleep(300)

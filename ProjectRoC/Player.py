@@ -45,6 +45,7 @@ class Player:
                 "Defensive Power": 0,
                 "Production Power": 0,
                 "Manufacturing Power": 0,
+                "Energy Sapping": 0,
                 "General Skill": 0, 
                 "Offensive Skill": 0,
                 "Defensive Skill": 0,

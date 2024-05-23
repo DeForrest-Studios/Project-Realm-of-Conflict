@@ -18,10 +18,10 @@ class ProductionFacilitiesPanel(Panel):
         if Self.Interaction.user != Self.InitialContext.author:
             return
         
-        if Interaction is not None:
-            await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
-            Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
-            await Self._Send_New_Panel(Interaction)
+        # if Interaction is not None:
+        #     await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
+        #     Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
+        #     await Self._Send_New_Panel(Interaction)
 
 
         if FacilityUpgraded == True:
@@ -34,9 +34,10 @@ class ProductionFacilitiesPanel(Panel):
                 await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
                 Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
                 Self.EmbedFrame.add_field(name="Insufficient Funds", value="\u200b", inline=False)
+                await Self._Send_New_Panel(Interaction)
             else:
-                Self.FacilitySelected.Upgrade()
                 Self.Player.Data['Wallet'] = round(Self.Player.Data['Wallet'] - Self.FacilitySelected.UpgradeCost, 2)
+                Self.FacilitySelected.Upgrade()
                 Self.EmbedFrame.clear_fields()
                 FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Level, ',')}\n"+
                                       f"Capacity: {format(Self.FacilitySelected.Capacity, ',')}\n"+
@@ -44,10 +45,10 @@ class ProductionFacilitiesPanel(Panel):
                                       f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
                 await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
                 Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
-
-        if FacilitySelected is not None:
-            Self.FacilitySelected:ProductionFacility = Self.Player.ProductionFacilities[Self.Interaction.data["values"][0]]
-            Self.FacilitiesSelect.placeholder = Self.Interaction.data["values"][0]
+                await Self._Send_New_Panel(Interaction)
+        elif FacilitySelected is not None:
+            Self.FacilitySelected:ProductionFacility = Self.Player.ProductionFacilities[FacilitySelected]
+            Self.FacilitiesSelect.placeholder = FacilitySelected
             Self.EmbedFrame.clear_fields()
 
             try:
@@ -55,7 +56,7 @@ class ProductionFacilitiesPanel(Panel):
             except AttributeError:
                 Self.FacilityUpgradeButton = Button(label="Upgrade", style=Self.ButtonStyle, custom_id="FacilityUpgradeButton", row=1)
                 Self.BaseViewFrame.add_item(Self.FacilityUpgradeButton)
-                Self.FacilityUpgradeButton.callback = lambda SelectInteraction: Self._Construct_Panel(SelectInteraction)
+                Self.FacilityUpgradeButton.callback = lambda SelectInteraction: Self._Construct_Panel(Interaction=SelectInteraction, FacilityUpgraded=True)
 
             await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
 
@@ -64,6 +65,7 @@ class ProductionFacilitiesPanel(Panel):
                                   f"Units Per Second: {format(Self.FacilitySelected.UnitsPerTick, ',')}\n"+
                                   f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
             Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+            await Self._Send_New_Panel(Interaction)
         else:
             await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
             Self.FacilitiesSelected = None
@@ -77,13 +79,13 @@ class ProductionFacilitiesPanel(Panel):
 
             Self.Options = [SelectOption(label=Name) for Name, Building in Self.Player.ProductionFacilities.items() if Building != "None"]
             Self.FacilitiesSelect = Select(options=Self.Options, custom_id=f"ItemSelection", row=2)
-            Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Panel(FacilitySelected=SelectInteraction.data["values"][0])
+            Self.FacilitiesSelect.callback = lambda SelectInteraction: Self._Construct_Panel(FacilitySelected=SelectInteraction.data["values"][0], Interaction=SelectInteraction)
             Self.BaseViewFrame.add_item(Self.FacilitiesSelect)
 
             await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
+            await Self._Send_New_Panel(Self.Interaction)
 
         Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
-        await Self._Send_New_Panel(Self.Interaction)
 
 
     async def _Collect_Production_Facilities(Self, Interaction:DiscordInteraction):
