@@ -106,6 +106,18 @@ class AvargoPanel(Panel):
         Self.CheckoutButton.callback = lambda ButtonInteraction: Self._Avargo_Checkout(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.CheckoutButton)
 
+        Self.SellHundredButton = Button(label=f"Sell 100", style=Self.ButtonStyle, custom_id="SellHundredButton")
+        Self.SellHundredButton.callback = Self._Sell_Hundred
+        Self.BaseViewFrame.add_item(Self.SellHundredButton)
+
+        Self.SellThousandButton = Button(label=f"Sell 1,000", style=Self.ButtonStyle, custom_id="SellThousandButton")
+        Self.SellThousandButton.callback = Self._Sell_Thousand
+        Self.BaseViewFrame.add_item(Self.SellThousandButton)
+
+        Self.SellTenThousandButton = Button(label=f"Sell 10,000", style=Self.ButtonStyle, custom_id="SellTenThousandButton")
+        Self.SellTenThousandButton.callback = Self._Sell_TenThousand
+        Self.BaseViewFrame.add_item(Self.SellTenThousandButton)
+
         Self.SellAllButton = Button(label=f"Sell All", style=Self.ButtonStyle, custom_id="SellAllButton")
         Self.SellAllButton.callback = Self._Sell_All
         Self.BaseViewFrame.add_item(Self.SellAllButton)
@@ -137,7 +149,6 @@ class AvargoPanel(Panel):
 
     async def _Add_To_Cart(Self, Interaction, Quantity):
         if Self.SaleType == "Buy":
-            print("Fuick")
             if (MaterialWorthTable[Self.MaterialRaw] * Quantity) > Self.Player.Data["Wallet"]:
                 Self.EmbedFrame.description += f"\nYou do not have enough money"
                 await Self._Send_New_Panel(Interaction)
@@ -167,15 +178,99 @@ class AvargoPanel(Panel):
         if Self.SaleType == "Sell":
             await Self._Construct_Sell_Panel(Interaction)
 
+    async def _Sell_Hundred(Self, Interaction:DiscordInteraction):
+        if Self.MaterialRaw == None:
+            Self.EmbedFrame.description += f"\nYou have nothing selected"
+            await Self._Send_New_Panel(Interaction)
+            return
+        if Self.Player.Inventory[Self.MaterialRaw] >= 100:
+            Self.Player.Inventory[Self.MaterialRaw] -= 100
+            EarnedExperience:float = 0.00
+            Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * 100, 2)
+            Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
+            EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+            Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
+            Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
+            Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
+            await Self._Generate_Info(Self.Ether, Self.InitialContext)
+            Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
+            await Self._Send_New_Panel(Interaction)
+            Self.MaterialChosen = None
+            Self.MaterialRaw = None
+            Self.ReceiptStarted = False
+            Self.Quantity = None
+            Self.ReceiptString = ""
+            Self.Receipt = {}
+        else:
+            Self.EmbedFrame.description += f"\nYou do not have enough {Self.MaterialRaw}"
+            await Self._Send_New_Panel(Interaction)
+            return
+
+    async def _Sell_Thousand(Self, Interaction:DiscordInteraction):
+        if Self.MaterialRaw == None:
+            Self.EmbedFrame.description += f"\nYou have nothing selected"
+            await Self._Send_New_Panel(Interaction)
+            return
+        if Self.Player.Inventory[Self.MaterialRaw] >= 1000:
+            Self.Player.Inventory[Self.MaterialRaw] -= 1000
+            EarnedExperience:float = 0.00
+            Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * 1000, 2)
+            Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
+            EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+            Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
+            Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
+            Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
+            await Self._Generate_Info(Self.Ether, Self.InitialContext)
+            Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
+            await Self._Send_New_Panel(Interaction)
+            Self.MaterialChosen = None
+            Self.MaterialRaw = None
+            Self.ReceiptStarted = False
+            Self.Quantity = None
+            Self.ReceiptString = ""
+            Self.Receipt = {}
+        else:
+            Self.EmbedFrame.description += f"\nYou do not have enough {Self.MaterialRaw}"
+            await Self._Send_New_Panel(Interaction)
+            return
+
+    async def _Sell_TenThousand(Self, Interaction:DiscordInteraction):
+        if Self.MaterialRaw == None:
+            Self.EmbedFrame.description += f"\nYou have nothing selected"
+            await Self._Send_New_Panel(Interaction)
+            return
+        if Self.Player.Inventory[Self.MaterialRaw] >= 10000:
+            Self.Player.Inventory[Self.MaterialRaw] -= 10000
+            EarnedExperience:float = 0.00
+            Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * 10000, 2)
+            Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
+            EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+            Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
+            Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
+            Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
+            await Self._Generate_Info(Self.Ether, Self.InitialContext)
+            Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
+            await Self._Send_New_Panel(Interaction)
+            Self.MaterialChosen = None
+            Self.MaterialRaw = None
+            Self.ReceiptStarted = False
+            Self.Quantity = None
+            Self.ReceiptString = ""
+            Self.Receipt = {}
+        else:
+            Self.EmbedFrame.description += f"\nYou do not have enough {Self.MaterialRaw}"
+            await Self._Send_New_Panel(Interaction)
+            return
 
     async def _Sell_All(Self, Interaction:DiscordInteraction):
         EarnedExperience:float = 0.00
         Total:int = 0
         EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
         Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * Self.Player.Inventory[Self.MaterialRaw], 2)
-        Self.ReceiptString += f"{Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialChosen} for ${format(round(MaterialWorthTable[Self.MaterialRaw] * int(Self.Player.Inventory[Self.MaterialRaw])/4, 2), ',')}"
+        Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
+        Self.ReceiptString += f"{Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialChosen} for ${format(Total, ',')}"
         Self.Player.Inventory[Self.MaterialRaw] = 0
-        Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
+        Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
         Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
         Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"

@@ -92,13 +92,14 @@ class RealmOfConflict(Bot):
 
 
     def Load_Player_Data(Self) -> None:
-        if not exists(join(Self.DataDirectory, "PlayerData")):
-            return
         Self.Logger.info("Loading Player Data")
         Self.Members:{int:DiscordMember} = {M.id:M for M in Self.Guild.members}
+        if not exists(join(Self.DataDirectory, "PlayerData")):
+            return
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerData")):
             PlayerUUID:int = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID not in Self.Members:continue
             with open(join(Self.DataDirectory, "PlayerData", f"{PlayerUUID}.data.roc"), 'r') as PlayerDataFile:
                 PlayerData:[str] = [Line.strip() for Line in PlayerDataFile.readlines()]
                 if PlayerUUID == 42069: continue
@@ -163,6 +164,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerInventories")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID not in Self.Members:continue
             if PlayerUUID == 42069: continue
             with open(join(Self.DataDirectory, "PlayerInventories", f"{PlayerUUID}.inventory.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
@@ -181,6 +183,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerProductionFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID not in Self.Members:continue
             if PlayerUUID == 42069: continue
             with open(join(Self.DataDirectory, "PlayerProductionFacilities", f"{PlayerUUID}.production.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
@@ -200,6 +203,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerManufacturingFacilities")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID not in Self.Members:continue
             if PlayerUUID == 42069: continue
             with open(join(Self.DataDirectory, "PlayerManufacturingFacilities", f"{PlayerUUID}.manufacturing.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
@@ -222,6 +226,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerArmy")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID not in Self.Members:continue
             if PlayerUUID == 42069: continue
             with open(join(Self.DataDirectory, "PlayerArmy", f"{PlayerUUID}.army.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
@@ -242,6 +247,7 @@ class RealmOfConflict(Bot):
         PlayerDataFileName:str
         for PlayerDataFileName in listdir(join(Self.DataDirectory, "PlayerSkills")):
             PlayerUUID = int(PlayerDataFileName.split(".")[0])
+            if PlayerUUID not in Self.Members:continue
             if PlayerUUID == 42069: continue
             with open(join(Self.DataDirectory, "PlayerSkills", f"{PlayerUUID}.skills.roc"), 'r') as PlayerDataFile:
                 PlayerData = [Line.strip() for Line in PlayerDataFile.readlines()]
