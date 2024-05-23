@@ -263,6 +263,10 @@ class AvargoPanel(Panel):
             return
 
     async def _Sell_All(Self, Interaction:DiscordInteraction):
+        if Self.MaterialRaw == None:
+            Self.EmbedFrame.description += f"\nYou have nothing selected"
+            await Self._Send_New_Panel(Interaction)
+            return
         EarnedExperience:float = 0.00
         Total:int = 0
         EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)

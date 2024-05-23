@@ -48,15 +48,29 @@ class CraftingPanel(Panel):
             Self.BaseViewFrame.add_item(Self.CraftingItemChoice)
 
         if CraftedAmount is not None:
-            for Item, AmountRequired in TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection].items():
-                if Self.Player.Inventory[Item] <= AmountRequired * CraftedAmount:
-                    Self.EmbedFrame.description += f"**Insufficient Resources** {Item}\n"
-                    Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")
-                    await Self._Send_New_Panel(Self.Interaction)
-                    return
+            ItemRecipe = TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection]
+            if type(ItemRecipe) == tuple:
+                Quantity = ItemRecipe[1]
+                ItemRecipe = ItemRecipe[0]
+                for Item, AmountRequired in ItemRecipe.items():
+                    if Self.Player.Inventory[Item] <= (AmountRequired * CraftedAmount) * Quantity:
+                        Self.EmbedFrame.description += f"**Insufficient Resources** {Item}\n"
+                        Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")
+                        await Self._Send_New_Panel(Self.Interaction)
+                        return
+                    
+                for Item, AmountRequired in ItemRecipe.items():
+                    Self.Player.Inventory[Item] = round(Self.Player.Inventory[Item] - (AmountRequired * CraftedAmount) * Quantity, 2)
+            if type(ItemRecipe) == dict:
+                for Item, AmountRequired in ItemRecipe.items():
+                    if Self.Player.Inventory[Item] <= AmountRequired * CraftedAmount:
+                        Self.EmbedFrame.description += f"**Insufficient Resources** {Item}\n"
+                        Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")
+                        await Self._Send_New_Panel(Self.Interaction)
+                        return
 
-            for Item, AmountRequired in TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection].items():
-                Self.Player.Inventory[Item] = round(Self.Player.Inventory[Item] - AmountRequired * CraftedAmount, 2)
+                for Item, AmountRequired in ItemRecipe.items():
+                    Self.Player.Inventory[Item] = round(Self.Player.Inventory[Item] - AmountRequired * CraftedAmount, 2)
             
             PreviousAmount = Self.Player.Inventory[CraftingItemSelection]
             Self.Player.Inventory[CraftingItemSelection] = round(Self.Player.Inventory[CraftingItemSelection] + CraftedAmount, 2)
@@ -71,16 +85,16 @@ class CraftingPanel(Panel):
                 Self.BaseViewFrame.add_item(Self.CraftItem)
             Self.CraftingItemSelection = CraftingItemSelection
             Self.CraftingItemChoice.placeholder = Self.CraftingItemSelection
-            Recipe = TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection]
+            ItemRecipe = TypeMapping[Self.CraftingTypeSelected][Self.CraftingItemSelection]
             Self.EmbedFrame.description += f"### Recipe\n"
-            if type(Recipe) == tuple:
-                Recipe = Recipe[0]
-                OutputQuantity = Recipe[1]
+            if type(ItemRecipe) == tuple:
+                Recipe = ItemRecipe[0]
+                OutputQuantity = ItemRecipe[1]
                 Self.EmbedFrame.description += f"**Outputs** - {OutputQuantity}\n"
                 for Name, Quantity in Recipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
-            if type(Recipe) == dict:
-                for Name, Quantity in Recipe.items():
+            if type(ItemRecipe) == dict:
+                for Name, Quantity in ItemRecipe.items():
                     Self.EmbedFrame.description += f"**{Name}** - {Quantity}\{Self.Player.Inventory[Name]}\n"
 
         Self.Ether.Logger.info(f"Sent Crafting panel to {Self.Player.Data['Name']}")

@@ -182,9 +182,7 @@ class SkillsPanel(Panel):
 
     async def _Respec_Player(Self, Interaction):
         Self.EmbedFrame.clear_fields()
-        SkillPointsAmount = 0
-        for Level in Self.Player.Skills.values():
-            SkillPointsAmount += Level
+        SkillPointsAmount = Self.Player.Data["Level"]
 
         Self.Player.Skills = {SkillName:0 for SkillName in Self.Player.Skills.keys()}
 
