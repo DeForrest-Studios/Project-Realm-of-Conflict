@@ -186,17 +186,15 @@ class AvargoPanel(Panel):
         if Self.Player.Inventory[Self.MaterialRaw] >= 100:
             Self.Player.Inventory[Self.MaterialRaw] -= 100
             EarnedExperience:float = 0.00
-            Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * 100, 2)
+            Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * 100, 2)
             Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
-            EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/8 + (Self.Player.Data["Maiden's Grace"] * 0.08 * Self.Player.Data["Level"]) * 100, 2)
             Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
             Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
             Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
             await Self._Generate_Info(Self.Ether, Self.InitialContext)
             Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
             await Self._Send_New_Panel(Interaction)
-            Self.MaterialChosen = None
-            Self.MaterialRaw = None
             Self.ReceiptStarted = False
             Self.Quantity = None
             Self.ReceiptString = ""
@@ -214,17 +212,15 @@ class AvargoPanel(Panel):
         if Self.Player.Inventory[Self.MaterialRaw] >= 1000:
             Self.Player.Inventory[Self.MaterialRaw] -= 1000
             EarnedExperience:float = 0.00
-            Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * 1000, 2)
+            Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * 1000, 2)
             Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
-            EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/8 + (Self.Player.Data["Maiden's Grace"] * 0.08 * Self.Player.Data["Level"]) * 1000, 2)
             Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
             Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
             Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
             await Self._Generate_Info(Self.Ether, Self.InitialContext)
             Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
             await Self._Send_New_Panel(Interaction)
-            Self.MaterialChosen = None
-            Self.MaterialRaw = None
             Self.ReceiptStarted = False
             Self.Quantity = None
             Self.ReceiptString = ""
@@ -242,17 +238,15 @@ class AvargoPanel(Panel):
         if Self.Player.Inventory[Self.MaterialRaw] >= 10000:
             Self.Player.Inventory[Self.MaterialRaw] -= 10000
             EarnedExperience:float = 0.00
-            Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * 10000, 2)
+            Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * 10000, 2)
             Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
-            EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/8 + (Self.Player.Data["Maiden's Grace"] * 0.08 * Self.Player.Data["Level"]) * 10000, 2)
             Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
             Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
             Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
             await Self._Generate_Info(Self.Ether, Self.InitialContext)
             Self.EmbedFrame.description += f"### Receipt\n{Self.ReceiptString}"
             await Self._Send_New_Panel(Interaction)
-            Self.MaterialChosen = None
-            Self.MaterialRaw = None
             Self.ReceiptStarted = False
             Self.Quantity = None
             Self.ReceiptString = ""
@@ -269,8 +263,8 @@ class AvargoPanel(Panel):
             return
         EarnedExperience:float = 0.00
         Total:int = 0
-        EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Self.MaterialRaw]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
-        Total = round(Total + (MaterialWorthTable[Self.MaterialRaw]/4) * Self.Player.Inventory[Self.MaterialRaw], 2)
+        EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/8 + (Self.Player.Data["Maiden's Grace"] * 0.08 * Self.Player.Data["Level"]) * Self.Player.Inventory[Self.MaterialRaw], 2)
+        Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * Self.Player.Inventory[Self.MaterialRaw], 2)
         Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
         Self.ReceiptString += f"{Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialChosen} for ${format(Total, ',')}"
         Self.Player.Inventory[Self.MaterialRaw] = 0
@@ -330,7 +324,7 @@ class AvargoPanel(Panel):
                     Self.InsufficientMaterial = Material
                     await Self._Construct_Sell_Panel(Interaction)
                     return
-                EarnedExperience = round((EarnedExperience + (MaterialWorthTable[Material]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"])), 2)
+                EarnedExperience = round(((EarnedExperience + (MaterialWorthTable[Material]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))) * Quantity, 2)
                 Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
 
 

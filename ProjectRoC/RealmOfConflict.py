@@ -15,7 +15,6 @@ from Tables import InfantryToObject
 from Simulation import Simulation
 from Structures import ManufacturingFacility
 
-
 class RealmOfConflict(Bot):
     def __init__(Self) -> None:
         super().__init__(command_prefix=['R', 'r'], intents=Intents.all())

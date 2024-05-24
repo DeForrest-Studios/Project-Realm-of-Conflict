@@ -30,6 +30,7 @@ class Panel:
 
 
     async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]):
+        Self.Player.Refresh_Stats()
         Self.EmbedFrame.description = ""
         Fields = [Field for Field in ["Wallet", "Team", "Level", "Experience", "Power"] if Field not in Exclusions]
         Fields += Inclusions

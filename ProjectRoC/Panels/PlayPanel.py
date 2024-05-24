@@ -60,7 +60,6 @@ class PlayPanel:
         Self.ReceiptString = ""
         Self.Receipt:{str:int} = {}
         await Self._Determine_Team(InitialContext)
-
         await Self._Generate_Info(Ether, InitialContext)
 
         Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
@@ -108,7 +107,6 @@ class PlayPanel:
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3, custom_id="DebugButton")
             Self.DebugButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
             Self.BaseViewFrame.add_item(Self.DebugButton)
-
 
         if Interaction:
             if Interaction.user != InitialContext.author:
