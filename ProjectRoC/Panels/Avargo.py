@@ -318,13 +318,13 @@ class AvargoPanel(Panel):
         for Material, Quantity in Self.Receipt.items():
             if Self.SaleType == "Buy":
                 Total += round(MaterialWorthTable[Material] * Quantity, 2) + (Self.Player.Data["Maiden's Grace"] * (0.02 * Self.Player.Data["Level"]))
-                EarnedExperience = round(EarnedExperience + (MaterialWorthTable[Material]), 2) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))
+                EarnedExperience = round((EarnedExperience + ((MaterialWorthTable[Material]/3 + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))) * Quantity)), 2)
             if Self.SaleType == "Sell":
                 if Quantity > Self.Player.Inventory[Material]:
                     Self.InsufficientMaterial = Material
                     await Self._Construct_Sell_Panel(Interaction)
                     return
-                EarnedExperience = round(((EarnedExperience + (MaterialWorthTable[Material]/2)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]))) * Quantity, 2)
+                EarnedExperience = round(((EarnedExperience + (MaterialWorthTable[Material]/8)) + (Self.Player.Data["Maiden's Grace"] * (0.08 * Self.Player.Data["Level"]) * Quantity)), 2)
                 Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
 
 
