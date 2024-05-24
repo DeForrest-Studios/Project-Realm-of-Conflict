@@ -25,7 +25,7 @@ class RecruitPanel(Panel):
 
             Self.RecruitButton = Button(label="Recruit Selection", style=Self.ButtonStyle,
                                         row=0, custom_id="RecruitButton")
-            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Interaction=Interaction, InfantrySelected=Self.InfantrySelected, InfantryRecruited=True)
+            Self.RecruitButton.callback = lambda Interaction: Self._Construct_Panel(Interaction=Interaction, InfantryRecruited=True)
             Self.BaseViewFrame.add_item(Self.RecruitButton)
 
             Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
@@ -36,7 +36,7 @@ class RecruitPanel(Panel):
 
             Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle,
                                         row=2, custom_id="SententsButton")
-            Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__ainit__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+            Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__init__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
             Self.BaseViewFrame.add_item(Self.SententsButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,
@@ -51,6 +51,10 @@ class RecruitPanel(Panel):
             Self.InfantryChoice.placeholder = InfantrySelected
 
         if InfantryRecruited == True:
+            if InfantrySelected == None:
+                Self.EmbedFrame.description += f"\nYou have nothing selected"
+                await Self._Send_New_Panel(Interaction)
+                return
             InfantryKey = Self.InfantrySelected.split(" for ")[0]
             if Self.Player.Data["Wallet"] >= InfantryTable[InfantryKey]:
                 Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] - InfantryTable[InfantryKey], 2)

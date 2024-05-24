@@ -1,4 +1,5 @@
 from discord import Interaction as DiscordInteraction
+from discord import Message as DiscordMessage
 from discord.ext.commands import Context as DiscordContext
 from discord import ButtonStyle as DiscordButtonStyle
 from discord import Embed
@@ -20,6 +21,7 @@ class Panel:
 
         Self.BaseViewFrame = View(timeout=144000)
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s {PanelType} Panel")
+        Ether.Data["Panels"].update({InitialContext.author.id:Self})
         if Interaction is not None:
             Self.Interaction:DiscordInteraction = Interaction
             create_task(Self._Construct_Panel())
@@ -27,6 +29,7 @@ class Panel:
 
     async def _Send_New_Panel(Self, Interaction:DiscordInteraction) -> None:
         await Interaction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
+        Self.DashboardMessage:DiscordMessage = Interaction.message
 
 
     async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]):

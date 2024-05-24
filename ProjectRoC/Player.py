@@ -181,6 +181,7 @@ class Player:
 
     
     def Level_Up(Self):
-        Self.Data["Level"] += 1
-        Self.Data["Skill Points"] += 1
-        Self.Refresh_Stats()
+        while Self.Data["Experience"] >= Self.ExperienceForNextLevel:
+            Self.Data["Level"] += 1
+            Self.Data["Skill Points"] += 1
+            Self.ExperienceForNextLevel = Self.Data["Level"] * (325 + (135 * Self.Data["Level"]) - (Self.Data["Maiden's Grace"] * (5 * Self.Data["Level"])))
