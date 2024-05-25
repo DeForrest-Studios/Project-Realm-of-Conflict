@@ -112,8 +112,16 @@ class Simulation:
             # Titan.EnergySappingLeaderboard = sorted(Titan.EnergySappingLeaderboard.items(), key=lambda x: x[1], reverse=True)
             Analis.Data["Offensive Power"] = 0
             Analis.Data["Defensive Power"] = 0
+            Analis.Data["Healing"] = 0
+            Analis.Data["Hacking"] = 0
+            Analis.Data["Energy Sapping"] = 0
+            Analis.Data["Domination"] = 0
             Titan.Data["Offensive Power"] = 0
             Titan.Data["Defensive Power"] = 0
+            Titan.Data["Healing"] = 0
+            Titan.Data["Hacking"] = 0
+            Titan.Data["Energy Sapping"] = 0
+            Titan.Data["Domination"] = 0
             # Get stats
             for Player in Ether.Data["Players"].values():
                 if Player.Data["Team"] == "Analis":
@@ -132,15 +140,15 @@ class Simulation:
                     Titan.Data["Hacking"] += Player.Skills["Hacking"]
 
             # Energy Sapping Phase
-            # if Analis.Data['Defensive Power'] - Titan.Data['Energy Sapping'] <= 0:
-            #     Analis.Data['Defensive Power'] = 0
-            # else:
-            #     Analis.Data['Defensive Power'] -= Titan.Data['Energy Sapping']
+            if Analis.Data['Defensive Power'] - Titan.Data['Energy Sapping'] <= 0:
+                Analis.Data['Defensive Power'] = 0
+            else:
+                Analis.Data['Defensive Power'] -= Titan.Data['Energy Sapping']
 
-            # if Titan.Data['Defensive Power'] - Analis.Data['Energy Sapping'] <= 0:
-            #     Titan.Data['Defensive Power'] = 0
-            # else:
-            #     Titan.Data['Defensive Power'] -= Analis.Data['Energy Sapping']
+            if Titan.Data['Defensive Power'] - Analis.Data['Energy Sapping'] <= 0:
+                Titan.Data['Defensive Power'] = 0
+            else:
+                Titan.Data['Defensive Power'] -= Analis.Data['Energy Sapping']
 
             # Titan attacking Analis Phase
             if Titan.Data['Offensive Power'] >= Analis.Data['Defensive Power']:
@@ -171,36 +179,38 @@ class Simulation:
             else:
                 Ether.Logger.info("Titan defended against Analis")
                 Self.TitanDefended = True
-            # # Domination Damage Phase
-            # Titan.Data['Population Dominated'] = Analis.Data['Domination'] * 40000
-            # Titan.Data['Population'] -= Titan.Data['Population Dominated']
-            # Analis.Data['Population Dominated'] = Titan.Data['Domination'] * 40000
-            # Analis.Data['Population'] -= Analis.Data['Population Dominated']
 
-            # # # Healing Phase
-            # Titan.Data['Population Healed'] = Titan.Data['Healing'] * 80000
-            # Titan.Data['Population'] += Titan.Data['Population Healed']
-            # Analis.Data['Population Healed'] = Analis.Data['Healing'] * 80000
-            # Analis.Data['Population'] += Analis.Data['Population Healed']
+            # # Domination Damage Phase
+            Titan.Data['Population Dominated'] = Titan.Data['Domination'] * 40000
+            Analis.Data['Population'] -= Titan.Data['Population Dominated']
+
+            Analis.Data['Population Dominated'] = Analis.Data['Domination'] * 40000
+            Titan.Data['Population'] -= Analis.Data['Population Dominated']
+
+            # # Healing Phase
+            Titan.Data['Population Healed'] = Titan.Data['Healing'] * 80000
+            Titan.Data['Population'] += Titan.Data['Population Healed']
+            Analis.Data['Population Healed'] = Analis.Data['Healing'] * 80000
+            Analis.Data['Population'] += Analis.Data['Population Healed']
 
             # # # Hacking Phase
-            # Analis.Data["Earned Pool"] = Analis.Data["Hacking"] * 25000
-            # Titan.Data["Earned Pool"] = Titan.Data["Hacking"] * 25000
-            # Self.EarnedPool = Analis.Data["Earned Pool"] + Titan.Data["Earned Pool"]
+            Analis.Data["Earned Pool"] = Analis.Data["Hacking"] * 8500
+            Titan.Data["Earned Pool"] = Titan.Data["Hacking"] * 8500
+            Self.EarnedPool = Analis.Data["Earned Pool"] + Titan.Data["Earned Pool"]
 
-            # Analis.Data['Population Loss'] += Analis.Data['Population Healed'] - Titan.Data['Population Dominated']
-            # Titan.Data['Population Loss'] += Titan.Data['Population'] + Titan.Data['Population Healed'] - Analis.Data['Population Dominated']
+            Analis.Data['Population Loss'] += Analis.Data['Population Healed'] - Titan.Data['Population Dominated']
+            Titan.Data['Population Loss'] += Titan.Data['Population'] + Titan.Data['Population Healed'] - Analis.Data['Population Dominated']
 
-            # while Self.EarnedPool > 0:
-            #     for Player in Ether["Online Players"].values():
-            #         if Player.team == "Analis":
-            #             Analis.Data["Average Earnings"] = round(Analis.Data["Earned Pool"] / (Analis.Data["Protector Count"] + 1), 2)
-            #             Player.wallet = round(Player.wallet + Analis.Data["Average Earnings"], 2)
-            #             Self.EarnedPool = round(Self.EarnedPool - Analis.Data["Average Earnings"], 2)
-            #         if Player.team == "Titan":
-            #             Titan.Data["Average Earnings"] = round(Titan.Data["Earned Pool"] / (Titan.Data["Protector Count"] + 1), 2)
-            #             Player.wallet = round(Player.wallet + Titan.Data["Average Earnings"], 2)
-            #             Self.EarnedPool = round(Self.EarnedPool - Titan.Data["Average Earnings"], 4)
+            while Self.EarnedPool > 0:
+                for Player in Ether.Data["Players"].values():
+                    if Player.Data["Team"] == "Analis":
+                        Analis.Data["Average Earnings"] = round(Analis.Data["Earned Pool"] / (Analis.Data["Protector Count"] + 1), 2)
+                        Player.Data["Wallet"] = round(Player.Data["Wallet"] + Analis.Data["Average Earnings"], 2)
+                        Self.EarnedPool = round(Self.EarnedPool - Analis.Data["Average Earnings"], 2)
+                    if Player.Data["Team"] == "Titan":
+                        Titan.Data["Average Earnings"] = round(Titan.Data["Earned Pool"] / (Titan.Data["Protector Count"] + 1), 2)
+                        Player.Data["Wallet"] = round(Player.Data["Wallet"] + Titan.Data["Average Earnings"], 2)
+                        Self.EarnedPool = round(Self.EarnedPool - Titan.Data["Average Earnings"], 4)
 
             # Raiding Phase
             # Self.Raids = ""
