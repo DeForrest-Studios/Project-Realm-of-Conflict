@@ -3,7 +3,7 @@ class Planet():
         Self.Data:{str:...} = {
             "Name": Name,
             "ROC": ROC,
-            "Population": 78542986762964,
+            "Population": 92543784546,
             "Protector Count": 0,
             "Damage": 0,
             "Offensive Power": 0,

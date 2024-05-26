@@ -116,12 +116,18 @@ class Simulation:
             Analis.Data["Hacking"] = 0
             Analis.Data["Energy Sapping"] = 0
             Analis.Data["Domination"] = 0
+            Analis.Data["Population Loss"] = 0
+            Analis.Data["Population Healed"] = 0
+            Analis.Data["Population Dominated"] = 0
             Titan.Data["Offensive Power"] = 0
             Titan.Data["Defensive Power"] = 0
             Titan.Data["Healing"] = 0
             Titan.Data["Hacking"] = 0
             Titan.Data["Energy Sapping"] = 0
             Titan.Data["Domination"] = 0
+            Titan.Data["Population Loss"] = 0
+            Titan.Data["Population Healed"] = 0
+            Titan.Data["Population Dominated"] = 0
             # Get stats
             for Player in Ether.Data["Players"].values():
                 if Player.Data["Team"] == "Analis":
@@ -150,36 +156,6 @@ class Simulation:
             else:
                 Titan.Data['Defensive Power'] -= Analis.Data['Energy Sapping']
 
-            # Titan attacking Analis Phase
-            if Titan.Data['Offensive Power'] >= Analis.Data['Defensive Power']:
-                Ether.Logger.info("Titan attacked Analis")
-                Titan.Data['Damage'] = (Titan.Data['Offensive Power'] - Analis.Data['Defensive Power'])
-                if Analis.Data['Population'] - Titan.Data['Damage'] * 2 <= 0:
-                    Analis.Data['Population'] = 0
-                    Self.VictoriousPlanet = "Titan"
-                    Self.DestroyedPlanet = "Analis"
-                else:
-                    Analis.Data['Population Loss'] = (Titan.Data['Damage'] * 2)
-                    Analis.Data['Population'] -= (Titan.Data['Damage'] * 2)
-            else:
-                Ether.Logger.info("Analis defended against Titan")
-                Self.AnalisDefended = True
-
-            # Analis Attacking Titan Phase
-            if Analis.Data['Offensive Power'] >= Titan.Data['Defensive Power']:
-                Ether.Logger.info("Analis attacked Titan")
-                Analis.Data['Damage'] = (Analis.Data['Offensive Power'] - Titan.Data['Defensive Power'])
-                if Titan.Data['Population'] - Analis.Data['Damage'] * 2 <= 0:
-                    Titan.Data['Population'] = 0
-                    Self.VictoriousPlanet = "Analis"
-                    Self.DestroyedPlanet = "Titan"
-                else:
-                    Titan.Data['Population Loss'] = (Analis.Data['Damage'] * 2)
-                    Titan.Data['Population'] -= (Analis.Data['Damage'] * 2)
-            else:
-                Ether.Logger.info("Titan defended against Analis")
-                Self.TitanDefended = True
-
             # # Domination Damage Phase
             Titan.Data['Population Dominated'] = Titan.Data['Domination'] * 40000
             Analis.Data['Population'] -= Titan.Data['Population Dominated']
@@ -198,8 +174,8 @@ class Simulation:
             Titan.Data["Earned Pool"] = Titan.Data["Hacking"] * 8500
             Self.EarnedPool = Analis.Data["Earned Pool"] + Titan.Data["Earned Pool"]
 
-            Analis.Data['Population Loss'] += Analis.Data['Population Healed'] - Titan.Data['Population Dominated']
-            Titan.Data['Population Loss'] += Titan.Data['Population'] + Titan.Data['Population Healed'] - Analis.Data['Population Dominated']
+            Analis.Data['Population Loss'] += (Analis.Data['Population Healed'] - Titan.Data['Population Dominated'])
+            Titan.Data['Population Loss'] += (Titan.Data['Population Healed'] - Analis.Data['Population Dominated'])
 
             while Self.EarnedPool > 0:
                 for Player in Ether.Data["Players"].values():
@@ -246,6 +222,37 @@ class Simulation:
             #         Self.Raids += '\n'.join([f'{item.id}\n' for item in Self.player_items])
             #         Self.Raids += '\n'.join([f'{item[1]} {item[0]}' for item in Self.player_materials.items()])
             #         Self.Raids += '\n\n'
+
+            # Titan attacking Analis Phase
+            if Titan.Data['Offensive Power'] >= Analis.Data['Defensive Power']:
+                Ether.Logger.info("Titan attacked Analis")
+                Titan.Data['Damage'] = (Titan.Data['Offensive Power'] - Analis.Data['Defensive Power'])
+                if Analis.Data['Population'] - Titan.Data['Damage'] * 2 <= 0:
+                    Analis.Data['Population'] = 0
+                    Self.VictoriousPlanet = "Titan"
+                    Self.DestroyedPlanet = "Analis"
+                else:
+                    Analis.Data['Population Loss'] = (Titan.Data['Damage'] * 2)
+                    Analis.Data['Population'] -= (Titan.Data['Damage'] * 2)
+            else:
+                Ether.Logger.info("Analis defended against Titan")
+                Self.AnalisDefended = True
+
+            # Analis Attacking Titan Phase
+            if Analis.Data['Offensive Power'] >= Titan.Data['Defensive Power']:
+                Ether.Logger.info("Analis attacked Titan")
+                Analis.Data['Damage'] = (Analis.Data['Offensive Power'] - Titan.Data['Defensive Power'])
+                if Titan.Data['Population'] - Analis.Data['Damage'] * 2 <= 0:
+                    Titan.Data['Population'] = 0
+                    Self.VictoriousPlanet = "Analis"
+                    Self.DestroyedPlanet = "Titan"
+                else:
+                    Titan.Data['Population Loss'] = (Analis.Data['Damage'] * 2)
+                    Titan.Data['Population'] -= (Analis.Data['Damage'] * 2)
+            else:
+                Ether.Logger.info("Titan defended against Analis")
+                Self.TitanDefended = True
+
 
             Ether.Logger.info("Sending Simulation Report")
             await create_task(Self._Generate_Simulation_Reports(Analis, Titan))
