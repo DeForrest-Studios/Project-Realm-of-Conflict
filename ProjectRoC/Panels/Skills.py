@@ -92,7 +92,7 @@ class SkillsPanel(Panel):
         Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Offensive Skills Panel")
         await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Offensive Skill"] + Self.SelectedSkills)
         
-        Self.OffensivePowerSkillButton = Button(label="Offensive Power", style=Self.ButtonStyle, custom_id="OffensivePowerSkillButton")
+        Self.OffensivePowerSkillButton = Button(label="Offensive Power", style=Self.ButtonStyle, custom_id="OffensiveSkillButton")
         Self.OffensivePowerSkillButton.callback = Self._Confirm_Skill_Point
         Self.BaseViewFrame.add_item(Self.OffensivePowerSkillButton)
 
@@ -182,7 +182,7 @@ class SkillsPanel(Panel):
 
     async def _Respec_Player(Self, Interaction):
         Self.EmbedFrame.clear_fields()
-        SkillPointsAmount = Self.Player.Data["Level"]
+        SkillPointsAmount = Self.Player.Data["Level"] - 1
 
         Self.Player.Skills = {SkillName:0 for SkillName in Self.Player.Skills.keys()}
 

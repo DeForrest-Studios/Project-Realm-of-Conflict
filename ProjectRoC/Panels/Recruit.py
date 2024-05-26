@@ -16,8 +16,9 @@ class RecruitPanel(Panel):
                          PlayPanel, "Recruit",
                          Interaction=Interaction, ButtonStyle=ButtonStyle)
         Self.SententsPanel = SententsPanel
+        Self.InfantrySelected = None
 
-    async def _Construct_Panel(Self, Interaction=None, InfantrySelected=None, InfantryRecruited=False):
+    async def _Construct_Panel(Self, Interaction=None, InfantryRecruited=False):
         if Self.Interaction.user != Self.InitialContext.author: return
 
         if Interaction == None:
@@ -31,7 +32,7 @@ class RecruitPanel(Panel):
             Self.InfantyChoices = [SelectOption(label=f"{Infantry} for ${Worth}") for Infantry, Worth in InfantryTable.items()]
             Self.InfantryChoice = Select(placeholder="Select an Infantry", options=Self.InfantyChoices,
                                         row=1, custom_id=f"InfantrySelection")
-            Self.InfantryChoice.callback = lambda Interaction: Self._Construct_Panel(Interaction=Interaction, InfantrySelected=Interaction.data["values"][0])
+            Self.InfantryChoice.callback = lambda Interaction: Self._Select_Item(Interaction=Interaction, InfantrySelected=Interaction.data["values"][0])
             Self.BaseViewFrame.add_item(Self.InfantryChoice)
 
             Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle,
@@ -46,12 +47,11 @@ class RecruitPanel(Panel):
         else:
             Self.Interaction = Interaction
         
-        if InfantrySelected:
-            Self.InfantrySelected = InfantrySelected
-            Self.InfantryChoice.placeholder = InfantrySelected
+        if Self.InfantrySelected:
+            Self.InfantryChoice.placeholder = Self.InfantrySelected
 
         if InfantryRecruited == True:
-            if InfantrySelected == None:
+            if Self.InfantrySelected == None:
                 Self.EmbedFrame.description += f"\nYou have nothing selected"
                 await Self._Send_New_Panel(Interaction)
                 return
@@ -75,3 +75,7 @@ class RecruitPanel(Panel):
 
         Self.Ether.Logger.info(f"Sent Recruit panel to {Self.Player.Data['Name']}")
         await Self._Send_New_Panel(Self.Interaction)
+
+    async def _Select_Item(Self, Interaction:DiscordInteraction, InfantrySelected):
+        Self.InfantrySelected:str = InfantrySelected
+        await Self._Construct_Panel(Interaction)
