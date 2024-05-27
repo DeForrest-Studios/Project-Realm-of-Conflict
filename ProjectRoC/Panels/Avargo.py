@@ -187,7 +187,7 @@ class AvargoPanel(Panel):
             Self.Player.Inventory[Self.MaterialRaw] -= 100
             EarnedExperience:float = 0.00
             Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * 100, 2)
-            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/24 * 100, 2)
+            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/28 * 100, 2)
             Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
             Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
             Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
@@ -212,7 +212,7 @@ class AvargoPanel(Panel):
             Self.Player.Inventory[Self.MaterialRaw] -= 1000
             EarnedExperience:float = 0.00
             Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * 1000, 2)
-            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/24 * 1000, 2)
+            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/28 * 1000, 2)
             Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
             Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
             Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
@@ -237,7 +237,7 @@ class AvargoPanel(Panel):
             Self.Player.Inventory[Self.MaterialRaw] -= 10000
             EarnedExperience:float = 0.00
             Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * 10000, 2)
-            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/24 * 10000, 2)
+            EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/28 * 10000, 2)
             Self.Player.Data["Wallet"] = round(Self.Player.Data["Wallet"] + Total, 2)
             Self.Player.Data["Experience"] = round(Self.Player.Data["Experience"] + EarnedExperience, 2)
             Self.ReceiptString += f"10 {Self.MaterialChosen} for ${format(Total, ',')}"
@@ -264,7 +264,7 @@ class AvargoPanel(Panel):
             return
         EarnedExperience:float = 0.00
         Total:int = 0
-        EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/24 * Self.Player.Inventory[Self.MaterialRaw], 2)
+        EarnedExperience = round(MaterialWorthTable[Self.MaterialRaw]/28 * Self.Player.Inventory[Self.MaterialRaw], 2)
         Total = round((MaterialWorthTable[Self.MaterialRaw]/4) * Self.Player.Inventory[Self.MaterialRaw], 2)
         Total = round(Total + (Self.Player.Data["Maiden's Grace"] * (0.03 * Self.Player.Data["Level"])), 2)
         Self.ReceiptString += f"{Self.Player.Inventory[Self.MaterialRaw]} {Self.MaterialChosen} for ${format(Total, ',')}"
@@ -319,13 +319,13 @@ class AvargoPanel(Panel):
         for Material, Quantity in Self.Receipt.items():
             if Self.SaleType == "Buy":
                 Total += round(MaterialWorthTable[Material] * Quantity, 2)
-                EarnedExperience = round((EarnedExperience + ((MaterialWorthTable[Material]/12) * Quantity)), 2)
+                EarnedExperience = round((EarnedExperience + ((MaterialWorthTable[Material]/18) * Quantity)), 2)
             if Self.SaleType == "Sell":
                 if Quantity > Self.Player.Inventory[Material]:
                     Self.InsufficientMaterial = Material
                     await Self._Construct_Sell_Panel(Interaction)
                     return
-                EarnedExperience = round(((EarnedExperience + (MaterialWorthTable[Material]/24) * Quantity)), 2)
+                EarnedExperience = round(((EarnedExperience + (MaterialWorthTable[Material]/28) * Quantity)), 2)
                 Total = round(Total + (MaterialWorthTable[Material]/4) * Quantity, 2)
 
 

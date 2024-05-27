@@ -1,6 +1,8 @@
 from asyncio import sleep, create_task
-from discord import Embed
-
+from discord import Embed, File
+from random import randrange
+from Tables import MaterialTable, RaidingTable
+from os.path import join
 
 class Simulation:
     def __init__(Self, Ether, Analis, Titan) -> None:
@@ -46,7 +48,7 @@ class Simulation:
         else:
             Self.TitanEmbedReportString += "".join((f"Titan lost {format(Titan.Data['Population Loss'], ',')} population\n",
                                             f"Titan's population is now {format(Titan.Data['Population'], ',')}\n\n"))
-            
+
         Self.ReportEmbed.add_field(name="\u200b", value=Self.AnalisEmbedReportString, inline=False)
         Self.ReportEmbed.add_field(name="\u200b", value=Self.TitanEmbedReportString, inline=False)
         
@@ -189,39 +191,26 @@ class Simulation:
                         Self.EarnedPool = round(Self.EarnedPool - Titan.Data["Average Earnings"], 4)
 
             # Raiding Phase
-            # Self.Raids = ""
-            # for Player in Ether['Online Players'].values():
-            #     if Player.Skills["Raiding"] != 0:
-            #         for rotation_count in range(Player.Skills["Raiding"]):
-            #             Self.player_items = []
-            #             Self.player_materials = {}
-            #             Self.experience_earned = randrange((Player.Skills["Raiding"]+1)//8, 5 + Player.Skills["Raiding"])
-            #             Player.experience = round(Player.experience + Self.experience_earned, 2)
-            #             for item in raiding_references["Items"].items():
-            #                 roll = randrange(0, 100)
-            #                 Self.item_tier = int(item[0].split(" ~ ")[0].split("r ")[1])
-            #                 Self.item_name = item[0].split(" ~ ")[1]
-            #                 if roll <= item[1]:
-            #                     Self.generated_item = object_references[Self.item_name](Self.item_tier)
-            #                     Player.items.append(Self.generated_item)
-            #                     Self.player_items.append(Self.generated_item)
-            #                     if await Is_Int(Self.generated_item.attack_power) is not False:
-            #                         Player.Data["Offensive Power"] += Self.generated_item.attack_power
-            #                     if await Is_Int(Self.generated_item.defensive_power) is not False:
-            #                         Player.Data["Defensive Power"] += Self.generated_item.defensive_power
-            #                     if await Is_Int(Self.generated_item.energy_sapping) is not False:
-            #                         Player.Data["Energy Sapping"] += Self.generated_item.energy_sapping
-
-            #             for material in raiding_references["Materials"].items():
-            #                 roll = randrange(0, 100)
-            #                 if roll <= material[1]:
-            #                     quantity = randrange(1, Player.Skills["Raiding"] * 4)
-            #                     Player.inventory[material[0]] += quantity
-            #                     Self.player_materials.update({material[0]: quantity})
-            #         Self.Raids += f"\n{Player.Data['Name']} raided and got:\n"
-            #         Self.Raids += '\n'.join([f'{item.id}\n' for item in Self.player_items])
-            #         Self.Raids += '\n'.join([f'{item[1]} {item[0]}' for item in Self.player_materials.items()])
-            #         Self.Raids += '\n\n'
+            Self.Raids = ""
+            for Player in Ether.Data['Players'].values():
+                if Player.Skills["Raiding"] != 0:
+                    PlayerRaidSuccesful = False
+                    PlayerRaidString = ""
+                    for RotationCount in range(Player.Skills["Raiding"]):
+                        for Item in RaidingTable.items():
+                            Roll = randrange(0, 100)
+                            if Roll <= Item[1]:
+                                PlayerRaidSuccesful = True
+                                MaterialScavenged = list(MaterialTable.keys())[randrange(0, (len(MaterialTable.keys()) - 1))]
+                                Start, End = MaterialTable[MaterialScavenged][0], MaterialTable[MaterialScavenged][1]
+                                MaterialScavengedAmount = randrange(Start, End)
+                                Player.Inventory[MaterialScavenged] = round(Player.Inventory[MaterialScavenged] + MaterialScavengedAmount, 2)
+                                PlayerRaidString += f'\n{MaterialScavenged}: {MaterialScavengedAmount} \n'
+                    if PlayerRaidSuccesful == True:
+                        Self.Raids += f"{Player.Data['Name']} raided an obtained:\n"
+                        Self.Raids += PlayerRaidString
+                    PlayerRaidSuccesful = False
+                        
 
             # Titan attacking Analis Phase
             if Titan.Data['Offensive Power'] >= Analis.Data['Defensive Power']:
@@ -259,6 +248,13 @@ class Simulation:
 
             if Self.VictoriousPlanet is None:
                 await Ether.Data["Simulation Channel"].send(embed=Self.ReportEmbed)
+                if Self.Raids != "":
+                    with open(join('Data', f'Raid{Ether.Data["Skirmish Count"]}.txt'), "w", encoding='utf-8') as RaidFile:
+                        RaidFile.write(Self.Raids)
+                    # RaidEmbed = Embed(title="Raiding Report")
+                    # RaidEmbed.add_field(name="\u200b", value=Self.Raids, inline=False)
+                    with open(join('Data', f'Raid{Ether.Data["Skirmish Count"]}.txt'), "rb") as RaidFile:
+                        await Ether.Data["Simulation Channel"].send(file=File(RaidFile, filename=f'Raid{Ether.Data["Skirmish Count"]}.txt'))
 
             if Self.VictoriousPlanet is not None:
                 Ether.Logger.info(f"{Self.VictoriousPlanet} won, and destroyed {Self.DestroyedPlanet}")
@@ -268,7 +264,9 @@ class Simulation:
 
                 Ether.Data["Planets"][Self.VictoriousPlanet].Data["Wins"] += 1
                 Ether.Data["Planets"][Self.DestroyedPlanet].Data["Losses"] += 1
-                await Ether["Simulation Channel"].send(embed=Self.ReportEmbed)
+                await Ether.Data["Simulation Channel"].send(embed=Self.ReportEmbed)
+                if Self.Raids != "":
+                    await Ether.Data["Simulation Channel"].send(embed=Self.Raids)
                 break
 
             await sleep(300)

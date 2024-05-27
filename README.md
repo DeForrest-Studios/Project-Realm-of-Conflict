@@ -21,11 +21,12 @@ Players have these actions:
  - Factory
      - Material Refining
      - Manufacturing
- - Player (Their Name)
+ - Profile
      - Inventory Display
      - Structures Display
         - Facilities
         - Factories
+ - Planet
      - Detailed Planet Display
      - Leaderboards
         - Power Leaderboard

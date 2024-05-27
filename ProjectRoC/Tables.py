@@ -9,6 +9,10 @@ ScavengeTable:{str:int} = {
     "Infantry": 5
 }
 
+RaidingTable = {
+    "Material":65
+}
+
 MaterialTable:{str:tuple} = {
     "Water": (25, 30),
     "Sand": (17, 22),
