@@ -51,39 +51,6 @@ class Simulation:
 
         Self.ReportEmbed.add_field(name="\u200b", value=Self.AnalisEmbedReportString, inline=False)
         Self.ReportEmbed.add_field(name="\u200b", value=Self.TitanEmbedReportString, inline=False)
-        
-        # if Analis.Data["Protector Count"] >= 3 and Titan.Data["Protector Count"] >= 3:
-        #     Self.AnalisLeaderboardReportString = "".join((f"Top Analis Offensive Power Players:\n",
-        #         f"\t1: {Analis.OffensiveLeaderboard[0][0].Data['Name']} with {format(Analis.OffensiveLeaderboard[0][1], ',')} Offensive Power\n",
-        #         f"\t2: {Analis.OffensiveLeaderboard[1][0].Data['Name']} with {format(Analis.OffensiveLeaderboard[1][1], ',')} Offensive Power\n",
-        #         f"\t3: {Analis.OffensiveLeaderboard[2][0].Data['Name']} with {format(Analis.OffensiveLeaderboard[2][1], ',')} Offensive Power\n\n",
-
-        #         f"Top Analis Defensive Power Players:\n",
-        #         f"\t1: {Analis.DefensiveLeaderboard[0][0].Data['Name']} with {format(Analis.DefensiveLeaderboard[0][1], ',')} Defensive Power\n",
-        #         f"\t2: {Analis.DefensiveLeaderboard[1][0].Data['Name']} with {format(Analis.DefensiveLeaderboard[1][1], ',')} Defensive Power\n",
-        #         f"\t3: {Analis.DefensiveLeaderboard[2][0].Data['Name']} with {format(Analis.DefensiveLeaderboard[2][1], ',')} Defensive Power\n\n",
-
-        #         f"Top Analis Energy Sapping Players:\n",
-        #         f"\t1: {Analis.EnergySappingLeaderboard[0][0].Data['Name']} with {format(Analis.EnergySappingLeaderboard[0][1], ',')} Energy Sapping\n",
-        #         f"\t2: {Analis.EnergySappingLeaderboard[1][0].Data['Name']} with {format(Analis.EnergySappingLeaderboard[1][1], ',')} Energy Sapping\n",
-        #         f"\t3: {Analis.EnergySappingLeaderboard[2][0].Data['Name']} with {format(Analis.EnergySappingLeaderboard[2][1], ',')} Energy Sapping\n\n\n"))
-            
-        #     Self.TitanLeaderboardReportString = "".join((f"Top Titan Offensive Power Players:\n",
-        #         f"\t1: {Titan.OffensiveLeaderboard[0][0].Data['Name']} with {format(Titan.OffensiveLeaderboard[0][1], ',')} Offensive Power\n",
-        #         f"\t2: {Titan.OffensiveLeaderboard[1][0].Data['Name']} with {format(Titan.OffensiveLeaderboard[1][1], ',')} Offensive Power\n",
-        #         f"\t3: {Titan.OffensiveLeaderboard[2][0].Data['Name']} with {format(Titan.OffensiveLeaderboard[2][1], ',')} Offensive Power\n\n",
-
-        #         f"Top Titan Defensive Power Players:\n",
-        #         f"\t1: {Titan.DefensiveLeaderboard[0][0].Data['Name']} with {format(Titan.DefensiveLeaderboard[0][1], ',')} Defensive Power\n",
-        #         f"\t2: {Titan.DefensiveLeaderboard[1][0].Data['Name']} with {format(Titan.DefensiveLeaderboard[1][1], ',')} Defensive Power\n",
-        #         f"\t3: {Titan.DefensiveLeaderboard[2][0].Data['Name']} with {format(Titan.DefensiveLeaderboard[2][1], ',')} Defensive Power\n\n",
-
-        #         f"Top Titan Energy Sapping Players:\n",
-        #         f"\t1: {Titan.EnergySappingLeaderboard[0][0].Data['Name']} with {format(Titan.EnergySappingLeaderboard[0][1], ',')} Energy Sapping\n",
-        #         f"\t2: {Titan.EnergySappingLeaderboard[1][0].Data['Name']} with {format(Titan.EnergySappingLeaderboard[1][1], ',')} Energy Sapping\n",
-        #         f"\t3: {Titan.EnergySappingLeaderboard[2][0].Data['Name']} with {format(Titan.EnergySappingLeaderboard[2][1], ',')} Energy Sapping\n\n"))
-        #     Self.ReportEmbed.add_field(name="\u200b", value=Self.AnalisLeaderboardReportString, inline=False)
-        #     Self.ReportEmbed.add_field(name="\u200b", value=Self.TitanLeaderboardReportString, inline=False)
 
     async def _Core_Simulation(Self, Ether, Analis, Titan) -> None:
         Self.VictoriousPlanet = None
@@ -97,21 +64,7 @@ class Simulation:
             Self.ReportEmbed = Embed(title="Simulation Report")
             Self.ReportEmbed.add_field(name="Skirmish", value=Ether.Data['Skirmish Count'], inline=False)
             Self.VictoriousPlanet = None
-            Analis.OffensiveLeaderboard = {Player: Player.Data["Offensive Power"] for Player in Ether.Data["Players"].values() if Player.Data["Team"] == "Analis"}
-            Analis.DefensiveLeaderboard = {Player: Player.Data["Defensive Power"] for Player in Ether.Data["Players"].values() if Player.Data["Team"] == "Analis"}
-            # Analis.EnergySappingLeaderboard = {Player: Player.Data["Energy Sapping"] for Player in Ether.Data["Players"].values() if Player.Data["Team"] == "Analis"}
-
-            Titan.OffensiveLeaderboard = {Player: Player.Data["Offensive Power"] for Player in Ether.Data["Players"].values() if Player.Data["Team"] == "Titan"}
-            Titan.DefensiveLeaderboard = {Player: Player.Data["Defensive Power"] for Player in Ether.Data["Players"].values() if Player.Data["Team"] == "Titan"}
-            # Titan.EnergySappingLeaderboard = {Player: Player.Data["Energy Sapping"] for Player in Ether.Data["Players"].values() if Player.Data["Team"] == "Titan"}
-
-            Analis.OffensiveLeaderboard = sorted(Analis.OffensiveLeaderboard.items(), key=lambda x: x[1], reverse=True)
-            Analis.DefensiveLeaderboard = sorted(Analis.DefensiveLeaderboard.items(), key=lambda x: x[1], reverse=True)
-            # Analis.EnergySappingLeaderboard = sorted(Analis.EnergySappingLeaderboard.items(), key=lambda x: x[1], reverse=True)
-
-            Titan.OffensiveLeaderboard = sorted(Titan.OffensiveLeaderboard.items(), key=lambda x: x[1], reverse=True)
-            Titan.DefensiveLeaderboard = sorted(Titan.DefensiveLeaderboard.items(), key=lambda x: x[1], reverse=True)
-            # Titan.EnergySappingLeaderboard = sorted(Titan.EnergySappingLeaderboard.items(), key=lambda x: x[1], reverse=True)
+            
             Analis.Data["Offensive Power"] = 0
             Analis.Data["Defensive Power"] = 0
             Analis.Data["Healing"] = 0
@@ -130,6 +83,7 @@ class Simulation:
             Titan.Data["Population Loss"] = 0
             Titan.Data["Population Healed"] = 0
             Titan.Data["Population Dominated"] = 0
+            
             # Get stats
             for Player in Ether.Data["Players"].values():
                 if Player.Data["Team"] == "Analis":
