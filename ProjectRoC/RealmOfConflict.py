@@ -81,10 +81,10 @@ class RealmOfConflict(Bot):
 
 
     def Load_Records(Self):
+        if exists(join(Self.DataDirectory, f"record.roc")) == False: return
         Self.Logger.info("Loading Records")
         with open(join(Self.DataDirectory, f"record.roc"), 'r') as RecordsFile:
             RecordData = RecordsFile.readlines()
-
             for Line in RecordData:
                 if Line != "":
                     Data:Union[str:str] = Line.split(":")
@@ -94,13 +94,17 @@ class RealmOfConflict(Bot):
                         RecordValue = int(RecordValue)
                     elif type(RecordValue.split(".")) != list:
                         RecordValue = float(RecordValue)
-                    Self.Records[RecordName] = Data[1]
+                    Self.Records[RecordName] = RecordValue
 
     async def Save_Record(Self) -> None:
         Self.Logger.info("Saving Records")
         SaveData = ""
+        Counter = 0
         for RecordName, RecordValue in Self.Records.items():
-            SaveData += f"{RecordName}:{RecordValue}\n"
+            SaveData += f"{RecordName}:{RecordValue}"
+            if Counter != len(Self.Records.keys()) - 1:
+                SaveData += "\n"
+            Counter += 1
 
         with open(join(Self.DataDirectory, f"record.roc"), 'w+') as RecordsFile:
             RecordsFile.write(SaveData)

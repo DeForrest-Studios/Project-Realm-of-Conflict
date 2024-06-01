@@ -209,12 +209,12 @@ class Simulation:
             if Self.VictoriousPlanet is None:
                 await Ether.Data["Simulation Channel"].send(embed=Self.ReportEmbed)
                 if Self.Raids != "":
-                    with open(join('Data', f'Raid{Ether.Records["Skirmish Count"]}.txt'), "w", encoding='utf-8') as RaidFile:
+                    with open(join('Data', f'Raid.txt'), "w+", encoding='utf-8') as RaidFile:
                         RaidFile.write(Self.Raids)
                     # RaidEmbed = Embed(title="Raiding Report")
                     # RaidEmbed.add_field(name="\u200b", value=Self.Raids, inline=False)
-                    with open(join('Data', f'Raid{Ether.Records["Skirmish Count"]}.txt'), "rb") as RaidFile:
-                        await Ether.Data["Simulation Channel"].send(file=File(RaidFile, filename=f'Raid{Ether.Records["Skirmish Count"]}.txt'))
+                    with open(join('Data', f'Raid.txt'), "rb") as RaidFile:
+                        await Ether.Data["Simulation Channel"].send(file=File(RaidFile, filename=f'Raid.txt'))
 
             if Self.VictoriousPlanet is not None:
                 Ether.Logger.info(f"{Self.VictoriousPlanet} won, and destroyed {Self.DestroyedPlanet}")
