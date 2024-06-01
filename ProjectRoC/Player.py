@@ -1,12 +1,13 @@
 from Structures import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
 
+from typing import Dict
 from time import time
 
 class Player:
     def __init__(Self, Member):
         Self.ExperienceForNextLevel:int = 0
         if Member == "Test":
-            Self.Data:{str:...} = {
+            Self.Data:Dict[str:...] = {
                 "UUID": 42069,
                 "Member Object": None,
                 "Name": "TestPlayer",
@@ -31,7 +32,7 @@ class Player:
                 "Time of Last Manufacturing Collection": "Never",
             }
         else:
-            Self.Data:{str:...} = {
+            Self.Data:Dict[str:...] = {
                 "UUID": Member.id,
                 "Member Object": Member,
                 "Name": Member.name,
@@ -66,7 +67,7 @@ class Player:
             "Hacking":0,
             "Raiding":0,
         }
-        Self.Inventory:{str:float} = {
+        Self.Inventory:Dict[str:float] = {
             "Water": 0.0,
             "Sand": 0.0,
             "Gravel": 0.0,
@@ -105,7 +106,7 @@ class Player:
             "Firearms":0.0,
             "Med-kits":0.0,
         }
-        Self.ProductionFacilities:{str:ProductionFacility} = {
+        Self.ProductionFacilities:Dict[str:ProductionFacility] = {
             "Well": Well(),
             "Sand Quarry": SandQuarry(),
             "Gravel Pit": GravelPit(),

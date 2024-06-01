@@ -8,6 +8,7 @@ from logging import getLogger, Formatter,  DEBUG, INFO, Logger
 from logging.handlers import RotatingFileHandler
 from os import mkdir, listdir
 from os.path import join, exists
+from typing import Union, Dict
 from Planet import Planet
 from Player import Player
 from random import randrange
@@ -26,14 +27,17 @@ class RealmOfConflict(Bot):
                 "Titan": Planet("Titan", Self),
             },
             "Panels": {},
+        }
+        Self.Records = {
             "Skirmish Count": 0,
+            "PlayerInteractions":0,
         }
         Self.DataDirectory = "Data"
         Self.Guild = None
         Self.Roles = None
         Self.Members = None
         Self.CoreSimulation = None
-        Self.Materials:[str] = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
+        Self.Materials:Union[str] = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
         Self.Initalize_Logger()
 
     
@@ -46,7 +50,7 @@ class RealmOfConflict(Bot):
         with open(join("Keys.txt")) as KeyFile:
             Line:str
             for Line in KeyFile:
-                LineData:[str] = Line.split("~")
+                LineData:Union[str] = Line.split("~")
                 if Key == LineData[0]:
                     return LineData[1].strip()
         Self.Logger.info("Got dat token")
@@ -76,6 +80,32 @@ class RealmOfConflict(Bot):
         Self.Logger.info("Logger is setup")
 
 
+    def Load_Records(Self):
+        Self.Logger.info("Loading Records")
+        with open(join(Self.DataDirectory, f"record.roc"), 'r') as RecordsFile:
+            RecordData = RecordsFile.readlines()
+
+            for Line in RecordData:
+                if Line != "":
+                    Data:Union[str:str] = Line.split(":")
+                    RecordName:str = Data[0]
+                    RecordValue:str = Data[1]
+                    if RecordValue[0].isdigit():
+                        RecordValue = int(RecordValue)
+                    elif type(RecordValue.split(".")) != list:
+                        RecordValue = float(RecordValue)
+                    Self.Records[RecordName] = Data[1]
+
+    async def Save_Record(Self) -> None:
+        Self.Logger.info("Saving Records")
+        SaveData = ""
+        for RecordName, RecordValue in Self.Records.items():
+            SaveData += f"{RecordName}:{RecordValue}\n"
+
+        with open(join(Self.DataDirectory, f"record.roc"), 'w+') as RecordsFile:
+            RecordsFile.write(SaveData)
+
+
     def Load_Players(Self) -> None:
         Self.Logger.info("Loading Players")
         if not exists(Self.DataDirectory):
@@ -92,7 +122,7 @@ class RealmOfConflict(Bot):
 
     def Load_Player_Data(Self) -> None:
         Self.Logger.info("Loading Player Data")
-        Self.Members:{int:DiscordMember} = {M.id:M for M in Self.Guild.members}
+        Self.Members:Dict[int:DiscordMember] = {M.id:M for M in Self.Guild.members}
         if not exists(join(Self.DataDirectory, "PlayerData")):
             return
         PlayerDataFileName:str
@@ -100,7 +130,7 @@ class RealmOfConflict(Bot):
             PlayerUUID:int = int(PlayerDataFileName.split(".")[0])
             if PlayerUUID not in Self.Members:continue
             with open(join(Self.DataDirectory, "PlayerData", f"{PlayerUUID}.data.roc"), 'r') as PlayerDataFile:
-                PlayerData:[str] = [Line.strip() for Line in PlayerDataFile.readlines()]
+                PlayerData:Union[str] = [Line.strip() for Line in PlayerDataFile.readlines()]
                 if PlayerUUID == 42069: continue
                 MemberObject:DiscordMember = Self.Members[PlayerUUID]
                 Self.Data["Players"].update({PlayerUUID:Player(MemberObject)})
@@ -297,6 +327,7 @@ class RealmOfConflict(Bot):
             await Self.Save_Player_Army()
             await Self.Save_Planet_Data()
             await Self.Save_Player_Skills()
+            await Self.Save_Record()
 
     async def Save_Planet_Data(Self) -> None:
         Self.Logger.info("Saving Planet Data")

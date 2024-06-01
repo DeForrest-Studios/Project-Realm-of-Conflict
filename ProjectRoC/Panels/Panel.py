@@ -28,6 +28,7 @@ class Panel:
 
 
     async def _Send_New_Panel(Self, Interaction:DiscordInteraction) -> None:
+        Self.Ether.Records["PlayerInteractions"] += 1
         await Interaction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
         Self.DashboardMessage:DiscordMessage = Interaction.message
 

@@ -60,9 +60,9 @@ class Simulation:
             Ether.Logger.info("Starting core simulation loop")
             Self.AnalisDefended = False
             Self.TitanDefended = False
-            Ether.Data['Skirmish Count'] += 1
+            Ether.Records['Skirmish Count'] += 1
             Self.ReportEmbed = Embed(title="Simulation Report")
-            Self.ReportEmbed.add_field(name="Skirmish", value=Ether.Data['Skirmish Count'], inline=False)
+            Self.ReportEmbed.add_field(name="Skirmish", value=Ether.Records['Skirmish Count'], inline=False)
             Self.VictoriousPlanet = None
             
             Analis.Data["Offensive Power"] = 0
@@ -136,11 +136,17 @@ class Simulation:
             while Self.EarnedPool > 0:
                 for Player in Ether.Data["Players"].values():
                     if Player.Data["Team"] == "Analis":
-                        Analis.Data["Average Earnings"] = round(Analis.Data["Earned Pool"] / (Analis.Data["Protector Count"] + 1), 2)
+                        if Analis.Data["Protector Count"] == 0:
+                            Analis.Data["Average Earnings"] = round(Analis.Data["Earned Pool"] / (Analis.Data["Protector Count"] + 1), 2)
+                        else:
+                            Analis.Data["Average Earnings"] = round(Analis.Data["Earned Pool"] / (Analis.Data["Protector Count"]), 2)
                         Player.Data["Wallet"] = round(Player.Data["Wallet"] + Analis.Data["Average Earnings"], 2)
                         Self.EarnedPool = round(Self.EarnedPool - Analis.Data["Average Earnings"], 2)
                     if Player.Data["Team"] == "Titan":
-                        Titan.Data["Average Earnings"] = round(Titan.Data["Earned Pool"] / (Titan.Data["Protector Count"] + 1), 2)
+                        if Titan.Data["Protector Count"] == 0:
+                            Titan.Data["Average Earnings"] = round(Titan.Data["Earned Pool"] / (Titan.Data["Protector Count"] + 1), 2)
+                        else:
+                            Titan.Data["Average Earnings"] = round(Titan.Data["Earned Pool"] / (Titan.Data["Protector Count"]), 2)
                         Player.Data["Wallet"] = round(Player.Data["Wallet"] + Titan.Data["Average Earnings"], 2)
                         Self.EarnedPool = round(Self.EarnedPool - Titan.Data["Average Earnings"], 4)
 
@@ -203,12 +209,12 @@ class Simulation:
             if Self.VictoriousPlanet is None:
                 await Ether.Data["Simulation Channel"].send(embed=Self.ReportEmbed)
                 if Self.Raids != "":
-                    with open(join('Data', f'Raid{Ether.Data["Skirmish Count"]}.txt'), "w", encoding='utf-8') as RaidFile:
+                    with open(join('Data', f'Raid{Ether.Records["Skirmish Count"]}.txt'), "w", encoding='utf-8') as RaidFile:
                         RaidFile.write(Self.Raids)
                     # RaidEmbed = Embed(title="Raiding Report")
                     # RaidEmbed.add_field(name="\u200b", value=Self.Raids, inline=False)
-                    with open(join('Data', f'Raid{Ether.Data["Skirmish Count"]}.txt'), "rb") as RaidFile:
-                        await Ether.Data["Simulation Channel"].send(file=File(RaidFile, filename=f'Raid{Ether.Data["Skirmish Count"]}.txt'))
+                    with open(join('Data', f'Raid{Ether.Records["Skirmish Count"]}.txt'), "rb") as RaidFile:
+                        await Ether.Data["Simulation Channel"].send(file=File(RaidFile, filename=f'Raid{Ether.Records["Skirmish Count"]}.txt'))
 
             if Self.VictoriousPlanet is not None:
                 Ether.Logger.info(f"{Self.VictoriousPlanet} won, and destroyed {Self.DestroyedPlanet}")

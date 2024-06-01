@@ -14,6 +14,7 @@ if __name__ == '__main__':
     
     @Ether.command(aliases=["oc", "oC", "OC"])
     async def Play_Interaction(InitialContext: Context):
+        Ether.Records["PlayerInteractions"] += 1
         # The "Initial Contex" is the original message that the user sends to receive the panel
         if await Ether.Guild_Guard(InitialContext) == "Unprotected": return
         
@@ -67,6 +68,7 @@ if __name__ == '__main__':
             Ether.Data["Planets"]["Analis"].Data["Role"] = Ether.Roles["Analis"]
             Ether.Data.update({"Simulation Channel": Ether.Guild.get_channel(1190385563505791017)})
 
+        Ether.Load_Records()
         Ether.Load_Players()
         create_task(Ether.Autosave())
         Ether.Logger.info("Bot is alive")
