@@ -10,6 +10,7 @@ class Simulation:
         create_task(Self._Core_Simulation(Ether, Analis, Titan))
 
     async def _Generate_Simulation_Reports(Self, Analis, Titan) -> None:
+        Self.EmbedReportString = ""
         Self.AnalisEmbedReportString = "".join((f"Analis Population.: {format(Analis.Data['Population'], ',')}\n",
                                                 f"Analis Attack: {format(Analis.Data['Offensive Power'], ',')}\n",
                                                 f"Analis Defense: {format(Analis.Data['Defensive Power'], ',')}\n",
@@ -34,7 +35,6 @@ class Simulation:
 
         if Self.VictoriousPlanet is not None:
             Self.EmbedReportString = f"**{Self.VictoriousPlanet} has claimed victory over {Self.DestroyedPlanet}.**\n\n", Self.EmbedReportString
-            Self.FileReportString = f"**{Self.VictoriousPlanet} has claimed victory over {Self.DestroyedPlanet}.**\n\n", Self.FileReportString
             Self.ReportEmbed.add_field(name="\u200b", value=Self.EmbedReportString)
 
         if Self.AnalisDefended:
@@ -218,15 +218,13 @@ class Simulation:
 
             if Self.VictoriousPlanet is not None:
                 Ether.Logger.info(f"{Self.VictoriousPlanet} won, and destroyed {Self.DestroyedPlanet}")
-                for Player in Ether["Online Players"].values():
+                for Player in Ether.Data["Players"].values():
                     if Player.Data["Team"] == Self.VictoriousPlanet:
-                        Player.victories += 1
+                        Player.Data["Victories"] += 1
 
-                Ether.Data["Planets"][Self.VictoriousPlanet].Data["Wins"] += 1
+                Ether.Data["Planets"][Self.VictoriousPlanet].Data["Victories"] += 1
                 Ether.Data["Planets"][Self.DestroyedPlanet].Data["Losses"] += 1
                 await Ether.Data["Simulation Channel"].send(embed=Self.ReportEmbed)
-                if Self.Raids != "":
-                    await Ether.Data["Simulation Channel"].send(embed=Self.Raids)
                 break
 
             await sleep(300)

@@ -1,10 +1,14 @@
+from typing import Dict
+
 class Planet():
     def __init__(Self, Name:str, ROC):
-        Self.Data:{str:...} = {
+        Self.Data:Dict[str:...] = {
             "Name": Name,
             "ROC": ROC,
             "Population": 92543784546,
             "Protector Count": 0,
+            "Victories":0,
+            "Losses":0,
             "Damage": 0,
             "Offensive Power": 0,
             "Defensive Power": 0,
