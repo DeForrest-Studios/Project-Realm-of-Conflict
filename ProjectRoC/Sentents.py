@@ -72,6 +72,14 @@ class Sentent:
         else:
             Self.Generate_Name(Owner)
 
+    def Refresh_Powers(Self):
+        if hasattr(Self, "OffensivePower"):
+            Self.OffensivePower += (1500 * Self.Tier) * Self.Level
+        if hasattr(Self, "DefensivePower"):
+            Self.DefensivePower += (1500 * Self.Tier) * Self.Level
+        if hasattr(Self, "HealingPower"):
+            Self.HealingPower += (1500 * Self.Tier) * Self.Level
+
 class Marksman(Sentent):
     def __init__(Self, Tier:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
@@ -81,6 +89,7 @@ class Marksman(Sentent):
         Self.OffensivePower = 15000 + (Tier * 3500)
         Self.DefensivePower = 4500 + (Tier * 1000)
         Self.Hunger = 3/Tier # 3/1 = 3
+        Self.Refresh_Powers()
 
 
 class Medic(Sentent):
@@ -92,6 +101,7 @@ class Medic(Sentent):
         Self.HealingPower = 15000 + (Tier * 3500)
         Self.DefensivePower = 4500 + (Tier * 1000)
         Self.Hunger = 3/Tier # 3/2 = 1.5
+        Self.Refresh_Powers()
 
 
 class Soldier(Sentent):
@@ -103,3 +113,4 @@ class Soldier(Sentent):
         Self.OffensivePower = 7500 + (Tier * 4500)
         Self.DefensivePower = 7500 + (Tier * 4500)
         Self.Hunger = 3/Tier # 3/3 = 1
+        Self.Refresh_Powers()

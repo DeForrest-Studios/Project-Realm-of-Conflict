@@ -63,6 +63,12 @@ class Simulation:
                 else:
                     Player.Army.pop(Sentent.Name)
 
+            PlayerArmy = [Sentent for Sentent in Player.Army.values()]
+
+            for Sentent in PlayerArmy:
+                Sentent.Level += 1
+                Sentent.Refresh_Powers()
+
     async def _Core_Simulation(Self, Ether, Analis, Titan) -> None:
         Self.VictoriousPlanet = None
         Self.DestroyedPlanet = None

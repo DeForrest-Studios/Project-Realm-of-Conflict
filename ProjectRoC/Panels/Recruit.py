@@ -37,7 +37,7 @@ class RecruitPanel(Panel):
 
             Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle,
                                         row=2, custom_id="SententsButton")
-            Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__init__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+            Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__ainit__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
             Self.BaseViewFrame.add_item(Self.SententsButton)
 
             Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,

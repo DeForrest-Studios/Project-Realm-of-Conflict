@@ -18,7 +18,7 @@ class BankingPanel(Panel):
         BankingString = ""
 
         Self.EmbedFrame.description += BankingString
-
+ 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey, row=3, custom_id="HomePageButton")
         Self.HomepageButton.callback = lambda Interaction: Self.PlayPanel._Construct_Home(Self.Ether, Self.InitialContext, Interaction)
         Self.BaseViewFrame.add_item(Self.HomepageButton)

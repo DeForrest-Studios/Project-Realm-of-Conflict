@@ -45,6 +45,7 @@ MaterialWorthTable:{str:float} = {
     "Iron Ore": 9,
     "Aluminum Ore": 17,
     "Silver Ore": 28,
+    "Oil": 34,
     "Gold Ore": 40,
     "Lithium Ore": 62,
 }
