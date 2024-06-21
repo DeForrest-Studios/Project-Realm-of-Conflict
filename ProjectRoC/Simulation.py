@@ -8,6 +8,7 @@ class Simulation:
     def __init__(Self, Ether, Analis, Titan) -> None:
         print("Initializing Simulation Object")
         create_task(Self._Core_Simulation(Ether, Analis, Titan))
+        Self.Ether = Ether
 
     async def _Generate_Simulation_Reports(Self, Analis, Titan) -> None:
         Self.EmbedReportString = ""
@@ -52,11 +53,22 @@ class Simulation:
         Self.ReportEmbed.add_field(name="\u200b", value=Self.AnalisEmbedReportString, inline=False)
         Self.ReportEmbed.add_field(name="\u200b", value=Self.TitanEmbedReportString, inline=False)
 
+
+    async def _Infantry_Lifecycle(Self):
+        for Player in Self.Ether.Data["Players"].values():
+            PlayerArmy = [Sentent for Sentent in Player.Army.values()]
+            for Sentent in PlayerArmy:
+                if Sentent.Hunger <= Player.Inventory["Bread"]:
+                    Player.Inventory["Bread"] -= Sentent.Hunger
+                else:
+                    Player.Army.pop(Sentent.Name)
+
     async def _Core_Simulation(Self, Ether, Analis, Titan) -> None:
         Self.VictoriousPlanet = None
         Self.DestroyedPlanet = None
 
         while True:
+            await Self._Infantry_Lifecycle()
             Ether.Logger.info("Starting core simulation loop")
             Self.AnalisDefended = False
             Self.TitanDefended = False

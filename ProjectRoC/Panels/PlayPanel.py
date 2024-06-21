@@ -18,7 +18,9 @@ from Panels.Debug import DebugPanel
 from Panels.Skills import SkillsPanel
 from Panels.Crafting import CraftingPanel
 from Panels.Planet import PlanetPanel
+from Panels.Banking import BankingPanel
 from Panels.ManufacturingFacilities import ManufacturingFacilitiesPanel
+from Panels.Skirmishes import SkirmishesPanel
 from Player import Player
 
 
@@ -128,7 +130,9 @@ class PlayPanel:
             "SkillsButton":SkillsPanel,
             "CraftingButton":CraftingPanel,
             "PlanetButton":PlanetPanel,
-            "ManufacturingFacilitiesButton":ManufacturingFacilitiesPanel
+            "ManufacturingFacilitiesButton":ManufacturingFacilitiesPanel,
+            "SkirmishesPanelButton": SkirmishesPanel,
+            "BankingPanelButton": BankingPanel,
         })
         # Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
         Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)

@@ -1,4 +1,4 @@
-from Infantry import Medic, Soldier
+from Sentents import Medic, Soldier
 
 ScavengeTable:{str:int} = {
     "Wallet": 65,

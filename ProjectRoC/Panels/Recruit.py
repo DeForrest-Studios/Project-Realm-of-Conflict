@@ -63,6 +63,7 @@ class RecruitPanel(Panel):
                 InfantryLevel = int(InfantryData[0].split(" ")[1])
                 InfantryType = InfantryData[1]
                 NewInfantry = InfantryToObject[InfantryType](InfantryLevel, InfantryType, Self.Player)
+                print(NewInfantry.Tier)
                 Self.Player.Army.update({NewInfantry.Name:NewInfantry})
                 Self.Player.Refresh_Power()
                 Self.EmbedFrame.clear_fields()

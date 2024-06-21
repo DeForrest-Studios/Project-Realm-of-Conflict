@@ -53,14 +53,15 @@ LastNames = [
 ]
 
 
-class Infantry:
-    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
+class Sentent:
+    def __init__(Self, Tier:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
             Self.Name = Self.Generate_Name(Owner)
         else:
             Self.Name = Name
-        Self.Level:int = Level
+        Self.Tier:int = Tier
         Self.Type:str = Type
+        Self.Level:int = 1
     
     def Generate_Name(Self, Owner):
         RandomFirstName:str = FirstNames[randrange(0, len(FirstNames))]
@@ -71,34 +72,34 @@ class Infantry:
         else:
             Self.Generate_Name(Owner)
 
-class Marksman(Infantry):
-    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
+class Marksman(Sentent):
+    def __init__(Self, Tier:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
-            super().__init__(Level, Type, Owner)
+            super().__init__(Tier, Type, Owner)
         else:
-            super().__init__(Level, Type, Owner, Name)
-        Self.OffensivePower = 15000 + (Level * 3500)
-        Self.DefensivePower = 4500 + (Level * 1000)
-        Self.Hunger = 3//Level # 3/1 = 3
+            super().__init__(Tier, Type, Owner, Name)
+        Self.OffensivePower = 15000 + (Tier * 3500)
+        Self.DefensivePower = 4500 + (Tier * 1000)
+        Self.Hunger = 3/Tier # 3/1 = 3
 
 
-class Medic(Infantry):
-    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
+class Medic(Sentent):
+    def __init__(Self, Tier:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
-            super().__init__(Level, Type, Owner)
+            super().__init__(Tier, Type, Owner)
         else:
-            super().__init__(Level, Type, Owner, Name)
-        Self.HealingPower = 15000 + (Level * 3500)
-        Self.DefensivePower = 4500 + (Level * 1000)
-        Self.Hunger = 3//Level # 3/2 = 1.5
+            super().__init__(Tier, Type, Owner, Name)
+        Self.HealingPower = 15000 + (Tier * 3500)
+        Self.DefensivePower = 4500 + (Tier * 1000)
+        Self.Hunger = 3/Tier # 3/2 = 1.5
 
 
-class Soldier(Infantry):
-    def __init__(Self, Level:int, Type:str, Owner:DiscordMember, Name=None):
+class Soldier(Sentent):
+    def __init__(Self, Tier:int, Type:str, Owner:DiscordMember, Name=None):
         if Name == None:
-            super().__init__(Level, Type, Owner)
+            super().__init__(Tier, Type, Owner)
         else:
-            super().__init__(Level, Type, Owner, Name)
-        Self.OffensivePower = 7500 + (Level * 4500)
-        Self.DefensivePower = 7500 + (Level * 4500)
-        Self.Hunger = 3//Level # 3/3 = 1
+            super().__init__(Tier, Type, Owner, Name)
+        Self.OffensivePower = 7500 + (Tier * 4500)
+        Self.DefensivePower = 7500 + (Tier * 4500)
+        Self.Hunger = 3/Tier # 3/3 = 1

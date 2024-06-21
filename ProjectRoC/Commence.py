@@ -51,7 +51,7 @@ if __name__ == '__main__':
             Ether.Roles = {
                 "Titan":Ether.Guild.get_role(1190386754327412870),
                 "Analis":Ether.Guild.get_role(1190386754327412869),
-                "Consented":None,
+                "Consented":Ether.Guild.get_role(1250068856701976648),
             }
             Ether.Data["Planets"]["Titan"].Data["Role"] = Ether.Roles["Titan"]
             Ether.Data["Planets"]["Analis"].Data["Role"] = Ether.Roles["Analis"]
@@ -85,9 +85,13 @@ if __name__ == '__main__':
 
     @Ether.event
     async def on_raw_reaction_add(Payload):
-        if Payload.message_id == 1248820265379692584: # This needs to be the official Server ID
+        if Payload.message_id == 1249872069441617941: # This needs to be the official Server ID
             if Payload.emoji.name == '✅':
                 await Payload.member.add_roles(Ether.Roles["Consented"])
+                if Payload.member.id not in Ether.Data["Players"].keys() or\
+                Ether.Data["Players"][Payload.member.id].Data["Team"] is None:
+                    await Ether.Send_Welcome(Payload.member)
+                    return
 
 
     Ether.run(Ether.Get_Token(argv[1]))

@@ -400,7 +400,7 @@ class RealmOfConflict(Bot):
             SaveData = ""
             with open(join(Self.DataDirectory, "PlayerArmy", f"{UUID}.army.roc"), 'w+') as PlayerDataFile:
                 for InfantryID, Infantry in PlayerObject.Army.items():
-                    SaveData += f"{InfantryID}:{Infantry.Level}:{Infantry.Type}\n"
+                    SaveData += f"{InfantryID}:{Infantry.Tier}:{Infantry.Type}\n"
                 PlayerDataFile.write(SaveData)
 
 

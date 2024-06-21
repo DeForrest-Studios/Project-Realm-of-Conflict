@@ -1,4 +1,7 @@
-from Structures import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm, LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm, CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine, LithiumMine
+from Structures import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm,\
+                       LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm,\
+                       CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine,\
+                       LithiumMine, OilWell
 
 from typing import Dict
 from time import time
@@ -122,6 +125,7 @@ class Player:
             "Bauxite Mine": BauxiteMine(),
             "Silver Mine": SilverMine(),
             "Gold Mine": GoldMine(),
+            "Oil Well": OilWell(),
             "Lithium Mine": LithiumMine(),
         }
         Self.ManufacturingFacilities = {}

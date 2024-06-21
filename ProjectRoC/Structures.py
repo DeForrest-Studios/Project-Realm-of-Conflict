@@ -175,6 +175,17 @@ class GoldMine(ProductionFacility):
         Self.Refresh_Stats()
 
 
+class OilWell(ProductionFacility):
+    def __init__(Self):
+        super().__init__()
+        Self.Name: str = "Oil Well"
+        Self.OutputItem: str = "Oil"
+        Self.UnitsPerTickMultiplier: float = 0.008
+        Self.CapacityMultiplier: int = 5000
+        Self.UpgradeCostMultiplier: int = 800
+        Self.Refresh_Stats()
+
+
 class LithiumMine(ProductionFacility):
     def __init__(Self):
         super().__init__()
@@ -184,6 +195,7 @@ class LithiumMine(ProductionFacility):
         Self.CapacityMultiplier: int = 5000
         Self.UpgradeCostMultiplier: int = 800
         Self.Refresh_Stats()
+
 
 
 class ManufacturingFacility:

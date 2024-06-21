@@ -29,7 +29,7 @@ class ArmyPanel(Panel):
                 Self.ArmyPaginationRequired = True
                 Self.ArmyIndex = Index
                 break
-            ArmyString += f"{Name} ~ Level {Infantry.Level} ~ {Infantry.Type}\n"
+            ArmyString += f"{Name} ~ Level {Infantry.Tier} ~ {Infantry.Type}\n"
 
         Self.EmbedFrame.add_field(name="\u200b", value=ArmyString, inline=False)
 
