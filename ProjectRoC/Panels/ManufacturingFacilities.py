@@ -6,7 +6,8 @@ from discord import SelectOption, Embed
 from discord.ui import Button, Select, View, Modal, TextInput
 from Panels.Panel import Panel
 from Structures import ManufacturingFacility
-from Panels.EditManufacturingFacility import EditManufacturingFacilitiesPanel
+from Tables import Components, FacilityMapping
+from time import time as Time
 
 class ManufacturingFacilitiesPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
@@ -28,14 +29,13 @@ class ManufacturingFacilitiesPanel(Panel):
         if Self.Interaction.user != Self.InitialContext.author: return
 
         if Interaction is not None:
-            print("Fuck")
             Self.BaseViewFrame = View(timeout=144000)
             Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Manufacturing Facilities Panel")
             Self.Interaction = Interaction
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
         Self.CollectButton = Button(label="Collect from Facilities", style=Self.ButtonStyle, row=0, custom_id="CollectButton")
-        Self.CollectButton.callback = lambda Interaction: Self._Construct_Panel(Interaction)
+        Self.CollectButton.callback = lambda Interaction: Self._Collect(Interaction)
         Self.BaseViewFrame.add_item(Self.CollectButton)
 
         Self.BuyFacilityButton = Button(label="Buy Facility ~ $35,000", style=Self.ButtonStyle, row=0, custom_id="BuyFacilityButton")
@@ -118,12 +118,13 @@ class ManufacturingFacilitiesPanel(Panel):
         Self.EmbedFrame.description += f"**Level:** {Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data['Level']}\n"
         Self.EmbedFrame.description += f"**Recipe:** {Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data['Recipe']}\n"
         
-        Self.FacilityRecipeChoices = [SelectOption(label="Lorem Ipsum")]
+        Self.FacilityRecipeChoices = [SelectOption(label=Component) for Component in Components]
         Self.FacilityRecipeSelection = Select(placeholder="Select a Recipe", options=Self.FacilityRecipeChoices, row=1, custom_id=f"FacilityRecipeSelection")
+        if Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data["Recipe"] != None: Self.FacilityRecipeSelection.placeholder = Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data["Recipe"]
         if hasattr(Self, "GroupSelected"):
-            Self.FacilityRecipeSelection.callback = lambda SelectInteraction: Self._Change_Recipe(SelectInteraction, FacilitySelected=SelectInteraction.data["values"][0], GroupSelected=Self.GroupSelected)
+            Self.FacilityRecipeSelection.callback = lambda SelectInteraction: Self._Change_Recipe(SelectInteraction, SelectInteraction.data["values"][0], GroupSelected=Self.GroupSelected)
         else:
-            Self.FacilityRecipeSelection.callback = lambda SelectInteraction: Self._Change_Recipe(SelectInteraction, FacilitySelected=SelectInteraction.data["values"][0])
+            Self.FacilityRecipeSelection.callback = lambda SelectInteraction: Self._Change_Recipe(SelectInteraction, SelectInteraction.data["values"][0])
         Self.BaseViewFrame.add_item(Self.FacilityRecipeSelection)
 
         Self.ChangeFacilityNameButton = Button(label="Change Facility Name", style=Self.ButtonStyle, row=0, custom_id="ChangeFacilityNameButton")
@@ -163,19 +164,79 @@ class ManufacturingFacilitiesPanel(Panel):
         await Interaction.response.send_modal(Self.ChangeFacilityNameModal)
 
     
-    async def _Change_Facility_Name(Self, Data):
+    async def _Change_Facility_Name(Self, Data, GroupSelected=None):
         Interaction, FacilitySelected = Data[0], Data[1]
-        if len(Data) == 3: GroupSelected = Data[2]
         Self.Player.ManufacturingFacilities[Self.FacilityName.value] = Self.Player.ManufacturingFacilities[FacilitySelected]
         Self.Player.ManufacturingFacilities.pop(FacilitySelected)
         FacilitySelected = Self.FacilityName.value
         Self.Player.ManufacturingFacilities[FacilitySelected].Data["Name"] = FacilitySelected
 
-        if len(Data) == 2:
+        if GroupSelected != None:
             await Self._Construct_Panel(Interaction=Interaction, FacilitySelected=FacilitySelected)
         else:
             await Self._Construct_Panel(Interaction=Interaction, FacilitySelected=FacilitySelected, GroupSelected=GroupSelected)
 
 
-    async def _Change_Recipe(Self, Data):
-        ...
+    async def _Change_Recipe(Self, Interaction, ComponentSelected):
+        Self.Player.ManufacturingFacilities[Self.FacilitySelected].Data["Recipe"] = ComponentSelected
+        await Self._Construct_Edit_Panel(Interaction)
+
+
+    async def _Collect(Self, Interaction):
+        # We're going to need to give each structure their own "Time of Last Production Collection" attribute that can be individually checked
+        # This means that I'll have to use the same DataDict approach that I did with the manufacturing facilities
+        # Production outputs will "trickle" down the priorities
+        CollectionString = ""
+        CollectionTime = int(Time())
+        if Self.Player.Data["Time of Last Manufacturing Collection"] == "Never": Self.Player.Data["Time of Last Manufacturing Collection"] = CollectionTime
+
+        for Facility in Self.Player.ManufacturingFacilities.values():
+            
+            OutputItem = Facility.Data["Recipe"]
+            if Self.Player.Data["Time of Last Manufacturing Collection"] == "Never":
+                ManufacturingPotential = round((Facility.Data["Units Per Tick"] * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
+            else:
+                ManufacturingPotential = round(Facility.Data["Units Per Tick"] * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
+            
+            ProductionFacility = Self.Player.ProductionFacilities[FacilityMapping[OutputItem]] 
+            if Self.Player.Data["Time of Last Production Collection"] == "Never":
+                ProductionAmount = round((ProductionFacility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
+            else:
+                ProductionAmount = round(ProductionFacility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
+            
+            RecipeRequirements = Components[OutputItem]
+            if len(RecipeRequirements.keys()) == 1:
+                RecipeRequirements = [(Item, Amount) for Item, Amount in RecipeRequirements.items()][0]
+            else:
+                print("yo, this recipe has multiple requirements, fuck right on off")
+
+            if len(RecipeRequirements) == 2:
+                RequirementAmount = RecipeRequirements[1]
+                ManufacturingRequirement = ManufacturingPotential * RequirementAmount
+                print(ManufacturingPotential)
+                print(ManufacturingRequirement)
+                if ManufacturingRequirement > ProductionAmount:
+                    print("Fuckin aye, we didn't produce enough")
+
+            if ManufacturingPotential <= ProductionAmount:
+                Self.Player.Data["Time of Last Manufacturing Collection"] = CollectionTime
+                Self.Player.Data["Time of Last Production Collection"] = CollectionTime
+                Self.Player.Inventory[OutputItem] = round(Self.Player.Inventory[OutputItem] + ManufacturingPotential, 2)
+                CollectionString += f"{Facility.Data['Name']} output {ManufacturingPotential} {OutputItem}"
+                print(ManufacturingPotential)
+                print(ProductionAmount)
+            else:
+                print("Yo, we didn't produce enough")
+
+        Self.EmbedFrame.clear_fields()
+
+        await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
+
+        Self.EmbedFrame.add_field(name="You've manufactured:", value=CollectionString)
+
+        Self.Ether.Logger.info(f"{Self.Player} collected from manufacturing facilities")
+        await Self._Send_New_Panel(Interaction)
+
+        # Minus from production
+        # Apply to Manufacturing
+        # Get Manufacturing Output

@@ -187,3 +187,22 @@ Weapons = {"Tier 1 Missile":{"Copper":500,
 
 TypeMapping = {"Components":Components,
            "Weapons":Weapons}
+
+FacilityMapping = {
+    "Water":"Well",
+    "Sand":"Sand Quarry",
+    "Gravel":"Gravel Pit",
+    "Cotton":"Cotton Farm",
+    "Limestone":"Limestone Quarry",
+    "Wheat":"Wheat Farm",
+    "Log":"Tree Farm",
+    "Coal":"Coal Mine",
+    "Mycelium":"Mycelium Farm",
+    "Copper":"Copper Mine",
+    "Iron":"Iron Mine",
+    "Bauxite":"Bauxite Mine",
+    "Silver":"Silver Mine",
+    "Gold":"Gold Mine",
+    "Oil":"Oil Well",
+    "Lithium":"Lithium Mine",
+}

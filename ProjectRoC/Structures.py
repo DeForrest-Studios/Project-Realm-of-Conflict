@@ -205,12 +205,16 @@ class ManufacturingFacility:
             "Level":1,
             "Recipe":"None",
             "Priority":0,
+            "Units Per Tick":0,
+            "Units Per Tick Multiplier":0.10,
             "Capacity":0,
             "Upgrade Cost":0,
             "Experience On Upgrade":0,
             "Capacity Multiplier": 5000,
             "Upgrade Cost Multiplier": 800,
         }
+
+        Self.Refresh_Stats()
 
 
     def Upgrade(Self):
@@ -219,6 +223,7 @@ class ManufacturingFacility:
     
     
     def Refresh_Stats(Self):
+        Self.Data["Units Per Tick"] = Self.Data["Units Per Tick Multiplier"] * Self.Data["Level"]
         Self.Data["Capacity"] = Self.Data["Capacity Multiplier"] * Self.Data["Level"]
         Self.Data["Upgrade Cost"] = Self.Data["Upgrade Cost Multiplier"] * Self.Data["Level"]
         Self.Data["Experience On Upgrade"] = (Self.Data["Upgrade Cost"] * 1.5) * Self.Data["Level"]

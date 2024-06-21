@@ -99,6 +99,7 @@ class ProductionFacilitiesPanel(Panel):
         Index:int
         Facility:ProductionFacility
         for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
+            print(Self.Player.Data["Time of Last Production Collection"])
             if Self.Player.Data["Time of Last Production Collection"] == "Never":
                 EarnedAmount = round((Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
             else:

@@ -72,9 +72,9 @@ class PlayPanel:
         Self.ProductionFacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.ProductionFacilitiesButton)
 
-        # Self.ManufacturingFacilitiesButton = Button(label="Manufacturing Facilities", style=Self.ButtonStyle, custom_id="ManufacturingFacilitiesButton")
-        # Self.ManufacturingFacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
-        # Self.BaseViewFrame.add_item(Self.ManufacturingFacilitiesButton)
+        Self.ManufacturingFacilitiesButton = Button(label="Manufacturing Facilities", style=Self.ButtonStyle, custom_id="ManufacturingFacilitiesButton")
+        Self.ManufacturingFacilitiesButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.ManufacturingFacilitiesButton)
 
         Self.CraftingButton = Button(label="Crafting", style=Self.ButtonStyle, custom_id="CraftingButton")
         Self.CraftingButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
