@@ -100,6 +100,10 @@ class PlayPanel:
         Self.ProfileButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.ProfileButton)
 
+        Self.BankingButton = Button(label="Banking", style=Self.ButtonStyle, custom_id="BankingButton")
+        Self.BankingButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
+        Self.BaseViewFrame.add_item(Self.BankingButton)
+
         Self.SkillsButton = Button(label="Skills", style=Self.ButtonStyle, custom_id="SkillsButton")
         Self.SkillsButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
@@ -131,8 +135,8 @@ class PlayPanel:
             "CraftingButton":CraftingPanel,
             "PlanetButton":PlanetPanel,
             "ManufacturingFacilitiesButton":ManufacturingFacilitiesPanel,
-            "SkirmishesPanelButton": SkirmishesPanel,
-            "BankingPanelButton": BankingPanel,
+            "SkirmishesButton": SkirmishesPanel,
+            "BankingButton": BankingPanel,
         })
         # Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
         Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)

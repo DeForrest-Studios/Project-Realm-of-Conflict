@@ -175,4 +175,7 @@ A long awaited official update
  - Sentent Hunger Implented. Sentents are fed akin to pirate roles. From first obtained to, newest recruit. The newest recruit will always be fed last. I will implement the ability to control this better down the line, but that's the system for now.
  - Sentent level up each cycle they participate in, and gain more power respective to their type
  - Added Sentent stats to army panel
- - Arny panel pagination *seems* to work, keyword seems
+ - Army panel pagination *seems* to work, keyword seems
+ - Added Banking Panel, with Save, and Pull button. Can put money into savings account, and pull money out of.
+ - Each skirmish their is now a banking cycle in which each players gains interest on their accounts each
+ - You can now send money to other players using their UserID

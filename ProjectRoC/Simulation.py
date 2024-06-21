@@ -69,12 +69,18 @@ class Simulation:
                 Sentent.Level += 1
                 Sentent.Refresh_Powers()
 
+
+    async def _Banking_Cycles(Self):
+        for Player in Self.Ether.Data["Players"].values():
+            Player.Data["Savings"] = round(Player.Data["Savings"] + (Player.Data["Savings"] * Self.Ether.InterestRate), 2)
+
     async def _Core_Simulation(Self, Ether, Analis, Titan) -> None:
         Self.VictoriousPlanet = None
         Self.DestroyedPlanet = None
 
         while True:
             await Self._Infantry_Lifecycle()
+            await Self._Banking_Cycles()
             Ether.Logger.info("Starting core simulation loop")
             Self.AnalisDefended = False
             Self.TitanDefended = False

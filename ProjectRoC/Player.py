@@ -33,6 +33,7 @@ class Player:
                 "Join TimeStamp": int(time()),
                 "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
+                "Savings":0,
             }
         else:
             Self.Data:Dict[str:...] = {
@@ -60,6 +61,7 @@ class Player:
                 "Time of Last Manufacturing Collection": "Never",
                 "Land Plots":1,
                 "Victories":0,
+                "Savings":0,
             }
         Self.Skills = {
             "Production":0,

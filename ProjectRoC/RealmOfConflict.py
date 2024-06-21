@@ -37,6 +37,7 @@ class RealmOfConflict(Bot):
         Self.Roles = None
         Self.Members = None
         Self.CoreSimulation = None
+        Self.InterestRate = .17
         Self.Materials:Union[str] = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
         Self.Initalize_Logger()
 
