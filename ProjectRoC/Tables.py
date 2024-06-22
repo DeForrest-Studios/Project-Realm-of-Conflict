@@ -1,6 +1,7 @@
 from Sentents import Medic, Soldier
+from typing import Dict
 
-ScavengeTable:{str:int} = {
+ScavengeTable = {
     "Wallet": 65,
     "Material": 65,
     "Bonus Material": 25,
@@ -13,7 +14,7 @@ RaidingTable = {
     "Material":65
 }
 
-MaterialTable:{str:tuple} = {
+MaterialTable = {
     "Water": (25, 30),
     "Sand": (17, 22),
     "Gravel": (17, 22),
@@ -31,7 +32,7 @@ MaterialTable:{str:tuple} = {
     "Lithium Ore": (1, 3),
 }
 
-MaterialWorthTable:{str:float} = {
+MaterialWorthTable = {
     "Water": 0.02,
     "Sand": 0.10,
     "Gravel": 0.10,
@@ -50,12 +51,12 @@ MaterialWorthTable:{str:float} = {
     "Lithium Ore": 62,
 }
 
-InfantryToObject:{str:object} = {
+InfantryToObject = {
     "Soldier":Soldier,
     "Medic":Medic,
 }
 
-InfantryTable:{str:int} = {
+InfantryTable = {
     "Level 1 ~ Soldier": 8500,
     "Level 2 ~ Soldier": 21500,
     "Level 3 ~ Soldier": 47300,

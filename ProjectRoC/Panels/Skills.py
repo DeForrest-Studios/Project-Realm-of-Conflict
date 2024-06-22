@@ -9,13 +9,18 @@ from Panels.Panel import Panel
 class SkillsPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                  ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
-                 PlayPanel):
+                 PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Avargo",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self, Interaction:DiscordInteraction=None):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+        
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Skill Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
         
         if Interaction is not None:
             Self.BaseViewFrame = View(timeout=144000)

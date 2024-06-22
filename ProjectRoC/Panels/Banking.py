@@ -7,17 +7,20 @@ from discord.ui import Button, Modal, TextInput, View
 from Panels.Panel import Panel
 
 class BankingPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Banking",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self, Interaction=None, UserID=None, Value=None, Save=False, Pull=False, Send=False):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+
         if Interaction != None: Self.Interaction = Interaction
 
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Banking Panel")
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Banking Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         BankingString = ""
 
@@ -71,7 +74,8 @@ class BankingPanel(Panel):
 
 
     async def _Send_Save_Modal(Self, Interaction):
-        if Interaction.user != Self.InitialContext.author:return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
 
         Self.SavingsQuantityModal = Modal(title="Enter Quantity to Save")
         Self.SavingsQuantityModal.on_submit = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction, Value=int(Self.Quantity.value), Save=True)
@@ -82,7 +86,8 @@ class BankingPanel(Panel):
 
 
     async def _Send_Pull_Modal(Self, Interaction):
-        if Interaction.user != Self.InitialContext.author:return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
 
         Self.PullQuantityModal = Modal(title="Enter Quantity to Pull")
         Self.PullQuantityModal.on_submit = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction, Value=int(Self.Quantity.value), Pull=True)
@@ -93,7 +98,8 @@ class BankingPanel(Panel):
 
 
     async def _Send_Money_Modal(Self, Interaction):
-        if Interaction.user != Self.InitialContext.author:return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
 
         Self.SendModal = Modal(title="Enter PlayerID, and Quantity to Send")
         Self.SendModal.on_submit = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction, UserID=int(Self.UserID.value), Value=int(Self.Quantity.value), Send=True)

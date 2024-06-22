@@ -8,13 +8,18 @@ from Panels.Panel import Panel
 from Player import Player
 
 class ProfilePanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Profile",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+        
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Profile Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext, Inclusions=["Skill Points", "Offensive Power", "Defensive Power", "Healing Power",
                                               "Production Power", "Manufacturing Power", "Energy Sapping",])

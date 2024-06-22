@@ -25,8 +25,9 @@ from Player import Player
 
 
 class PlayPanel:
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext) -> None:
-        create_task(Self._Construct_Home(Ether, InitialContext))
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, SummonedID=None) -> None:
+        Self.SummonedID = SummonedID
+        create_task(Self._Construct_Home(Ether, InitialContext, SummonedID=SummonedID))
 
 
     async def _Generate_Info(Self, Ether, InitialContext, Exclusions:list=[], Inclusions:list=[]):
@@ -40,28 +41,31 @@ class PlayPanel:
     async def _Determine_Team(Self, InitialContext):
         if "Titan" in str(InitialContext.author.roles):
             Self.ButtonStyle = ButtonStyle.red
+            Self.Emoji = " 🟥 "
         elif "Analis" in str(InitialContext.author.roles):
             Self.ButtonStyle = ButtonStyle.blurple
+            Self.Emoji = " 🟦 "
         else:
             Self.ButtonStyle = ButtonStyle.grey
+            Self.Emoji = " ⬛ "
 
 
-    async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, Interaction:DiscordInteraction=None):
+    async def _Construct_Home(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, Interaction:DiscordInteraction=None, SummonedID=None):
         Self.Ether:RealmOfConflict = Ether
+        if SummonedID != None:
+            InitialContext.author = Ether.Data['Players'][SummonedID].Data['Member Object']
         Self.InitialContext:DiscordContext = InitialContext
         Self.PlayPanel:Panel = PlayPanel
         Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
         Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
 
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Home Panel")
-
-        Whitelist:[int] = [897410636819083304, # Robert Reynolds, Cavan
-        ]
         Self.Mapping = {}
         Self.ReceiptString = ""
-        Self.Receipt:{str:int} = {}
+        Self.Receipt = {}
         await Self._Determine_Team(InitialContext)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Home Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
         await Self._Generate_Info(Ether, InitialContext)
 
         Self.ScavengeButton = Button(label="Scavenge", style=Self.ButtonStyle, custom_id="ScavengeButton")
@@ -108,15 +112,15 @@ class PlayPanel:
         Self.SkillsButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
         Self.BaseViewFrame.add_item(Self.SkillsButton)
 
-        if InitialContext.author.id in Whitelist:
+        if InitialContext.author.id in Self.Ether.Whitelist:
             Self.Mapping.update({"DebugButton":DebugPanel})
             Self.DebugButton = Button(label="Debug", style=ButtonStyle.grey, row=3, custom_id="DebugButton")
             Self.DebugButton.callback = lambda Interaction: Self._Construct_New_Panel(Ether, InitialContext, Self.ButtonStyle, Interaction)
             Self.BaseViewFrame.add_item(Self.DebugButton)
 
         if Interaction:
-            if Interaction.user != InitialContext.author:
-                return
+            if Interaction.user.id in Self.Ether.Whitelist: pass
+            elif Interaction.user != Self.InitialContext.author: return
             Self.Ether.Logger.info(f"Sent Home panel to {Self.Player.Data['Name']}")
             await Self._Send_New_Panel(Interaction)
         else:
@@ -138,14 +142,13 @@ class PlayPanel:
             "SkirmishesButton": SkirmishesPanel,
             "BankingButton": BankingPanel,
         })
-        # Ether.Data["Panels"][InitialContext.author.id] = Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
-        Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self)
+        Self.Mapping[Interaction.data["custom_id"]](Ether, InitialContext, ButtonStyle, Interaction, Self, Self.Emoji)
         
 
     async def _Scavenge(Self, Ether, InitialContext, Interaction:DiscordInteraction):
-        if Interaction.user != InitialContext.author:
-            return
-        SuccessfulRolls:[str] = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
+        SuccessfulRolls = [Name for Name, Chance in ScavengeTable.items() if randrange(0 , 99) < Chance]
         Self.EmbedFrame.clear_fields()
         ScavengedString = ""
         ExperienceGained:float = round(((0.65 * (0.35 * Self.Player.Data["Level"])) * len(SuccessfulRolls)) + (Self.Player.Data["Maiden's Grace"] * (0.11 * Self.Player.Data["Level"])), 2)

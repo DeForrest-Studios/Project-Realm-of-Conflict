@@ -10,10 +10,10 @@ from Tables import MaterialWorthTable
 class AvargoPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                  ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
-                 PlayPanel):
+                 PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Avargo",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
 
     async def _Construct_Panel(Self, Interaction:DiscordInteraction=None):
@@ -23,15 +23,17 @@ class AvargoPanel(Panel):
         Self.Quantity = None
         Self.ReceiptString = ""
         Self.Receipt = {}
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
         
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Avargo Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
         Self.Ether.Logger.info(f"Sent Avargo panel to {Self.Player.Data['Name']}")
 
         Self.BuyButton = Button(label="Buy", style=Self.ButtonStyle, custom_id="BuyButton")
-        Self.BuyButton.callback = lambda ButtonInteraction : Self._Construct_Buy_Panel(ButtonInteraction)
+        Self.BuyButton.callback = lambda ButtonInteraction: Self._Construct_Buy_Panel(ButtonInteraction)
         Self.BaseViewFrame.add_item(Self.BuyButton)
 
         Self.SellButton = Button(label="Sell", style=Self.ButtonStyle, custom_id="SellButton")
@@ -50,10 +52,13 @@ class AvargoPanel(Panel):
 
 
     async def _Construct_Buy_Panel(Self, Interaction:DiscordInteraction) -> None:
-        if Interaction.user != Self.InitialContext.author:return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
+
         Self.SaleType = "Buy"
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Buy Panel")
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Avargo Buy Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
@@ -91,10 +96,12 @@ class AvargoPanel(Panel):
 
 
     async def _Construct_Sell_Panel(Self, Interaction:DiscordInteraction) -> None:
-        if Interaction.user != Self.InitialContext.author:return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
         Self.SaleType = "Sell"
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sell Panel")
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Avargo Sell Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
         
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
 

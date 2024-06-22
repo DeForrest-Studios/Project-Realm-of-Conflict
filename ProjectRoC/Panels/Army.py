@@ -11,10 +11,10 @@ from asyncio import create_task
 class ArmyPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                  ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
-                 PlayPanel, SententsPanel):
+                 PlayPanel, SententsPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Army",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
         Self.SententsPanel = SententsPanel
         Self.Index = 0
         Self.Pages = []
@@ -30,10 +30,13 @@ class ArmyPanel(Panel):
 
 
     async def _Construct_Panel(Self, GivenInteraction=None):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
         
         Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s Avargo Sale Panel")
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Army Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
+
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
         if GivenInteraction != None: Self.Interaction = GivenInteraction
@@ -85,7 +88,7 @@ class ArmyPanel(Panel):
 
         Self.SententsButton = Button(label="Return to Sentents", style=Self.ButtonStyle,
                                      row=2, custom_id="SententsButton")
-        Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__ainit__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel)
+        Self.SententsButton.callback = lambda Interaction: Self.SententsPanel.__ainit__(Self.Ether, Self.InitialContext, Self.ButtonStyle, Interaction, Self.PlayPanel, Self.Emoji)
         Self.BaseViewFrame.add_item(Self.SententsButton)
 
         Self.HomepageButton = Button(label="Home", style=DiscordButtonStyle.grey,

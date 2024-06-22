@@ -7,17 +7,23 @@ from discord.ui import Select, Button
 from Panels.Panel import Panel
 from Structures import ProductionFacility
 from time import time as Time
+from discord import Embed
+from discord.ui import View
 
 class ProductionFacilitiesPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Production",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self, Interaction:DiscordInteraction=None, FacilitySelected=None, FacilityUpgraded=False):
-        if Self.Interaction.user != Self.InitialContext.author:
-            return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
         
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Production Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
+
         # if Interaction is not None:
         #     await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
         #     Self.Ether.Logger.info(f"Sent Facilities panel to {Self.Player}")
@@ -25,26 +31,26 @@ class ProductionFacilitiesPanel(Panel):
 
 
         if FacilityUpgraded == True:
-            if Self.Player.Data['Wallet'] < Self.FacilitySelected.UpgradeCost:
+            if Self.Player.Data['Wallet'] < Self.FacilitySelected.Data['Upgrade Cost']:
                 Self.EmbedFrame.clear_fields()
-                FacilityInfoString = (f"Level: {Self.FacilitySelected.Level}\n"+
-                                    f"Capacity: {Self.FacilitySelected.Capacity}\n"+
-                                    f"Units Per Second: {Self.FacilitySelected.UnitsPerTick}\n"+
-                                    f"Upgrade Cost: {Self.FacilitySelected.UpgradeCost}")
+                FacilityInfoString = (f"Level: {Self.FacilitySelected.Data['Level']}\n"+
+                                    f"Capacity: {Self.FacilitySelected.Data['Capacity']}\n"+
+                                    f"Units Per Second: {Self.FacilitySelected.Data['Units Per Tick']}\n"+
+                                    f"Upgrade Cost: {Self.FacilitySelected.Data['Upgrade Cost']}")
                 await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
-                Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+                Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Data['Name']} Info", value=FacilityInfoString)
                 Self.EmbedFrame.add_field(name="Insufficient Funds", value="\u200b", inline=False)
                 await Self._Send_New_Panel(Interaction)
             else:
-                Self.Player.Data['Wallet'] = round(Self.Player.Data['Wallet'] - Self.FacilitySelected.UpgradeCost, 2)
+                Self.Player.Data['Wallet'] = round(Self.Player.Data['Wallet'] - Self.FacilitySelected.Data['Upgrade Cost'], 2)
                 Self.FacilitySelected.Upgrade()
                 Self.EmbedFrame.clear_fields()
-                FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Level, ',')}\n"+
-                                      f"Capacity: {format(Self.FacilitySelected.Capacity, ',')}\n"+
-                                      f"Units Per Second: {format(Self.FacilitySelected.UnitsPerTick, ',')}\n"+
-                                      f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
+                FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Data['Level'], ',')}\n"+
+                                      f"Capacity: {format(Self.FacilitySelected.Data['Capacity'], ',')}\n"+
+                                      f"Units Per Second: {format(Self.FacilitySelected.Data['Units Per Tick'], ',')}\n"+
+                                      f"Upgrade Cost: {format(Self.FacilitySelected.Data['Upgrade Cost'], ',')}")
                 await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
-                Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+                Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Data['Name']} Info", value=FacilityInfoString)
                 await Self._Send_New_Panel(Interaction)
         elif FacilitySelected is not None:
             Self.FacilitySelected:ProductionFacility = Self.Player.ProductionFacilities[FacilitySelected]
@@ -60,11 +66,11 @@ class ProductionFacilitiesPanel(Panel):
 
             await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
 
-            FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Level, ',')}\n"+
-                                  f"Capacity: {format(Self.FacilitySelected.Capacity, ',')}\n"+
-                                  f"Units Per Second: {format(Self.FacilitySelected.UnitsPerTick, ',')}\n"+
-                                  f"Upgrade Cost: {format(Self.FacilitySelected.UpgradeCost, ',')}")
-            Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Name} Info", value=FacilityInfoString)
+            FacilityInfoString = (f"Level: {format(Self.FacilitySelected.Data['Level'], ',')}\n"+
+                                  f"Capacity: {format(Self.FacilitySelected.Data['Capacity'], ',')}\n"+
+                                  f"Units Per Second: {format(Self.FacilitySelected.Data['Units Per Tick'], ',')}\n"+
+                                  f"Upgrade Cost: {format(Self.FacilitySelected.Data['Upgrade Cost'], ',')}")
+            Self.EmbedFrame.add_field(name=f"{Self.FacilitySelected.Data['Name']} Info", value=FacilityInfoString)
             await Self._Send_New_Panel(Interaction)
         else:
             await Self._Generate_Info(Self.Ether, Self.InitialContext, Exclusions=["Team", "Power"])
@@ -89,8 +95,8 @@ class ProductionFacilitiesPanel(Panel):
 
 
     async def _Collect_Production_Facilities(Self, Interaction:DiscordInteraction):
-        if Interaction.user != Self.InitialContext.author:
-            return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
         CollectionString = ""
         ProductionFacilityLength:int = len(Self.Player.ProductionFacilities.values()) - 1
         
@@ -99,22 +105,21 @@ class ProductionFacilitiesPanel(Panel):
         Index:int
         Facility:ProductionFacility
         for Index, Facility in enumerate(Self.Player.ProductionFacilities.values()):
-            print(Self.Player.Data["Time of Last Production Collection"])
-            if Self.Player.Data["Time of Last Production Collection"] == "Never":
-                EarnedAmount = round((Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
+            print(Facility, " ", Facility.Data["Time of Last Collect"])
+            if Facility.Data["Time of Last Collect"] == "Never":
+                EarnedAmount = round((Facility.Data['Units Per Tick'] * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
             else:
-                EarnedAmount = round(Facility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
+                EarnedAmount = round(Facility.Data['Units Per Tick'] * (CollectionTime - Facility.Data["Time of Last Collect"]), 2)
 
             if Index == ProductionFacilityLength:
-                CollectionString += f"{EarnedAmount} {Facility.OutputItem}"
+                CollectionString += f"{EarnedAmount} {Facility.Data['Output']}"
             else:
-                CollectionString += f"{EarnedAmount} {Facility.OutputItem}\n"
+                CollectionString += f"{EarnedAmount} {Facility.Data['Output']}\n"
 
             SkillBonus = ((Self.Player.Skills["Production"] + 1) * (5 * EarnedAmount)/100)
             EarnedAmount = round(EarnedAmount + SkillBonus, 2)
-            Self.Player.Inventory[Facility.OutputItem] = round(Self.Player.Inventory[Facility.OutputItem] + EarnedAmount, 2)
-        
-        Self.Player.Data["Time of Last Production Collection"] = CollectionTime
+            Self.Player.Inventory[Facility.Data['Output']] = round(Self.Player.Inventory[Facility.Data['Output']] + EarnedAmount, 2)
+            Facility.Data["Time of Last Collect"] = CollectionTime
 
         Self.EmbedFrame.clear_fields()
 

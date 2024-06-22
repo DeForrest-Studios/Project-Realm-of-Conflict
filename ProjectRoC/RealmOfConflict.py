@@ -33,13 +33,18 @@ class RealmOfConflict(Bot):
             "PlayerInteractions":0,
         }
         Self.DataDirectory = "Data"
+        Self.RunType = None
         Self.Guild = None
         Self.Roles = None
         Self.Members = None
         Self.CoreSimulation = None
         Self.InterestRate = .17
-        Self.Materials:Union[str] = [Facility.OutputItem for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
+        Self.Materials:Union[str] = [Facility.Data['Output'] for Facility in Self.Data["Players"]["42069"].ProductionFacilities.values()]
         Self.Initalize_Logger()
+
+        Self.Whitelist = [897410636819083304, # Robert Reynolds, Cavan
+                     713798389908897822, # Zachary Monroe, TheMadDM
+        ]
 
     
     def Dev_Mode(Self):
@@ -96,6 +101,7 @@ class RealmOfConflict(Bot):
                     elif type(RecordValue.split(".")) != list:
                         RecordValue = float(RecordValue)
                     Self.Records[RecordName] = RecordValue
+
 
     async def Save_Record(Self) -> None:
         Self.Logger.info("Saving Records")
@@ -225,8 +231,13 @@ class RealmOfConflict(Bot):
                 for Field in PlayerData:
                     Contents:str = Field.split(":")
                     Name:str = Contents[0]
-                    Value = int(Contents[1])
-                    Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Level = Value
+                    Level = int(Contents[1])
+                    Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Data["Level"] = Level
+                    if len(Contents) >= 3:
+                        if Contents[2].isdigit():
+                            Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Data["Time of Last Collect"] = int(Contents[2])
+                        else:
+                            Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Data["Time of Last Collect"] = Contents[2]
                     Self.Data["Players"][PlayerUUID].ProductionFacilities[Name].Refresh_Stats()
 
 
@@ -377,7 +388,7 @@ class RealmOfConflict(Bot):
             SaveData = ""
             with open(join(Self.DataDirectory, "PlayerProductionFacilities", f"{UUID}.production.roc"), 'w+') as PlayerDataFile:
                 for Facility in PlayerObject.ProductionFacilities.values():
-                    SaveData += f"{Facility.Name}:{Facility.Level}\n"
+                    SaveData += f"{Facility.Data['Name']}:{Facility.Data['Level']}:{Facility.Data['Time of Last Collect']}\n"
                 PlayerDataFile.write(SaveData)
 
 
@@ -433,6 +444,7 @@ class RealmOfConflict(Bot):
         Self.Data["Players"][NewMember.id].Data["Team"] = Choice.Data["Name"]
         Self.Data["Players"][NewMember.id].Data["Maiden's Grace"] = 1
         Choice.Data["Protector Count"] += 1
+        print(Choice)
         await NewMember.add_roles(Self.Roles[Choice.Data["Name"]])
 
         MessageEmbed = Embed(title="Welcome")

@@ -11,15 +11,20 @@ from Player import Player
 class RecruitPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                  ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
-                 PlayPanel, SententsPanel):
+                 PlayPanel, SententsPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Recruit",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
         Self.SententsPanel = SententsPanel
         Self.InfantrySelected = None
 
     async def _Construct_Panel(Self, Interaction=None, InfantryRecruited=False):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+        
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Recruit Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         if Interaction == None:
             await Self._Generate_Info(Self.Ether, Self.InitialContext)

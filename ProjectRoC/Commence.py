@@ -48,6 +48,7 @@ if __name__ == '__main__':
         # Official Server Setup
         if Ether.Guild.id == 1190386754327412867: # Leave this all hard coded for very good reason.
             Ether.Logger.info("Running on Official Server")
+            Ether.RunType = "Official"
             Ether.Roles = {
                 "Titan":Ether.Guild.get_role(1190386754327412870),
                 "Analis":Ether.Guild.get_role(1190386754327412869),
@@ -61,6 +62,7 @@ if __name__ == '__main__':
         if Ether.Guild.id == 1190385562604015626: # Leave this all hard coded for very good reason.
             Ether.Dev_Mode()
             Ether.Logger.info("Running on Developer Server")
+            Ether.RunType = "Dev"
             Ether.Roles = {
                 "Titan":Ether.Guild.get_role(1190385562604015629),
                 "Analis":Ether.Guild.get_role(1190385562604015628),

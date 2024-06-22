@@ -10,10 +10,10 @@ from Tables import Components, FacilityMapping
 from time import time as Time
 
 class ManufacturingFacilitiesPanel(Panel):
-    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel):
+    def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, ButtonStyle, Interaction:DiscordInteraction, PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Manufacturing Facilities",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self, Interaction=None, FacilitySelected=None,
                                GroupSelected=None, BoughtFacility=False,
@@ -26,7 +26,12 @@ class ManufacturingFacilitiesPanel(Panel):
             elif len(Interaction) == 3:
                 GroupSelected = Data[2]
 
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+        
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Manufacturing Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         if Interaction is not None:
             Self.BaseViewFrame = View(timeout=144000)
@@ -102,7 +107,8 @@ class ManufacturingFacilitiesPanel(Panel):
                 Data = Interaction
                 Interaction = Data[0]
 
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
 
         if Interaction is not None:
             Self.BaseViewFrame = View(timeout=144000)
@@ -154,8 +160,8 @@ class ManufacturingFacilitiesPanel(Panel):
 
     async def _Send_Change_Name_Modal(Self, Data):
         Interaction = Data[0]
-        if Interaction.user != Self.InitialContext.author:
-            return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
         Self.ChangeFacilityNameModal = Modal(title="Change Facility Name")
         Self.ChangeFacilityNameModal.on_submit = lambda ButtonInteraction: Self._Change_Facility_Name((ButtonInteraction,) + Data[1::])
 
@@ -183,6 +189,8 @@ class ManufacturingFacilitiesPanel(Panel):
 
 
     async def _Collect(Self, Interaction):
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
         # We're going to need to give each structure their own "Time of Last Production Collection" attribute that can be individually checked
         # This means that I'll have to use the same DataDict approach that I did with the manufacturing facilities
         # Production outputs will "trickle" down the priorities
@@ -196,13 +204,13 @@ class ManufacturingFacilitiesPanel(Panel):
             if Self.Player.Data["Time of Last Manufacturing Collection"] == "Never":
                 ManufacturingPotential = round((Facility.Data["Units Per Tick"] * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
             else:
-                ManufacturingPotential = round(Facility.Data["Units Per Tick"] * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
+                ManufacturingPotential = round(Facility.Data["Units Per Tick"] * (CollectionTime - Self.Player.Data["Time of Last Manufacturing Collection"]), 2)
             
             ProductionFacility = Self.Player.ProductionFacilities[FacilityMapping[OutputItem]] 
-            if Self.Player.Data["Time of Last Production Collection"] == "Never":
-                ProductionAmount = round((ProductionFacility.UnitsPerTick * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
+            if Facility.Data["Time of Last Collect"] == "Never":
+                ProductionAmount = round((ProductionFacility.Data['Units Per Tick'] * (CollectionTime - Self.Player.Data["Join TimeStamp"])) , 2)
             else:
-                ProductionAmount = round(ProductionFacility.UnitsPerTick * (CollectionTime - Self.Player.Data["Time of Last Production Collection"]), 2)
+                ProductionAmount = round(ProductionFacility.Data['Units Per Tick'] * (CollectionTime - Facility.Data["Time of Last Collect"]), 2)
             
             RecipeRequirements = Components[OutputItem]
             if len(RecipeRequirements.keys()) == 1:
@@ -220,7 +228,7 @@ class ManufacturingFacilitiesPanel(Panel):
 
             if ManufacturingPotential <= ProductionAmount:
                 Self.Player.Data["Time of Last Manufacturing Collection"] = CollectionTime
-                Self.Player.Data["Time of Last Production Collection"] = CollectionTime
+                ProductionFacility.Data["Time of Last Collect"] = CollectionTime
                 Self.Player.Inventory[OutputItem] = round(Self.Player.Inventory[OutputItem] + ManufacturingPotential, 2)
                 CollectionString += f"{Facility.Data['Name']} output {ManufacturingPotential} {OutputItem}"
                 print(ManufacturingPotential)

@@ -2,22 +2,27 @@ from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
 from discord import ButtonStyle as DiscordButtonStyle
-from discord import SelectOption
-from discord.ui import Button, Select, Modal, TextInput
+from discord import SelectOption, Embed
+from discord.ui import Button, Select, Modal, TextInput, View
 from Panels.Panel import Panel
 from Tables import TypeMapping
 
 class CraftingPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                  ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
-                 PlayPanel):
+                 PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Crafting",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self, Interaction:DiscordInteraction=None, CraftingTypeSelected:str=None,
                                CraftingItemSelection:str=None, CraftedAmount:int=None):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Crafting Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
         if Interaction == None:
@@ -102,7 +107,9 @@ class CraftingPanel(Panel):
 
 
     async def _Send_Quantity_Modal(Self, Interaction):
-        if Interaction.user != Self.InitialContext.author:return
+        if Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Interaction.user != Self.InitialContext.author: return
+
 
         Self.ItemQuantityModal = Modal(title="Enter Quantity")
         Self.ItemQuantityModal.on_submit = lambda ButtonInteraction: Self._Construct_Panel(ButtonInteraction, CraftingTypeSelected=Self.CraftingTypeSelected,

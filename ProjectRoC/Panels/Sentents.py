@@ -2,7 +2,8 @@ from RealmOfConflict import RealmOfConflict
 from discord.ext.commands import Context as DiscordContext
 from discord import Interaction as DiscordInteraction
 from discord import ButtonStyle as DiscordButtonStyle
-from discord.ui import Button
+from discord import Embed
+from discord.ui import Button, View
 from Panels.Panel import Panel
 from Panels.Recruit import RecruitPanel
 from Panels.Army import ArmyPanel
@@ -10,20 +11,25 @@ from Panels.Army import ArmyPanel
 class SententPanel(Panel):
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                  ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction,
-                 PlayPanel):
+                 PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Sentents",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def __ainit__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext, # I'm sorry for this, but this is how the recruit panel,
                         ButtonStyle:DiscordButtonStyle, Interaction:DiscordInteraction, # and the army panel get back to the sentent panel
-                        PlayPanel):
+                        PlayPanel, Emoji):
         super().__init__(Ether, InitialContext,
                          PlayPanel, "Sentents",
-                         Interaction=Interaction, ButtonStyle=ButtonStyle)
+                         Interaction=Interaction, ButtonStyle=ButtonStyle, Emoji=Emoji)
 
     async def _Construct_Panel(Self):
-        if Self.Interaction.user != Self.InitialContext.author: return
+        if Self.Interaction.user.id in Self.Ether.Whitelist: pass
+        elif Self.Interaction.user != Self.InitialContext.author: return
+
+        Self.BaseViewFrame = View(timeout=144000)
+        Self.PanelTitle = f"{Self.Player.Data['Name']}'s Sentent Panel"
+        Self.EmbedFrame = Embed(title=Self.Emoji*2 + Self.PanelTitle + Self.Emoji*2)
 
         await Self._Generate_Info(Self.Ether, Self.InitialContext)
 
@@ -44,10 +50,10 @@ class SententPanel(Panel):
 
 
     async def _Construct_New_Panel(Self, Interaction:DiscordInteraction):
-        Mapping:{str:Panel} = {
+        Mapping = {
             "ArmyButton":ArmyPanel,
             "RecruitButton":RecruitPanel,
         }
         Self.Ether.Data["Panels"][Self.InitialContext.author.id] = Mapping[Interaction.data["custom_id"]](Self.Ether, Self.InitialContext,
                                                                                                           Self.ButtonStyle, Interaction,
-                                                                                                          Self.PlayPanel, Self)
+                                                                                                          Self.PlayPanel, Self, Self.Emoji)

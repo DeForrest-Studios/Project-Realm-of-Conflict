@@ -11,23 +11,27 @@ from asyncio import create_task
 class Panel:
     def __init__(Self, Ether:RealmOfConflict, InitialContext:DiscordContext,
                        PlayPanel, PanelType:str,
-                       Interaction:DiscordInteraction=None, ButtonStyle:DiscordButtonStyle=None) -> None:
+                       Interaction:DiscordInteraction=None, ButtonStyle:DiscordButtonStyle=None,
+                       Emoji=None) -> None:
         
         Self.Ether:RealmOfConflict = Ether
         Self.InitialContext:DiscordContext = InitialContext
         Self.PlayPanel:Panel = PlayPanel
         Self.ButtonStyle:DiscordButtonStyle = ButtonStyle
+        Self.Emoji = Emoji
         Self.Player:Player = Ether.Data['Players'][InitialContext.author.id]
-
-        Self.BaseViewFrame = View(timeout=144000)
-        Self.EmbedFrame = Embed(title=f"{Self.Player.Data['Name']}'s {PanelType} Panel")
         Ether.Data["Panels"].update({InitialContext.author.id:Self})
+        
         if Interaction is not None:
             Self.Interaction:DiscordInteraction = Interaction
+            print("Interaction found, sending as reply")
             create_task(Self._Construct_Panel())
+        else:
+            print("No interaction found, most likely sending as new panel altogether")
 
 
     async def _Send_New_Panel(Self, Interaction:DiscordInteraction) -> None:
+        print("Sending new panel")
         Self.Ether.Records["PlayerInteractions"] += 1
         await Interaction.response.edit_message(embed=Self.EmbedFrame, view=Self.BaseViewFrame)
         Self.DashboardMessage:DiscordMessage = Interaction.message

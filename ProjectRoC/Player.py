@@ -1,6 +1,6 @@
 from Structures import ProductionFacility, Well, SandQuarry, GravelPit, CottonFarm,\
                        LimestoneQuarry, WheatFarm, TreeFarm, CoalMine, MyceliumFarm,\
-                       CopperMine, IronMine, BauxiteMine, SilverMine, GoldMine,\
+                       CopperMine, IronMine, AluminumMine, SilverMine, GoldMine,\
                        LithiumMine, OilWell
 
 from typing import Dict
@@ -31,7 +31,6 @@ class Player:
                 "Counter Operations Skill": 0,
                 "Maiden's Grace": 0, # 0 for False, 1 for True
                 "Join TimeStamp": int(time()),
-                "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
                 "Savings":0,
             }
@@ -57,7 +56,6 @@ class Player:
                 "Counter Operations Skill": 0,
                 "Maiden's Grace": 0, # 0 for False, 1 for True
                 "Join TimeStamp": int(time()),
-                "Time of Last Production Collection": "Never",
                 "Time of Last Manufacturing Collection": "Never",
                 "Land Plots":1,
                 "Victories":0,
@@ -124,7 +122,7 @@ class Player:
             "Mycelium Farm": MyceliumFarm(),
             "Copper Mine": CopperMine(),
             "Iron Mine": IronMine(),
-            "Bauxite Mine": BauxiteMine(),
+            "Aluminum Mine": AluminumMine(),
             "Silver Mine": SilverMine(),
             "Gold Mine": GoldMine(),
             "Oil Well": OilWell(),
