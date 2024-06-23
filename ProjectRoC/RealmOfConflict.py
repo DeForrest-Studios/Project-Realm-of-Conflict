@@ -258,9 +258,11 @@ class RealmOfConflict(Bot):
                     Name:str = Contents[0]
                     Level = int(Contents[1])
                     Recipe = Contents[2]
+                    Priority = int(Contents[3])
                     Self.Data["Players"][PlayerUUID].ManufacturingFacilities.update({Name:ManufacturingFacility(Name)})
                     Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Data["Level"] = Level
                     Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Data["Recipe"] = Recipe
+                    Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Data["Priority"] = Priority
                     Self.Data["Players"][PlayerUUID].ManufacturingFacilities[Name].Refresh_Stats()
 
 
@@ -400,7 +402,7 @@ class RealmOfConflict(Bot):
             SaveData = ""
             with open(join(Self.DataDirectory, "PlayerManufacturingFacilities", f"{UUID}.manufacturing.roc"), 'w+') as PlayerDataFile:
                 for Facility in PlayerObject.ManufacturingFacilities.values():
-                    SaveData += f"{Facility.Data['Name']}:{Facility.Data['Level']}:{Facility.Data['Recipe']}\n"
+                    SaveData += f"{Facility.Data['Name']}:{Facility.Data['Level']}:{Facility.Data['Recipe']}:{Facility.Data['Priority']}\n"
                 PlayerDataFile.write(SaveData)
 
 

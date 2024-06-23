@@ -179,6 +179,6 @@ A long awaited official update
  - Added Banking Panel, with Save, and Pull button. Can put money into savings account, and pull money out of.
  - Each skirmish their is now a banking cycle in which each players gains interest on their accounts each
  - You can now send money to other players using their UserID
- - You can now properly collect from manufacturing facilities
+ - You can now properly buy, and collect from manufacturing facilities, name them, and set their priority
  - Added emojis to the panel titles for decoration, this also fixes some of the fields in the embed being put onto two lines
  - Added a multitude of new features for devs, and admins to help with problems

@@ -12,9 +12,12 @@ Every simulation begins with population of 5,298,647,384,393, and the simulation
 ## Tiny Wiki
 
 Players have these actions:
- - Facilities
+ - Production & Manufacturing Facilities
      - Collect from Facilities
      - Upgrade Facilities Output, and Storage
+     - You can name your manufacturing facilities
+     - A player can have a maximum of 5 plots, and each plot can hold 25 manufacturing facilities
+     - There are 20 priority levels, the player can change the priority level of each manufacturing facility
  - Avargo (NPC Shop)
      - Buy
      - Sell

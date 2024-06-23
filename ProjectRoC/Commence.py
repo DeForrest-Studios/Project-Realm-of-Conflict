@@ -27,6 +27,7 @@ if __name__ == '__main__':
 
         # If the player already has a panel, delete the previous panel before sending them a new one
         if InitialContext.author.id in Ether.Data["Panels"].keys():
+            await InitialContext.message.delete()
             await Ether.Data["Panels"][InitialContext.author.id].DashboardMessage.delete()
             Ether.Data["Panels"].update({InitialContext.author.id:PlayPanel(Ether, InitialContext)})
             return
